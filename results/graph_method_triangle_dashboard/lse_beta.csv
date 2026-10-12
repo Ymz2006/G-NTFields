@@ -1,0 +1,4 @@
+beta,forward,collision,no_converge,y_max,y_violated,source
+10,0.79,22,193,0.1427667135349984,0.6103515625,results/graph_method_triangle_stageE/T_gmetric_beta10_s0_c1000/success_rate.txt ; results/graph_method_triangle_triangle/beta.json
+30,0.798,22,188,0.12061919569383386,0.5751953125,results/graph_method_triangle_stageE/T_gmetric_beta30_s0_c1000/success_rate.txt ; results/graph_method_triangle_triangle/beta.json
+100,0.766,32,211,0.08773207346679285,0.4697265625,results/graph_method_triangle_stageE/T_gmetric_beta100_s0_c1000/success_rate.txt ; results/graph_method_triangle_triangle/beta.json

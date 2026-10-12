@@ -1,0 +1,89 @@
+{
+ "Experiments/graph_method_triangle_stageE/T_gmetric_beta10_s0/latest.pt": {
+  "arch": "graph_metric",
+  "mode": "shape",
+  "rot_mode": "free",
+  "data": "datasets/3dshape/Tshape3d_env1",
+  "random": {
+   "viol_max": -0.020025209573340197,
+   "viol_rel_max": -0.011252105610828048,
+   "viol_frac": 0.0,
+   "viol_rel_p99": -0.12803373742461788,
+   "n": 1024
+  },
+  "attack": {
+   "viol_max": 0.8455342149279899,
+   "viol_rel_max": 0.1672290058188864,
+   "viol_frac": 0.9853515625,
+   "viol_rel_p99": 0.14952404585823462,
+   "n": 1024,
+   "in_domain": 0.9464816650148662
+  },
+  "attack_y": {
+   "viol_max": 0.3812289993546676,
+   "viol_rel_max": 0.1427667135349984,
+   "viol_frac": 0.6103515625,
+   "viol_rel_p99": 0.11995203212362421,
+   "n": 1024,
+   "in_domain": 1.0
+  }
+ },
+ "Experiments/graph_method_triangle_stageE/T_gmetric_beta30_s0/latest.pt": {
+  "arch": "graph_metric",
+  "mode": "shape",
+  "rot_mode": "free",
+  "data": "datasets/3dshape/Tshape3d_env1",
+  "random": {
+   "viol_max": -0.03431138569281211,
+   "viol_rel_max": -0.018465043601239694,
+   "viol_frac": 0.0,
+   "viol_rel_p99": -0.13346458344040402,
+   "n": 1024
+  },
+  "attack": {
+   "viol_max": 0.29647719830200714,
+   "viol_rel_max": 0.13598968560981367,
+   "viol_frac": 0.9873046875,
+   "viol_rel_p99": 0.12664973785971145,
+   "n": 1024,
+   "in_domain": 0.9574678536102869
+  },
+  "attack_y": {
+   "viol_max": 0.17415518109701988,
+   "viol_rel_max": 0.12061919569383386,
+   "viol_frac": 0.5751953125,
+   "viol_rel_p99": 0.0989676705592079,
+   "n": 1024,
+   "in_domain": 1.0
+  }
+ },
+ "Experiments/graph_method_triangle_stageE/T_gmetric_beta100_s0/latest.pt": {
+  "arch": "graph_metric",
+  "mode": "shape",
+  "rot_mode": "free",
+  "data": "datasets/3dshape/Tshape3d_env1",
+  "random": {
+   "viol_max": -0.06488465363257334,
+   "viol_rel_max": -0.0371279531692625,
+   "viol_frac": 0.0,
+   "viol_rel_p99": -0.1287696539810789,
+   "n": 1024
+  },
+  "attack": {
+   "viol_max": 0.09681517168599574,
+   "viol_rel_max": 0.11897985583946555,
+   "viol_frac": 0.9638671875,
+   "viol_rel_p99": 0.09095461648428275,
+   "n": 1024,
+   "in_domain": 0.9523809523809523
+  },
+  "attack_y": {
+   "viol_max": 0.057827983478058675,
+   "viol_rel_max": 0.08773207346679285,
+   "viol_frac": 0.4697265625,
+   "viol_rel_p99": 0.06263593746880274,
+   "n": 1024,
+   "in_domain": 1.0
+  }
+ }
+}

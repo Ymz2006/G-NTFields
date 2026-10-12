@@ -1,0 +1,54 @@
+=== success rate by planner ===
+regular/forward                 : 0.7610  (76.1%)  [761/1000]
+flipped/reverse                 : 0.7550  (75.5%)  [755/1000]
+either/or                       : 0.8540  (85.4%)  [854/1000]
+alt/alternate                   : 0.8010  (80.1%)  [801/1000]
+locB/Alternative Bellman        : 0.7620  (76.2%)  [762/1000]
+hlB/Alternative Bellman Horizon : 0.7580  (75.8%)  [758/1000]
+
+data_path                    : testing_data/3dshape/Tshape3d_env1
+model_path                   : ./Experiments/3dshape
+checkpoint                   : /workspace/Experiments/graph_method_triangle_stageE/T_tri_b1g1_s0/latest.pt
+test_cases                   : 1000
+mppi_momentum                : 2.0
+mppi_step                    : 0.015   [convergence ball is 0.01]
+mppi_taper                   : 0.0
+mppi_temp                    : 50.0   [softmax(-temp * cost); default 50]
+mppi_planar (--2d)           : False
+no_conv_min_dis_median       : 0.6505
+no_conv_min_dis_within_2ball : 0 / 201   [overshoot: got inside 0.02 but never inside 0.01]
+discarded_invalid_endpoints  : 0  (start: 0, goal: 0)
+episodes                     : 1000   [evaluated = test_cases - discarded]
+successes                    : 761
+failures                     : 239
+  collision                  : 56
+  no_converge                : 201
+success_rate                 : 0.7610  (76.1%)
+successes_flipped            : 755  (collision: 73, no_converge: 198)
+success_rate_flipped         : 0.7550  (75.5%)
+successes_either             : 854   [regular OR flipped]
+success_rate_either          : 0.8540  (85.4%)
+success_rate_alternating     : 0.8010  (80.1%)  [801/1000]
+alternating_rescued          : 87   [regular failed, alternating passed]
+alternating_lost             : 47   [regular passed, alternating failed]
+alternating_collision        : 56 / 1000
+alternating_no_convergence   : 165 / 1000
+local_step_weight            : 0.03
+success_rate_local_bidir     : 0.7620  (76.2%)  [762/1000]
+local_bidir_rescued          : 69   [regular failed, local-bidir passed]
+local_bidir_lost             : 68   [regular passed, local-bidir failed]
+local_bidir_collision        : 31 / 1000
+local_bidir_no_convergence   : 220 / 1000
+success_rate_hor_local_bidir : 0.7580  (75.8%)  [758/1000]
+hor_local_bidir_rescued      : 72   [regular failed, hor+local-bidir passed]
+hor_local_bidir_lost         : 75   [regular passed, hor+local-bidir failed]
+hor_local_bidir_collision    : 34 / 1000
+hor_local_bidir_no_convergence: 220 / 1000
+rescued_by_flip              : 93
+lost_by_flip                 : 99   [regular passed but flipped failed; symmetric with rescued_by_flip iff the flip carries no directional signal]
+failures_both                : 146   [regular AND flipped both failed]
+failure_rate_both            : 0.1460  (14.6%)
+failure_corr_phi_flip        : +0.4767   [P(both fail)=0.1460, independent=0.0586]
+linear_interp_valid          : 194 / 1000
+success_rate|lin_interp_valid: 0.8969  (89.7%)  [174/194]
+success_rate|lin_interp_fail : 0.7283  (72.8%)  [587/806]

@@ -1,0 +1,23 @@
+\texttt{graph\_gram} & sq. residual, aniso speeds & $1.0/0.3$ & $0.0$ & 178 & 200 \\
+\texttt{graph\_gram} & sq. residual, iso speeds & $1.0/0.3$ & $0.0$ & 158 & 200 \\
+\texttt{graph\_gram} & $\sqrt{\cdot}$ residual, iso & $1.0/0.3$ & $1.0$ & 130 & 198 \\
+\texttt{graph\_gram} & + non-detached $e^{-T/2}$ weight & $1.0/0.3$ & $22.5$ & 143 & 77 \\
+\texttt{metric} & + non-detached $e^{-T/2}$ weight & $1.0/0.3$ & $5.5$ & 26 & 188 \\
+\texttt{graph\_gram} & no input skip & $1.0/0.3$ & $6.0$ & 124 & 186 \\
+\texttt{graph\_gram} & + speed lower bound $T\ge T_{\mathrm{free}}$ & $1.0/0.3$ & $22.0$ & 145 & 71 \\
+\texttt{metric} & + speed lower bound & $1.0/0.3$ & $10.1$ & 45 & 177 \\
+\texttt{graph\_gram} & AdamW (wd 0.5) & $1.0/0.3$ & $26.5$ & 137 & 56 \\
+\texttt{graph\_gram} & Adam, cosine LR & $1.0/0.1$ & $67.0$ & 22 & 61 \\
+\texttt{graph\_gram} & AdamW & $1.0/0.1$ & $69.0$ & 32 & 43 \\
+\texttt{metric} & Adam, cosine LR & $1.0/0.1$ & $60.3$ & 4 & 79 \\
+\texttt{metric} & AdamW & $1.0/0.1$ & $71.0$ & 8 & 53 \\
+\texttt{graph\_gram} & AdamW, aniso speeds & $1.0/0.1$ & $11.0$ & 170 & 110 \\
+\texttt{graph\_gram} & AdamW & $2.0/0.1$ & $52.5$ & 64 & 56 \\
+\texttt{graph\_gram} & AdamW & $0.5/0.1$ & $77.5$ & 13 & 38 \\
+\texttt{graph\_gram} & AdamW & $0.5/0.05$ & $78.5$ & 15 & 31 \\
+\texttt{graph\_gram} & AdamW & $0.3/0.05$ & $78.0$ & 9 & 40 \\
+\texttt{metric} & AdamW & $0.5/0.1$ & $81.0$ & 1 & 37 \\
+\texttt{metric} & coordinate replica of baseline & $1.0$ & $68.5$ & 40 & 50 \\
+\texttt{metric} & replica + rollback, resampled $B$ & $1.0$ & $74.5$ & 34 & 39 \\
+\texttt{metric} & replica, no clipping, no mask & $1.0$ & $76.0$ & 32 & 43 \\
+\texttt{metric baseline} & native pipeline, checkpoint s1 & $1.0$ & $82.0$ & 19 & 29 \\

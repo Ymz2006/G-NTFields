@@ -1,0 +1,35 @@
+key,scene,model_id,model,role,guarantee,seed,rotation_share,b_corr,source
+T-shape|tri_metric_eq|0,T-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,0,0.05015050619840622,0.9936938285827637,Experiments/graph_method_triangle_stageE/T_trimetric_eq_s0/latest.pt
+T-shape|tri_metric_eq|1,T-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,1,0.047557245939970016,0.997093141078949,Experiments/graph_method_triangle_stageE/T_trimetric_eq_s1/latest.pt
+T-shape|tri_metric_eq|2,T-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,2,0.047778837382793427,0.9950679540634155,Experiments/graph_method_triangle_stageE/T_trimetric_eq_s2/latest.pt
+T-shape|tri_metric_eq|3,T-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,3,0.04550137370824814,0.9941030740737915,Experiments/graph_method_triangle_stageE/T_trimetric_eq_s3/latest.pt
+T-shape|tri_metric_eq|4,T-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,4,0.045905545353889465,0.9941137433052063,Experiments/graph_method_triangle_stageE/T_trimetric_eq_s4/latest.pt
+L-shape|tri_metric_eq|0,L-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,0,0.11073300242424011,0.9947282671928406,Experiments/graph_method_triangle_stageE/L_trimetric_eq_s0/latest.pt
+L-shape|tri_metric_eq|1,L-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,1,0.11094348877668381,0.9957104921340942,Experiments/graph_method_triangle_stageE/L_trimetric_eq_s1/latest.pt
+L-shape|tri_metric_eq|2,L-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,2,0.10795634239912033,0.9929190874099731,Experiments/graph_method_triangle_stageE/L_trimetric_eq_s2/latest.pt
+L-shape|tri_metric_eq|3,L-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,3,0.10744132101535797,0.9945459365844727,Experiments/graph_method_triangle_stageE/L_trimetric_eq_s3/latest.pt
+L-shape|tri_metric_eq|4,L-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,4,0.10520999878644943,0.9943548440933228,Experiments/graph_method_triangle_stageE/L_trimetric_eq_s4/latest.pt
+A-shape|tri_metric_eq|0,A-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,0,0.06851955503225327,0.9907981753349304,Experiments/graph_method_triangle_stageE/A_trimetric_eq_s0/latest.pt
+A-shape|tri_metric_eq|1,A-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,1,0.0708112120628357,0.9909334778785706,Experiments/graph_method_triangle_stageE/A_trimetric_eq_s1/latest.pt
+A-shape|tri_metric_eq|2,A-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,2,0.07102011144161224,0.9928387403488159,Experiments/graph_method_triangle_stageE/A_trimetric_eq_s2/latest.pt
+A-shape|tri_metric_eq|3,A-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,3,0.06790529191493988,0.989930272102356,Experiments/graph_method_triangle_stageE/A_trimetric_eq_s3/latest.pt
+A-shape|tri_metric_eq|4,A-shape,tri_metric_eq,Triangle head (equivariant V),new,yes,4,0.06979257613420486,0.9916466474533081,Experiments/graph_method_triangle_stageE/A_trimetric_eq_s4/latest.pt
+T-shape|tri_metric_free|0,T-shape,tri_metric_free,Triangle head (free V),variant,yes,0,3.4200362279079854e-05,0.0321677103638649,Experiments/graph_method_triangle_stageE/T_trimetric_b1g1_s0/latest.pt
+T-shape|tri_metric_free|1,T-shape,tri_metric_free,Triangle head (free V),variant,yes,1,4.8651454562786967e-05,0.04524622857570648,Experiments/graph_method_triangle_stageE/T_trimetric_b1g1_s1/latest.pt
+T-shape|tri_metric_free|2,T-shape,tri_metric_free,Triangle head (free V),variant,yes,2,3.2232332159765065e-05,0.048812609165906906,Experiments/graph_method_triangle_stageE/T_trimetric_b1g1_s2/latest.pt
+L-shape|tri_metric_free|0,L-shape,tri_metric_free,Triangle head (free V),variant,yes,0,4.09374843002297e-05,0.048473287373781204,Experiments/graph_method_triangle_stageE/L_trimetric_b1g1_s0/latest.pt
+L-shape|tri_metric_free|1,L-shape,tri_metric_free,Triangle head (free V),variant,yes,1,8.650751260574907e-05,0.04998256266117096,Experiments/graph_method_triangle_stageE/L_trimetric_b1g1_s1/latest.pt
+A-shape|tri_metric_free|0,A-shape,tri_metric_free,Triangle head (free V),variant,yes,0,0.00016173397307284176,0.08215770870447159,Experiments/graph_method_triangle_stageE/A_trimetric_b1g1_s0/latest.pt
+A-shape|tri_metric_free|1,A-shape,tri_metric_free,Triangle head (free V),variant,yes,1,0.00015889832866378129,0.06924011558294296,Experiments/graph_method_triangle_stageE/A_trimetric_b1g1_s1/latest.pt
+T-shape|graph_metric|0,T-shape,graph_metric,graph_metric (logsumexp a),baseline,no,0,0.009089412167668343,0.1585252732038498,Experiments/graph_method_stageE/stageE_graph_metric_s0/latest.pt
+T-shape|graph_metric|1,T-shape,graph_metric,graph_metric (logsumexp a),baseline,no,1,0.011388761922717094,0.13600173592567444,Experiments/graph_method_stageE/stageE_graph_metric_s1/latest.pt
+T-shape|graph_metric|2,T-shape,graph_metric,graph_metric (logsumexp a),baseline,no,2,0.013239126652479172,0.16608195006847382,Experiments/graph_method_stageE/stageE_graph_metric_s2/latest.pt
+L-shape|graph_metric|0,L-shape,graph_metric,graph_metric (logsumexp a),baseline,no,0,0.009866381995379925,0.11183877289295197,Experiments/graph_method_stageE2/L_graph_metric_s0/latest.pt
+L-shape|graph_metric|1,L-shape,graph_metric,graph_metric (logsumexp a),baseline,no,1,0.0027208656538277864,0.09970249980688095,Experiments/graph_method_stageE2/L_graph_metric_s1/latest.pt
+A-shape|graph_metric|0,A-shape,graph_metric,graph_metric (logsumexp a),baseline,no,0,0.013823412358760834,0.19800856709480286,Experiments/graph_method_stageE2/A_graph_metric_s0/latest.pt
+A-shape|graph_metric|1,A-shape,graph_metric,graph_metric (logsumexp a),baseline,no,1,0.015118280425667763,0.13219229876995087,Experiments/graph_method_stageE2/A_graph_metric_s1/latest.pt
+T-shape|graph_gram|0,T-shape,graph_gram,graph_gram (Euclidean a),baseline,no,0,0.005677467677742243,0.35835298895835876,Experiments/graph_method_stageE/stageE_graph_gram_s0/latest.pt
+T-shape|graph_gram|1,T-shape,graph_gram,graph_gram (Euclidean a),baseline,no,1,0.0011541687417775393,0.14710552990436554,Experiments/graph_method_stageE/stageE_graph_gram_s1/latest.pt
+T-shape|graph_gram|2,T-shape,graph_gram,graph_gram (Euclidean a),baseline,no,2,0.0005871370667591691,0.15716946125030518,Experiments/graph_method_stageE/stageE_graph_gram_s2/latest.pt
+L-shape|graph_gram|0,L-shape,graph_gram,graph_gram (Euclidean a),baseline,no,0,0.025993019342422485,0.624049186706543,Experiments/graph_method_stageE2/L_graph_gram_s0/latest.pt
+A-shape|graph_gram|0,A-shape,graph_gram,graph_gram (Euclidean a),baseline,no,0,0.024486195296049118,0.619728147983551,Experiments/graph_method_stageE2/A_graph_gram_s0/latest.pt

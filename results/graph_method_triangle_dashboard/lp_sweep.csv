@@ -1,0 +1,7 @@
+p,forward,collision,no_converge,source
+1,0.74,67,211,results/graph_method_triangle_stageE/T_trimetric_p1_s0_c1000/success_rate.txt
+2,0.722,107,204,results/graph_method_triangle_stageE/T_trimetric_p2_s0_c1000/success_rate.txt
+4,0.722,98,204,results/graph_method_triangle_stageE/T_trimetric_p4_s0_c1000/success_rate.txt
+8,0.743,77,203,results/graph_method_triangle_stageE/T_trimetric_b1g1_s0_c1000/success_rate.txt
+16,0.73,85,204,results/graph_method_triangle_stageE/T_trimetric_p16_s0_c1000/success_rate.txt
+32,0.733,85,206,results/graph_method_triangle_stageE/T_trimetric_p32_s0_c1000/success_rate.txt
