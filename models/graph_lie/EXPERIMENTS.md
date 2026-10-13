@@ -356,3 +356,23 @@ GPU 3 is now index 2).
 Both potential forms give the same, seed-stable speed-range change on all three scenes: -0.01 to -0.05
 dex bins, concentrated in the 0.005-0.2 band (per-bin ratios 10-20 % lower), nothing in the lowest decade
 and nothing above 0.5. The predicted-speed range is not materially widened by any method in this series.
+
+### S7b: planning of the fixed potential, all seeds and scenes (standard 1000-case sets, batch 125, seed 0)
+
+| scene | field | SE(3) success | SE(3) converged | collision | chart success | median iters |
+|---|---|---|---|---|---|---|
+| T | baseline s0 / s1 / s2 | 91.9 / 90.3 / 90.1 | 95.5 / 94.2 / 95.4 | 4.0 / 4.3 / 5.6 | 78.8 / 77.9 / 78.7 | 59 |
+| T | `sf_psi=fixed` s0 / s1 / s2 | **94.4 / 93.7 / 94.1** | 94.7 / 94.3 / 94.6 | **0.4 / 0.6 / 0.5** | **80.3 / 80.5 / 80.5** | 59-60 |
+| T | `sf_psi=learned` s0 / s1 | 92.4 / 92.6 | 92.6 / 93.6 | 0.2 / 1.0 | 80.0 / 79.3 | 59-60 |
+| L | baseline s0 / s1 / s2 | 96.3 / 95.4 / 96.9 | 96.9 / 96.7 / 97.7 | 0.9 / 1.3 / 0.9 | 82.7 / 81.5 / 83.3 | 55-56 |
+| L | `sf_psi=fixed` / `learned` s0 | 96.1 / 96.8 | 96.8 / 97.5 | 0.7 / 0.8 | 82.7 / 82.7 | 55 |
+| A | baseline s0 / s1 | 94.3 / 94.6 | 97.7 / 98.2 | 3.4 / 3.8 | 81.0 / 81.0 | 52-53 |
+| A | `sf_psi=fixed` / `learned` s0 | **96.0** / 95.0 | 97.6 / 97.0 | **1.7** / 2.0 | **82.1** / 81.2 | 52 |
+
+Final conclusion of the S-series. The fixed escape-time potential (T = D + (Psi_x + Psi_y)(1 - kappa),
+Psi from the exact clearance predictor, two trained scalars) is a seed-stable improvement on every scene
+where the baseline collides: T +2.2 to +4.0 points SE(3) success (collisions 4-6 % -> 0.4-0.6 %, chart
+success +1.5 to +2.6), A +1.4 to +1.7 points (collisions 3.4-3.8 % -> 1.7 %), L unchanged (baseline
+collisions already ~1 %). The learned form is slightly worse on success (it loses 1-2 points of
+convergence). The pointwise predicted-speed range, the original target, moves by 0.01-0.05 dex only;
+the planner gain comes from tau being raised near contact, not from a better 1/|grad T| at low speed.
