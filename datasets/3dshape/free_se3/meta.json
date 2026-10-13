@@ -1,0 +1,17 @@
+{
+ "obstacle_free": true,
+ "box_lo": [
+  -0.465,
+  -0.323,
+  -0.489
+ ],
+ "box_hi": [
+  0.465,
+  0.323,
+  0.49
+ ],
+ "rot_norm": 6.283185307179586,
+ "seed": 0,
+ "n": 800000,
+ "note": "models/graph_lie ground-truth control; T* = SE(3) geodesic"
+}

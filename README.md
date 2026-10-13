@@ -30,3 +30,11 @@ a = |u_x - u_y|^2 (or an exact seminorm m(x, y)^2) and b = |V_x - V_y|_F^2 / 8 =
 `EXPERIMENTS.md` (log T0-T9; results dashboard https://claude.ai/artifact/LHyUtVzc8h9u4KgKKvz4ts). Entry points: `train/train_graph_triangle.py`,
 `python -m models.graph_method_triangle.evaluate`, `python -m unittest tests.test_graph_method_triangle`,
 `models/graph_method_triangle/scripts/triangle_check.py`, configs in `configs/graph_method_triangle/`.
+
+## Cusp / seam study vs. the original method (2026-10-12)
+
+`results/graph_method_cusp/REPORT.md`: per-case MPPI planning of every head against the original
+metric NTFields (chart input) on the standard and rotation-heavy test sets, with chart and SE(3)
+convergence, seam-crossing analysis, path lengths, a head-to-head inside the original trainer
+(`models/graph_native/`) and obstacle-free planning by relative angle. Summary tables in
+`results/graph_method_cusp/summary/`, figures in `results/graph_method_cusp/figures/`.

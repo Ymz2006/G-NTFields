@@ -1,0 +1,206 @@
+start Tue Oct 13 00:10:31 UTC 2026
+[load_obj] 'datasets/3dshape/eastville.obj': 1 objects/groups
+  [0] ''  (451365 triangles)
+In-mesh check: |winding number| > 0.5 over 451365 env triangles
+[load_obj] 'datasets/3dshape/rect_small.obj': 1 objects/groups
+  [0] 'rect_small'  (12 triangles)
+Delaunizing vertices...
+Delaunay seconds:  0.000113
+Creating surface mesh ...
+Surface mesh seconds:  6e-05
+Recovering boundaries...
+Boundary recovery seconds:  4.9e-05
+Removing exterior tetrahedra ...
+Exterior tets removal seconds:  3.3e-05
+Recovering Delaunayness...
+Delaunay recovery seconds:  2.9e-05
+Refining mesh...
+Refinement seconds:  6.5e-05
+Improving mesh...
+Mesh improvement seconds:  1.6e-05
+
+Writing nodes.
+Writing elements.
+Writing faces.
+Writing edges.
+
+Output seconds:  6.5e-05
+Total running seconds:  0.000502
+
+Statistics:
+
+  Input points: 8
+  Input facets: 12
+  Input segments: 18
+  Input holes: 0
+  Input regions: 0
+
+  Mesh points: 8
+  Mesh tetrahedra: 6
+  Mesh faces: 18
+  Mesh faces on exterior boundary: 12
+  Mesh faces on input facets: 12
+  Mesh edges on input segments: 18
+
+Tetrahedralized shape: 6 tets, 12 boundary triangles, 8 verts
+Sampling 1000 (x0, x1) pairs [TESTING (independent collision-free pairs)]   margin=0.05  offset=0.02  ...
+generated: 7 / 1000
+generated: 13 / 1000
+generated: 19 / 1000
+generated: 24 / 1000
+generated: 33 / 1000
+generated: 40 / 1000
+generated: 50 / 1000
+generated: 53 / 1000
+generated: 57 / 1000
+generated: 62 / 1000
+generated: 75 / 1000
+generated: 85 / 1000
+generated: 92 / 1000
+generated: 102 / 1000
+generated: 107 / 1000
+generated: 122 / 1000
+generated: 132 / 1000
+generated: 143 / 1000
+generated: 149 / 1000
+generated: 154 / 1000
+generated: 164 / 1000
+generated: 170 / 1000
+generated: 179 / 1000
+generated: 184 / 1000
+generated: 187 / 1000
+generated: 195 / 1000
+generated: 204 / 1000
+generated: 213 / 1000
+generated: 222 / 1000
+generated: 228 / 1000
+generated: 235 / 1000
+generated: 243 / 1000
+generated: 247 / 1000
+generated: 253 / 1000
+generated: 260 / 1000
+generated: 268 / 1000
+generated: 273 / 1000
+generated: 278 / 1000
+generated: 282 / 1000
+generated: 287 / 1000
+generated: 291 / 1000
+generated: 299 / 1000
+generated: 309 / 1000
+generated: 317 / 1000
+generated: 327 / 1000
+generated: 337 / 1000
+generated: 342 / 1000
+generated: 350 / 1000
+generated: 360 / 1000
+generated: 365 / 1000
+generated: 369 / 1000
+generated: 373 / 1000
+generated: 383 / 1000
+generated: 388 / 1000
+generated: 393 / 1000
+generated: 398 / 1000
+generated: 405 / 1000
+generated: 413 / 1000
+generated: 422 / 1000
+generated: 425 / 1000
+generated: 430 / 1000
+generated: 443 / 1000
+generated: 449 / 1000
+generated: 456 / 1000
+generated: 465 / 1000
+generated: 467 / 1000
+generated: 474 / 1000
+generated: 478 / 1000
+generated: 486 / 1000
+generated: 494 / 1000
+generated: 501 / 1000
+generated: 505 / 1000
+generated: 511 / 1000
+generated: 519 / 1000
+generated: 533 / 1000
+generated: 542 / 1000
+generated: 548 / 1000
+generated: 557 / 1000
+generated: 564 / 1000
+generated: 570 / 1000
+generated: 576 / 1000
+generated: 584 / 1000
+generated: 597 / 1000
+generated: 601 / 1000
+generated: 607 / 1000
+generated: 615 / 1000
+generated: 621 / 1000
+generated: 627 / 1000
+generated: 634 / 1000
+generated: 638 / 1000
+generated: 646 / 1000
+generated: 653 / 1000
+generated: 660 / 1000
+generated: 664 / 1000
+generated: 672 / 1000
+generated: 679 / 1000
+generated: 688 / 1000
+generated: 695 / 1000
+generated: 705 / 1000
+generated: 713 / 1000
+generated: 721 / 1000
+generated: 727 / 1000
+generated: 731 / 1000
+generated: 739 / 1000
+generated: 744 / 1000
+generated: 754 / 1000
+generated: 760 / 1000
+generated: 765 / 1000
+generated: 773 / 1000
+generated: 775 / 1000
+generated: 790 / 1000
+generated: 797 / 1000
+generated: 804 / 1000
+generated: 813 / 1000
+generated: 818 / 1000
+generated: 822 / 1000
+generated: 829 / 1000
+generated: 838 / 1000
+generated: 846 / 1000
+generated: 856 / 1000
+generated: 862 / 1000
+generated: 868 / 1000
+generated: 880 / 1000
+generated: 883 / 1000
+generated: 890 / 1000
+generated: 895 / 1000
+generated: 898 / 1000
+generated: 908 / 1000
+generated: 916 / 1000
+generated: 920 / 1000
+generated: 929 / 1000
+generated: 935 / 1000
+generated: 939 / 1000
+generated: 943 / 1000
+generated: 949 / 1000
+generated: 953 / 1000
+generated: 964 / 1000
+generated: 971 / 1000
+generated: 975 / 1000
+generated: 981 / 1000
+generated: 984 / 1000
+generated: 990 / 1000
+generated: 996 / 1000
+generated: 1000 / 1000
+Sampling done in 15.4s
+Saved sample visualization: testing_data/3dshape/rect_small_eastville/sampled_placements.html
+Saved speed distribution: testing_data/3dshape/rect_small_eastville/speed_distribution.html
+Saved speed_angles distribution: testing_data/3dshape/rect_small_eastville/speed_angles_distribution.html
+Saved speed_dists distribution: testing_data/3dshape/rect_small_eastville/speed_dists_distribution.html
+x0 pos    : x=[-0.326,0.327]  y=[-0.461,0.445]  z=[-0.077,0.077]
+speed x0  : [0.700, 1.000]   (band [0.400, 1.0])
+speed x1  : [0.700, 1.000]
+Wrote 1000 training pairs to testing_data/3dshape/rect_small_eastville
+  sampled_points.npy (1000, 12)
+  speed.npy          (1000, 2)
+  normal.npy         (1000, 12)
+  trans_n.npy        (1000, 12)
+  rot_n.npy          (1000, 12)
+  env.npy            (226199, 3)
+rc=0 end Tue Oct 13 00:10:51 UTC 2026

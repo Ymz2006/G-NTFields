@@ -77,9 +77,10 @@ def make_fourier_matrix(n_freq, in_dim, sigma, seed, sigma_t=None, sigma_r=None,
 class GShapeEncoder(torch.nn.Module):
     """Port of the encoder in models/metric/model_network_metric.NN.out()."""
 
-    def __init__(self, in_dim, B, h_size=256, nl1=2, normalize=True, skip_input=False):
+    def __init__(self, in_dim, B, h_size=256, nl1=2, normalize=True, skip_input=False, lip_cap=1.0):
         super().__init__()
         assert B.shape[0] * 2 == h_size, 'Fourier features must match h_size'
+        self.lip_cap = float(lip_cap)  # rows of every weight are softly capped at this norm (1 = G-Shape)
         self.register_buffer('B', B.t().contiguous())  # (in_dim, n_freq)
         self.in_dim = in_dim
         self.h_size = h_size
@@ -110,7 +111,7 @@ class GShapeEncoder(torch.nn.Module):
 
     def lip_norm(self, w):
         absrowsum = torch.sqrt(torch.sum(w ** 2, dim=1)).detach()
-        scale = 1 + 1e-5 - self.act(1 - 1 / absrowsum)
+        scale = 1 + 1e-5 - self.act(1 - self.lip_cap / absrowsum)
         return w * scale.unsqueeze(1)
 
     def _lin(self, layer, x):
@@ -147,6 +148,12 @@ def _init(module, encoder):
 
 class _Siamese(torch.nn.Module):
     """Shared helper: run both endpoints through one encoder in one batch."""
+    ENCODER = GShapeEncoder  # subclasses may swap the per-pose encoder (speed_fourier.py)
+
+    @staticmethod
+    def encoder_extra(kw):
+        """Extra constructor kwargs for ENCODER, taken from the head's unused options."""
+        return {}
 
     def embed_pair(self, gx, gy):
         e = self.enc(torch.cat([gx, gy], 0))
@@ -155,9 +162,9 @@ class _Siamese(torch.nn.Module):
 
 class GraphGramNN(PairLatentModel, _Siamese):
     def __init__(self, B, s_t=1.0, s_r=1.0, h_size=256, nl1=2, k_a=16, gram_k=4,
-                 normalize=False, skip_input=False, a_scale=1.0, gram_power=1, **_):
+                 normalize=False, skip_input=False, a_scale=1.0, gram_power=1, lip_cap=1.0, **extra):
         PairLatentModel.__init__(self, s_t, s_r)
-        self.enc = GShapeEncoder(B.shape[1], B, h_size, nl1, normalize, skip_input)
+        self.enc = self.ENCODER(B.shape[1], B, h_size, nl1, normalize, skip_input, lip_cap, **self.encoder_extra(extra))
         self.A = Linear(self.enc.out_dim, k_a, bias=False)
         self.L = Linear(self.enc.out_dim, gram_k * gram_k)
         self.gram_k = gram_k
@@ -285,11 +292,11 @@ class GraphTriNN(PairLatentModel, _Siamese):
 
     def __init__(self, B, s_t=1.0, s_r=1.0, h_size=256, nl1=2, k_a=16, normalize=False, skip_input=False,
                  a_scale=1.0, metric_scale=0.2, group=16, lp_p=8.0, rot_gain=1.0, rot_bias=0.0, rot_mode='free',
-                 **_):
+                 lip_cap=1.0, **extra):
         PairLatentModel.__init__(self, s_t, s_r)
         assert rot_mode in ('free', 'equivariant'), rot_mode
         assert rot_mode == 'free' or B.shape[1] == FEATURE_DIM, 'equivariant V needs G(x) = (t, vec R) inputs'
-        self.enc = GShapeEncoder(B.shape[1], B, h_size, nl1, normalize, skip_input)
+        self.enc = self.ENCODER(B.shape[1], B, h_size, nl1, normalize, skip_input, lip_cap, **self.encoder_extra(extra))
         self.A = Linear(self.enc.out_dim, k_a, bias=False) if self.A_KIND in ('euclid', 'mix') else None
         self.W = Linear(self.enc.out_dim, 6)
         self.a_scale, self.metric_scale, self.group, self.lp_p = a_scale, metric_scale, group, float(lp_p)
@@ -521,6 +528,9 @@ def build_network(arch, s_t=1.0, s_r=1.0, h_size=256, fourier_sigma=0.5, fourier
                   fourier_sigma_t=None, fourier_sigma_r=None, feature_dim=FEATURE_DIM, fourier_trunc='clamp', **kw):
     if arch == 'analytic':
         return AnalyticGraph(s_t=s_t, s_r=s_r)
+    if arch not in ARCHITECTURES:
+        from . import speed_fourier  # speed-conditioned Fourier heads (graph_metric_sf, graph_tri_metric_sf)
+        ARCHITECTURES.update(speed_fourier.ARCHITECTURES)
     cls, in_dim = ARCHITECTURES[arch]
     in_dim = in_dim // FEATURE_DIM * feature_dim
     B = make_fourier_matrix(h_size // 2, in_dim, fourier_sigma, fourier_seed, fourier_sigma_t, fourier_sigma_r,
