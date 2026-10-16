@@ -531,6 +531,15 @@ def build_network(arch, s_t=1.0, s_r=1.0, h_size=256, fourier_sigma=0.5, fourier
     if arch not in ARCHITECTURES:
         from . import speed_fourier  # speed-conditioned Fourier heads (graph_metric_sf, graph_tri_metric_sf)
         ARCHITECTURES.update(speed_fourier.ARCHITECTURES)
+    if arch not in ARCHITECTURES:
+        from . import branch_decoder  # min-of-branches decoder heads (graph_branch, graph_branch_conf)
+        ARCHITECTURES.update(branch_decoder.ARCHITECTURES)
+    if arch not in ARCHITECTURES:
+        from . import cover_decoder  # cover-quotient metric head (graph_cover): triangle inequality + ridges
+        ARCHITECTURES.update(cover_decoder.ARCHITECTURES)
+    if arch not in ARCHITECTURES:
+        from . import multibranch  # multi-branch decoder that learns the cut (graph_mb, graph_mb_free)
+        ARCHITECTURES.update(multibranch.ARCHITECTURES)
     cls, in_dim = ARCHITECTURES[arch]
     in_dim = in_dim // FEATURE_DIM * feature_dim
     B = make_fourier_matrix(h_size // 2, in_dim, fourier_sigma, fourier_seed, fourier_sigma_t, fourier_sigma_r,

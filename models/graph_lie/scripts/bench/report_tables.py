@@ -67,7 +67,7 @@ print('## T3. Saturated-clearance pairs: predicted / exact travel time by start 
 for pf, F in J.get('free', {}).items():
     sc = pf[0]
     print('### {} scene (chart segment / geodesic time of the pairs: {})\n'.format(sc, ', '.join('{:.2f}'.format(x) for x in F['T_chart_over_T_geo'])))
-    print('| field | ' + ' | '.join(F['labels']) + ' | paired log(tau_Lie/tau_chart) % |')
+    print('| field | ' + ' | '.join(F['labels']) + ' | paired log(tau_Lie/tau_chart), % |')
     print('|---|' + '---|' * (len(F['labels']) + 1))
     for sp, lab in SP:
         for g in ('chart', 'lie'):
@@ -76,7 +76,7 @@ for pf, F in J.get('free', {}).items():
                 continue
             pr = F.get('paired|{}'.format(sp))
             print('| {} / {}-trained | {} | {} |'.format(lab, g, ' | '.join('{:.3f}'.format(x) for x in e['tau_over_Tgeo']),
-                                                       ', '.join('{:+.0f}'.format(100 * np.log(x) if x > 0 else float('nan')) for x in pr) if (pr and g == 'lie') else ''))
+                                                       ', '.join('{:+.0f}'.format(100 * x) for x in pr) if (pr and g == 'lie') else ''))
     print()
 
 print('## T4. Training endpoints: median Eikonal value N with the Lie gradient (1/N = predicted / true speed), by |rotvec|\n')

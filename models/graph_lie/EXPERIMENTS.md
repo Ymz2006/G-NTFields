@@ -376,3 +376,54 @@ success +1.5 to +2.6), A +1.4 to +1.7 points (collisions 3.4-3.8 % -> 1.7 %), L 
 collisions already ~1 %). The learned form is slightly worse on success (it loses 1-2 points of
 convergence). The pointwise predicted-speed range, the original target, moves by 0.01-0.05 dex only;
 the planner gain comes from tau being raised near contact, not from a better 1/|grad T| at low speed.
+
+# Targeted chart-vs-Lie benchmark (B-series, 2026-10-12/13; `models/graph_lie/scripts/bench/`, report `results/graph_lie/bench/REPORT.md`)
+
+Question: the standard sets show the Lie-trained field 1-3 points behind and the Lie sampler equal; does the
+gradient definition change what the field *predicts*? 18 checkpoints (comb/iso/aniso × chart/Lie × 3 seeds)
+per scene, two MPPI samplers, 300-case targeted subsets (nearid, bothfar, startfar, goalfar, perp/par paired,
+longtrans_near/far, tightstart, standard300; T also bigangle/rotheavy/transonly), 1044 evaluations with a
+per-path audit, plus exact free-space ground truth (1000 saturated-clearance pairs per scene) and 200k
+training pairs per scene. Everything paired by seed and by case.
+
+## B1: predicted travel time differs by exactly the chart factor
+
+τ_Lie-field / τ_chart-field on the same query (median; iso, other formulations within 0.02): nearid 0.99-1.00,
+par 0.98-1.00, startfar/goalfar 0.97-1.01, standard300 0.97-0.98, bothfar 0.80-0.82, perp 0.72-0.75 in T/L/A.
+perp vs par (same start, same geodesic angle, chart segment 1.30×): chart-trained τ_perp/τ_par 1.14/1.23/1.22,
+Lie-trained 0.87/0.88/0.90 (T/L/A) — the two fields differ by 1.31-1.40, the chart factor.
+
+## B2: exact truth (saturated-clearance pairs)
+
+τ / T_exact by start |rotvec| bin (0-45 … 160-180°): Lie-trained iso flat (T 1.11 1.11 1.10 1.11 1.11;
+L 1.02 0.99 0.99 0.98 0.98; A 1.01 1.02 1.03 1.02 1.02); chart-trained iso tracks the chart segment
+(T 1.11→1.35, L 1.01→1.22, A 1.03→1.28; τ/T_chart constant at 0.93-1.13). Paired log(τ_Lie/τ_chart):
+0, −4…−6, −10…−13, −16…−20, −17…−23 % in every scene/formulation. The Lie field is calibrated at every
+angle; the chart field measures rotation-vector length and is 20-35 % too slow above 135°.
+
+## B3: along executed paths the Lie field is over-optimistic near obstacles
+
+Rotation steps at 160-180° on official-MPPI paths (iso): N_Lie chart-trained 1.04/1.04/1.08, Lie-trained
+0.78/0.80/0.80; slope −Δτ/Δcost_Lie 0.77/0.93/0.95 vs 0.53/0.64/0.66 (T/L/A). Below 90° identical. On
+bothfar τ_0/cost_Lie 0.61-0.85 (chart-trained) vs 0.48-0.64 (Lie-trained). Training endpoints agree:
+paired N_Lie (Lie − chart) ≈ 0 below 45°, −0.07…−0.10 at 160-180°, −0.09…−0.15 for fast endpoints at
+θ ≥ 150°; chart-trained N_Lie 1.02-1.08 / N_chart 0.94-0.99 there, Lie-trained N_Lie 0.92-1.00 / N_chart
+0.86-0.94.
+
+## B4: planning success
+
+Only both-ends-far subsets separate the fields: bothfar/bigangle Δ(Lie − chart) −6…−11 points in T (sign test
+p < 1e-3), −1…−4 in L/A; the loss is non-convergence (T bothfar 11-13 % vs 6-7 %) plus collisions. Single far
+endpoint, perp vs par, long translations, tightstart, standard300: within ±3 (chart slightly ahead on
+standard300 iso/aniso, Lie slightly ahead on near-identity translation sets). perp is not harder than par for
+either field although the chart field believes it 12-29 % longer. The sampler dominates startfar: the official
+chart MPPI leaves 11-22 % unconverged for both fields, the Lie body-twist MPPI lifts success 70-74→84-89 (T),
+83→94-97 (L), 79-83→89-92 (A), identically for both fields; it halves but does not close the bothfar gap.
+
+Reading: the gradient does define the predicted speed, and only the Lie-trained field is frame-consistent
+(use it, or correct the chart field by up to the chart factor, wherever τ itself is consumed). For steering
+MPPI the chart field is as good or better, because the Lie loss trades near-contact accuracy at large angles
+for free-space calibration; the next lever for the Lie field is near-contact calibration at large |rotvec|,
+not the gradient definition. Infrastructure notes: planning containers peak at 8-14 GB (Lie-repo clearance
+evaluator) — at most 2 per 24 GB GPU; a full disk makes `docker run` fail silently; host GPU 3 dropped off
+the bus during the run (2026-10-13 ~03:20) and the runner was restarted on GPUs 0-2.

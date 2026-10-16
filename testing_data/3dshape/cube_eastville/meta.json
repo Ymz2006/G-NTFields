@@ -1,0 +1,19 @@
+{
+  "shape_scale": 1.0,
+  "shape_obj": "/workspace/datasets/3dshape/cube.obj",
+  "env_obj": "/workspace/datasets/3dshape/eastville.obj",
+  "margin": 0.05,
+  "offset": 0.02,
+  "rot_norm": 6.283185307179586,
+  "testing_data": true,
+  "yrot": false,
+  "two_d": false,
+  "shape_z_thickness": null,
+  "env_scale": 14.08298,
+  "env_center": [
+    1.4989400000000002,
+    -4.55011,
+    1.2020125000000002
+  ],
+  "num_tets": 6
+}
