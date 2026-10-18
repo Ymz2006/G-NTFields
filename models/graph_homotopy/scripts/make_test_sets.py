@@ -87,14 +87,14 @@ name = args.name or '{}_{}'.format(args.scene, args.variant)
 # ----------------------------------------------------------------------------- scene
 std_dir = os.path.join(args.lie_root, 'testing_data/3dshape', args.scene)
 if not os.path.exists(os.path.join(std_dir, 'meta.json')):
-    std_dir = os.path.join(args.graph_root, 'datasets/3dshape', args.scene)      # hole cells: the training set's meta
+    std_dir = os.path.join(args.graph_root, 'datasets/3dshape/data', args.scene)      # hole cells: the training set's meta
 meta = json.load(open(os.path.join(std_dir, 'meta.json')))
 
 
 def _resolve(path):
     for c in (path, os.path.join(std_dir, os.path.basename(path)),
-              os.path.join(args.lie_root, 'datasets/3dshape', os.path.basename(path)),
-              os.path.join(args.graph_root, 'datasets/3dshape', os.path.basename(path))):
+              os.path.join(args.lie_root, 'datasets/3dshape/data/obj', os.path.basename(path)),
+              os.path.join(args.graph_root, 'datasets/3dshape/data/obj', os.path.basename(path))):
         if os.path.exists(c):
             return c
     raise FileNotFoundError(path)

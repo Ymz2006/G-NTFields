@@ -110,13 +110,13 @@ Inside `pytorchserver:latest` with this repo at `/workspace`:
 
 ```bash
 python -m unittest tests.test_branch_decoder -v                      # architectural property tests
-python train/train_graph_branch.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_br4_s0 --seed 0 \
+python train/train_graph_branch.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_br4_s0 --seed 0 \
     --arch graph_branch --grad lie --speed iso --set n_branch=4
-python train/train_graph_branch.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_bc4e_s0 --seed 0 \
+python train/train_graph_branch.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_bc4e_s0 --seed 0 \
     --arch graph_branch_conf --grad lie --speed iso --end-weight 1 --set n_branch=4
 python models/graph_branch/scripts/decoder_properties.py --scene Tshape3d_env1 --out <json> <ckpt>
 python models/graph_branch/scripts/synth_fit.py --kind sector --A 4 --heads ggram,br1,br4 --out results/graph_branch/synth/sector_A4
-python models/graph_branch/scripts/synth_dataset.py --kind sector --A 4 --out datasets/3dshape/synth_sector_A4
+python models/graph_branch/scripts/synth_dataset.py --kind sector --A 4 --out datasets/3dshape/data/synth_sector_A4
 ```
 
 Host side (queue of trainings + per-case MPPI evaluations, shares GPUs with memory guards):

@@ -297,7 +297,7 @@ a{color:var(--accent)}
             H.append('<div class="verdict"><h4>{} <span class="tag">{}</span></h4><p>{}</p></div>'.format(METHODS[m][0], m, v))
     if findings.get('closing'):
         H.append('<p>{}</p>'.format(findings['closing']))
-    H.append('<h2>Reproduction</h2><p class="note">Sets: <code>models/stress_bench/make_stress_sets.py</code> → <code>datasets/3dshape/bench/&lt;scene&gt;_&lt;subset&gt;</code>. Queue: <code>models/stress_bench/run_stress.py</code> → <code>results/stress_bench/plan/&lt;model&gt;_&lt;S&gt;_s&lt;seed&gt;/&lt;set&gt;.json</code>. Field checks: <code>field_checks.py</code>, speed calibration: <code>models/graph_lie/scripts/speed_range_eval.py</code>. Tables: <code>aggregate_stress.py</code> → <code>results/stress_bench/summary/stress_summary.md</code>.</p>')
+    H.append('<h2>Reproduction</h2><p class="note">Sets: <code>models/stress_bench/make_stress_sets.py</code> → <code>datasets/3dshape/data/bench/&lt;scene&gt;_&lt;subset&gt;</code>. Queue: <code>models/stress_bench/run_stress.py</code> → <code>results/stress_bench/plan/&lt;model&gt;_&lt;S&gt;_s&lt;seed&gt;/&lt;set&gt;.json</code>. Field checks: <code>field_checks.py</code>, speed calibration: <code>models/graph_lie/scripts/speed_range_eval.py</code>. Tables: <code>aggregate_stress.py</code> → <code>results/stress_bench/summary/stress_summary.md</code>.</p>')
     H.append('</main>')
     with open(os.path.join(OUT_DIR, 'report.html'), 'w') as fh:
         fh.write('\n'.join(H))

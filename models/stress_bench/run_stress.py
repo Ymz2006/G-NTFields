@@ -57,7 +57,7 @@ def data_path(S, suffix, where):
     name = set_name(S, suffix)
     if where == 'lie':
         return 'testing_data/3dshape/' + name, os.path.join(LIE, 'testing_data/3dshape', name)
-    return '/workspace/datasets/3dshape/bench/' + name, os.path.join(HOST, 'datasets/3dshape/bench', name)
+    return '/workspace/datasets/3dshape/data/bench/' + name, os.path.join(HOST, 'datasets/3dshape/data/bench', name)
 
 
 def checkpoint(model, S, seed):

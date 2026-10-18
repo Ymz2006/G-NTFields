@@ -26,7 +26,7 @@ BENCH_SUBSETS = ['nearid', 'bothfar', 'startfar', 'goalfar', 'perp', 'par', 'lon
 # (name, dataPath inside the container, --cases); bench sets live in this repo, Lie suites in the Lie repo
 def sets_for(scene, full=False):
     S = SCENES[scene]
-    out = [(s, '/workspace/datasets/3dshape/bench/{}_{}'.format(S, s), 0) for s in BENCH_SUBSETS]
+    out = [(s, '/workspace/datasets/3dshape/data/bench/{}_{}'.format(S, s), 0) for s in BENCH_SUBSETS]
     out.append(('standard300', 'testing_data/3dshape/{}'.format(S), 300))
     if scene == 'T':
         out += [(s, 'testing_data/3dshape/{}_{}'.format(S, s), 0) for s in ('bigangle', 'rotheavy', 'transonly')]

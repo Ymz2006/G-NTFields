@@ -56,7 +56,7 @@ VARIANTS = {
 VARIANT_EPOCHS = {'hminL': 8000, 'hminPL': 8000, 'hrand01L': 8000, 'hminPsL': 8000, 'hminXL': 16000, 'hmin32L': 8000}
 # reference heads trained by their own scripts (base-field planner only)
 EXTERNAL = {
-    'bc4': ('python -u train/train_graph_branch.py --dataPath datasets/3dshape/{sc} --name {n} --seed {s} '
+    'bc4': ('python -u train/train_graph_branch.py --dataPath datasets/3dshape/data/{sc} --name {n} --seed {s} '
             '--arch graph_branch_conf --grad lie --speed iso --epochs {ep} --set n_branch=4'),
 }
 PHASES = {
@@ -134,7 +134,7 @@ def launch_train(r, epochs):
         args = EXTERNAL[r['tag']].format(sc=SCENES[r['scene']], n=r['name'], s=r['seed'], ep=epochs)
         args += ' --out_root ./' + EXP
     else:
-        args = ('python -u train/train_graph_homotopy.py --dataPath datasets/3dshape/{sc} --name {n} --seed {s} '
+        args = ('python -u train/train_graph_homotopy.py --dataPath datasets/3dshape/data/{sc} --name {n} --seed {s} '
                 '--epochs {ep} --lift {l} --lift-far {f}').format(sc=SCENES[r['scene']], n=r['name'], s=r['seed'],
                                                                  ep=VARIANT_EPOCHS.get(r['tag'], epochs), l=r['lift'], f=r['far'])
         if r['sets']:

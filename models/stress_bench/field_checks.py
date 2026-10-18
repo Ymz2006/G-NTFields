@@ -34,7 +34,7 @@ ap.add_argument('--out', required=True)
 ap.add_argument('--device', default='cuda:0')
 ap.add_argument('--lie-root', default='/lieshape')
 ap.add_argument('--graph-root', default='/workspace')
-ap.add_argument('--bench', default='/workspace/datasets/3dshape/bench')
+ap.add_argument('--bench', default='/workspace/datasets/3dshape/data/bench')
 args = ap.parse_args()
 
 sys.path.insert(0, args.lie_root)
@@ -58,7 +58,7 @@ _load_pkg('graph_method_triangle', os.path.join(args.graph_root, 'models', 'grap
 if args.kind == 'graph_native':
     _load_pkg('graph_native', os.path.join(args.graph_root, 'models', 'graph_native'))
     md = importlib.import_module('graph_native.model_train_metric')
-    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
+    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/data/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
     m.load(args.checkpoint)
     m.network.eval()
     fn = m.function

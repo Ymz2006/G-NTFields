@@ -38,7 +38,7 @@ def main():
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    m = md.Model('/tmp/slice_model', 'datasets/3dshape/Tshape3d_env1', 6, [0.0] * 6, device=a.device)
+    m = md.Model('/tmp/slice_model', 'datasets/3dshape/data/Tshape3d_env1', 6, [0.0] * 6, device=a.device)
     m.load(a.ckpt)
     head = m.network.net
     arr = np.load(os.path.join(a.dataPath, 'sampled_points.npy')).astype(np.float32)

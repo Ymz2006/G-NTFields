@@ -36,7 +36,7 @@ def load_net(path, device):
 
 def load_phys(ck, device):
     from models.graph_native import model_train_metric as gn_train
-    m = gn_train.Model('/tmp/sf', 'datasets/3dshape/Tshape3d_env1', 6, [0.0] * 6, device=device)
+    m = gn_train.Model('/tmp/sf', 'datasets/3dshape/data/Tshape3d_env1', 6, [0.0] * 6, device=device)
     m.load(ck)
     return m.network.eval()
 

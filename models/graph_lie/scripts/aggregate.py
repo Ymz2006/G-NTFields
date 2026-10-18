@@ -332,7 +332,7 @@ def main():
         elif nm == 'oracle':
             free[('oracle', 'oracle', 'exact', 0)] = json.load(open(f))
     if free:
-        L += ['## Obstacle-free SE(3), exact ground truth (`datasets/3dshape/free_se3`, all speeds 1)', '',
+        L += ['## Obstacle-free SE(3), exact ground truth (`datasets/3dshape/data/free_se3`, all speeds 1)', '',
               'T* = sqrt(|dt|^2 + (theta / 2 pi)^2) solves the Lie Eikonal exactly. Relative error |tau − T*| / T* on '
               '20k held-out pairs (T* > 0.05), by the larger endpoint |rotvec|; bias = median (tau − T*) / T*; '
               'planning = forward MPPI without obstacles on 1000 pairs, path cost = SE(3) path length / T*. '

@@ -45,7 +45,7 @@ Defaults (`model_function_mb.DEFAULT_SPEC`): `tau_ref = 0.3` (median T on the sc
 
 ```bash
 python -m unittest tests.test_multibranch -v
-python train/train_graph_mb.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_mb4_s0 --seed 0 --arch graph_mb \
+python train/train_graph_mb.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_mb4_s0 --seed 0 --arch graph_mb \
     --set n_branch=4 --spec delta=0.1                                       # spec defaults
 python train/train_graph_mb.py ... --set n_branch=4 offset_init=0.0 --spec split_revive=True split_every=400 merge_frac=1.01
 python3 models/graph_mb/scripts/run_mb_queue.py --phase explore --gpus 0,1,2    # host-side queue (train + per-case MPPI)

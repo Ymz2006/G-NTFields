@@ -1,7 +1,7 @@
 {
   "shape_scale": 1.0,
-  "shape_obj": "/workspace/datasets/3dshape/Tshape3d.obj",
-  "env_obj": "/workspace/datasets/3dshape/hole75.obj",
+  "shape_obj": "/workspace/datasets/3dshape/obj/Tshape3d.obj",
+  "env_obj": "/workspace/datasets/3dshape/obj/hole75.obj",
   "margin": 0.05,
   "offset": 0.02,
   "rot_norm": 6.283185307179586,

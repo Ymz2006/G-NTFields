@@ -115,7 +115,7 @@ seed means +- population std; `scripts/readme_table.py`):
 
 ```bash
 python -m unittest tests.test_graph_homotopy -v
-python train/train_graph_homotopy.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_hminL_s0 --seed 0 --lift min --epochs 8000
+python train/train_graph_homotopy.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_hminL_s0 --seed 0 --lift min --epochs 8000
 python models/graph_homotopy/scripts/plan_eval_homotopy.py --planner dual --checkpoint Experiments/graph_homotopy/T_hmin_s0/latest.pt \
     --dataPath testing_data/3dshape/Tshape3d_env1 --out results/graph_homotopy/plan/T_hmin_s0/Tshape3d_env1__dual.json   # cwd = Lie repo
 python3 models/graph_homotopy/scripts/run_homotopy_queue.py --phase main3 --train-slots 5 --eval-slots 2   # host side (docker)

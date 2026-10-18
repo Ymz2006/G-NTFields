@@ -8,7 +8,7 @@ distance between the placed shape and the sampled env surface, tetrahedral insid
 random poses as needed, and writes (chart pose, dist, angle, speed_dists) for predictor training.
 
     docker ... -v Lie-Shape-NTFields:/lieshape:ro ... python models/graph_lie/scripts/clearance_oracle.py \
-        --dataPath datasets/3dshape/Tshape3d_env1 --n 6000000 --out datasets/3dshape/Tshape3d_env1/dense_speed.npz
+        --dataPath datasets/3dshape/data/Tshape3d_env1 --n 6000000 --out datasets/3dshape/data/Tshape3d_env1/dense_speed.npz
 
 It first scores the oracle against the dataset's own speed_dists on --validate stored endpoints (the
 stored values were computed with an independent surface sampling, so the agreement is the label noise).
@@ -61,7 +61,7 @@ def evaluate(geo, configs_rad, device, batch):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--env', default=None, help='default: from meta.json basename under datasets/3dshape')
     ap.add_argument('--shape', default=None)
     ap.add_argument('--num_env_points', type=int, default=50000)
@@ -73,8 +73,8 @@ def main():
     ap.add_argument('--out', required=True)
     args = ap.parse_args()
     meta = json.load(open(os.path.join(args.dataPath, 'meta.json')))
-    args.env = args.env or os.path.join('datasets/3dshape', os.path.basename(meta['env_obj']))
-    args.shape = args.shape or os.path.join('datasets/3dshape', os.path.basename(meta['shape_obj']))
+    args.env = args.env or os.path.join('datasets/3dshape/data/obj', os.path.basename(meta['env_obj']))
+    args.shape = args.shape or os.path.join('datasets/3dshape/data/obj', os.path.basename(meta['shape_obj']))
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     t0 = time.time()

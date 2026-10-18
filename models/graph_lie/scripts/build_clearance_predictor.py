@@ -1,7 +1,7 @@
 """Build the structured clearance predictor (clearance.py) for a scene and validate it.
 
-    docker ... python models/graph_lie/scripts/build_clearance_predictor.py --dataPath datasets/3dshape/Tshape3d_env1 \
-        --out Experiments/graph_lie/speed_pred/Tshape3d_env1_clearance.pt [--dense datasets/3dshape/Tshape3d_env1/dense_speed_s1.npz]
+    docker ... python models/graph_lie/scripts/build_clearance_predictor.py --dataPath datasets/3dshape/data/Tshape3d_env1 \
+        --out Experiments/graph_lie/speed_pred/Tshape3d_env1_clearance.pt [--dense datasets/3dshape/data/Tshape3d_env1/dense_speed_s1.npz]
 
 Validation: predicted vs stored speed_dists on 100 k dataset endpoints (and on the dense oracle poses when
 given): per-bin median ratio, mean |log10|, fraction within x1.5. Writes the predictor state dict + kw.
@@ -64,7 +64,7 @@ def validate(pred, cfg, sd_raw, device, label):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out', required=True)
     ap.add_argument('--res', type=int, default=192)
     ap.add_argument('--n_points', type=int, default=1024)
@@ -77,8 +77,8 @@ def main():
     ap.add_argument('--device', default='cuda:0')
     a = ap.parse_args()
     meta = json.load(open(os.path.join(a.dataPath, 'meta.json')))
-    env = os.path.join('datasets/3dshape', os.path.basename(meta['env_obj']))
-    shape = os.path.join('datasets/3dshape', os.path.basename(meta['shape_obj']))
+    env = os.path.join('datasets/3dshape/data/obj', os.path.basename(meta['env_obj']))
+    shape = os.path.join('datasets/3dshape/data/obj', os.path.basename(meta['shape_obj']))
     t0 = time.time()
     V_env, F_env, G_env = load_obj(env)
     bb_min, bb_max = V_env.min(0), V_env.max(0)

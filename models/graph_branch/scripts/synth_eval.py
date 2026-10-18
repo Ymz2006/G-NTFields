@@ -1,4 +1,4 @@
-"""Score physics-trained fields on the synthetic exact-truth problems (datasets/3dshape/synth_*) with the same
+"""Score physics-trained fields on the synthetic exact-truth problems (datasets/3dshape/data/synth_*) with the same
 metrics as synth_fit.py (field error, rotational ridge location, cap, planning in the problem metric).
 
     python models/graph_branch/scripts/synth_eval.py --out results/graph_branch/synth_phys \

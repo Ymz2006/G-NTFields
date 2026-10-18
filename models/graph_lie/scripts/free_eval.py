@@ -1,4 +1,4 @@
-"""Obstacle-free ground-truth evaluation of graph_lie checkpoints trained on datasets/3dshape/free_se3.
+"""Obstacle-free ground-truth evaluation of graph_lie checkpoints trained on datasets/3dshape/data/free_se3.
 
 With all speeds 1 the exact travel time is the SE(3) geodesic T* = sqrt(|dt|^2 + (theta / 2 pi)^2). On
 fresh held-out pose pairs (uniform translations in the scene box, Haar rotations) it reports
@@ -164,7 +164,7 @@ def main():
             res = evaluate(lambda Z: geodesic(Z.double())[0].float(), None, a.device)
             res.update(grad_mode='exact', arch='analytic')
         else:
-            m = mtl.Model('/tmp/free', 'datasets/3dshape/free_se3', 6, [0.0] * 6, device=a.device)
+            m = mtl.Model('/tmp/free', 'datasets/3dshape/data/free_se3', 6, [0.0] * 6, device=a.device)
             m.load(ck)
             res = evaluate(m.function.TravelTimes, m.network, a.device)
             res.update(grad_mode=m.function.grad_mode, arch=m.network.graph['arch'], checkpoint=ck)

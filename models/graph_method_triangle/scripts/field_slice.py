@@ -70,7 +70,7 @@ def load(kind, ckpt):
     if kind == 'graph_native':
         _load_pkg('graph_native', os.path.join(args.graph_root, 'models', 'graph_native'))
         md = importlib.import_module('graph_native.model_train_metric')
-        m = md.Model('/tmp/analysis_model', 'datasets/3dshape/Tshape3d_env1/', 6, [0.0] * 6, device=args.device)
+        m = md.Model('/tmp/analysis_model', 'datasets/3dshape/data/Tshape3d_env1/', 6, [0.0] * 6, device=args.device)
         m.load(ckpt)
         return m.function.TravelTimes
     from analysis.common import load_model

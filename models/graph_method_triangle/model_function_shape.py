@@ -1,6 +1,6 @@
 """Stage E (separate research branch): graph fields among obstacles.
 
-Training data are the preprocessed 3dshape datasets (`datasets/3dshape/<shape>_<env>`):
+Training data are the preprocessed 3dshape datasets (`datasets/3dshape/data/<shape>_<env>`):
 pairs of poses stored as (t, rotvec / 2 pi) with per-endpoint clearance speeds.
 The speed model is the *declared position-dependent* ellipsoidal model
 
@@ -46,7 +46,7 @@ def coords_to_features(xp):
 
 
 def shape_config(**overrides):
-    base = dict(data_path='datasets/3dshape/Tshape3d_env1', speed_model='aniso', eik_scale_weight=False,
+    base = dict(data_path='datasets/3dshape/data/Tshape3d_env1', speed_model='aniso', eik_scale_weight=False,
                 exp_weight=0.5, exp_weight_grad=False, td_weight_T=None, n_holdout=20000, w_lb=0.0,
                 coords=False, ntf_rollback=False, ntf_epoch=5, ntf_ratio=1.2)
     extra = {k: overrides.pop(k) for k in list(overrides) if k in base}

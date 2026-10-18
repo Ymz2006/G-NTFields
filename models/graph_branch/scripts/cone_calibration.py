@@ -47,7 +47,7 @@ def main():
     dev = a.device
     torch.set_grad_enabled(False)
     g = torch.Generator().manual_seed(0)
-    root = os.path.join('datasets/3dshape', a.scene)
+    root = os.path.join('datasets/3dshape/data', a.scene)
     cols = [np.asarray(np.load(os.path.join(root, f + '.npy'), mmap_mode='r')[:400000:7][: 3 * a.m])
             for f in ('sampled_points', 'speed', 'normal', 'speed_dists', 'speed_angles')]
     d = torch.from_numpy(np.concatenate(cols, 1)).float()

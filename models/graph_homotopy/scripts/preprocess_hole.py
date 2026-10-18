@@ -7,8 +7,8 @@ evaluate_placements, whose collision test and clearances decide as before. Witho
 drawn placements are evaluated only to be rejected (the shapes have radius 0.2 in a room of half-height 0.32), and
 one cell took ~2 GPU-hours per 200k pairs on the RTX 5070.
 
-    python /workspace/models/graph_homotopy/scripts/preprocess_hole.py --env /workspace/datasets/3dshape/hole90.obj \
-        --shape /workspace/datasets/3dshape/Tshape3d.obj --out /workspace/datasets/3dshape/Tshape3d_hole90 \
+    python /workspace/models/graph_homotopy/scripts/preprocess_hole.py --env /workspace/datasets/3dshape/obj/hole90.obj \
+        --shape /workspace/datasets/3dshape/obj/Tshape3d.obj --out /workspace/datasets/3dshape/data/Tshape3d_hole90 \
         --num_samples 400000 --device cuda
 
 At the end 300 pre-filter-rejected placements are re-checked with the original test and the agreement is printed

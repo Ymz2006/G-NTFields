@@ -1,8 +1,8 @@
 """Train a graph head with the Lie-gradient (or chart-gradient) Eikonal loss (models/graph_lie).
 
-    python train/train_graph_lie.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_gmetric_iso_lie_s0 \
+    python train/train_graph_lie.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_gmetric_iso_lie_s0 \
         --device cuda:0 --seed 0 --arch graph_metric --grad lie --speed iso
-    python train/train_graph_lie.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_trieq_aniso_lie_s0 \
+    python train/train_graph_lie.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_trieq_aniso_lie_s0 \
         --seed 0 --arch graph_tri_metric --grad lie --speed aniso --set rot_mode=equivariant
 
 --grad   chart (partial derivatives d tau / d(t, rotvec / 2 pi)) | lie (body-frame Lie gradient)
@@ -19,7 +19,7 @@ sys.path.append('.')
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out_root', default='./Experiments/graph_lie')
     ap.add_argument('--name', required=True)
     ap.add_argument('--device', default='cuda:0')

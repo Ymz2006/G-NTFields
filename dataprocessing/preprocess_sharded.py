@@ -11,11 +11,11 @@ parallel and each one saves as soon as it finishes.
 
     # shard i of S (pass preprocess_obj.py's own flags after --; --out is the final dataset dir)
     python dataprocessing/preprocess_sharded.py run --shard i --shards S --env_seed 1 -- \\
-        --env datasets/3dshape/env5.obj --shape datasets/3dshape/loop3d.obj \\
-        --out datasets/3dshape/loop3d_env5 --num_samples 800000 --batch_size 500 --device cuda:0
+        --env datasets/3dshape/obj/env5.obj --shape datasets/3dshape/obj/loop3d.obj \\
+        --out datasets/3dshape/data/loop3d_env5 --num_samples 800000 --batch_size 500 --device cuda:0
 
     # once every shard has finished
-    python dataprocessing/preprocess_sharded.py merge --out datasets/3dshape/loop3d_env5 --shards S
+    python dataprocessing/preprocess_sharded.py merge --out datasets/3dshape/data/loop3d_env5 --shards S
 
 Shards go to ``<out>/shards/shard_<i>/``; ``merge`` writes the usual files to
 ``<out>`` (meta.json gains ``shards``, ``env_seed``, ``torch_seeds``) and deletes

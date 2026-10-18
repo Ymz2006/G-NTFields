@@ -7,7 +7,7 @@ with a 60 / 70 window).  Per cell:
   test   1000 start/goal pairs: original preprocess_obj.py --testing_data --offset 0.02
   shard  4 x 200k training pairs: preprocess_obj_fast.py via preprocess_sharded.py
          (same env points in every shard, distribution of one 800k run)
-  merge  shards -> datasets/3dshape/<cell>
+  merge  shards -> datasets/3dshape/data/<cell>
   train  the metric baseline (Lie-Shape-NTFields train/train_3dshape.py
          --models metric_baseline --epochs 4000), checkpoints every 1000 epochs kept
   eval   Lie-Shape-NTFields analysis/plan_eval.py --kind metric on the test set
@@ -73,25 +73,25 @@ def command(job, kind, cell):
     shape, env = cell.split('_')
     log = '/workspace/results/shapes3d/logs/{}.log'.format(job)
     if kind == 'test':
-        cmd = ('python -u /lieshape/dataprocessing/preprocess_obj.py --env datasets/3dshape/{env}.obj '
-               '--shape datasets/3dshape/{shape}.obj --out testing_data/3dshape/{cell} '
+        cmd = ('python -u /lieshape/dataprocessing/preprocess_obj.py --env datasets/3dshape/obj/{env}.obj '
+               '--shape datasets/3dshape/obj/{shape}.obj --out testing_data/3dshape/{cell} '
                '--num_samples {n} --testing_data --offset 0.02 --batch_size 250 --visualize --device cuda:0'
                ).format(env=env, shape=shape, cell=cell, n=TEST_N)
     elif kind == 'shard':
         i = int(job.rsplit('_', 1)[1])
         cmd = ('PREPROCESS_OBJ=/lieshape/dataprocessing/preprocess_obj.py python -u dataprocessing/preprocess_sharded.py run '
                '--script dataprocessing/preprocess_obj_fast.py --shard {i} --shards {S} --env_seed 1 -- '
-               '--env datasets/3dshape/{env}.obj --shape datasets/3dshape/{shape}.obj '
-               '--out datasets/3dshape/{cell} --num_samples {n} --batch_size {bs} --visualize --device cuda:0'
+               '--env datasets/3dshape/obj/{env}.obj --shape datasets/3dshape/obj/{shape}.obj '
+               '--out datasets/3dshape/data/{cell} --num_samples {n} --batch_size {bs} --visualize --device cuda:0'
                ).format(i=i, S=SHARDS, env=env, shape=shape, cell=cell, n=TRAIN_N, bs=TRAIN_BS)
     elif kind == 'merge':
         cmd = ('PREPROCESS_OBJ=/lieshape/dataprocessing/preprocess_obj.py python -u dataprocessing/preprocess_sharded.py merge '
                '--script /lieshape/dataprocessing/preprocess_obj.py --shards {S} --env_seed 1 '
-               '--out datasets/3dshape/{cell}').format(S=SHARDS, cell=cell)
+               '--out datasets/3dshape/data/{cell}').format(S=SHARDS, cell=cell)
     elif kind == 'train':
         run = '/workspace/Experiments/shapes3d_metric_baseline/{}_{}'.format(cell, SEED_TAG)
         cmd = ('cd /lieshape && OMP_NUM_THREADS=4 NTF_NO_PLOT=1 python -u train/train_3dshape.py '
-               '--dataPath /workspace/datasets/3dshape/{cell} --models metric_baseline --epochs {ep} '
+               '--dataPath /workspace/datasets/3dshape/data/{cell} --models metric_baseline --epochs {ep} '
                '--device cuda:0 --modelPath /workspace/Experiments/shapes3d_metric_baseline '
                '--name {cell}_{tag} --no-wandb 2>&1 | grep -v "UserWarning\\|warnings.warn" && '
                'find {run} -name "Model_Epoch_*.pt" ! -name "Model_Epoch_0[1-4]000_*" -delete'

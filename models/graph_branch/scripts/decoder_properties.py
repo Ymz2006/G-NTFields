@@ -46,7 +46,7 @@ se3 = _sib.se3
 
 
 def load(ckpt, device):
-    m = gn_train.Model('/tmp/props', 'datasets/3dshape/Tshape3d_env1', 6, [0.0] * 6, device=device)
+    m = gn_train.Model('/tmp/props', 'datasets/3dshape/data/Tshape3d_env1', 6, [0.0] * 6, device=device)
     m.load(ckpt)
     m.network.eval()
     return m.network
@@ -91,9 +91,9 @@ def main():
     net = chart_metric.load_original(a.ckpt, dev) if a.orig else load(a.ckpt, dev)
     arch = net.graph['arch']
     g = torch.Generator().manual_seed(0)
-    X = np.load(os.path.join('datasets/3dshape', a.scene, 'sampled_points.npy'), mmap_mode='r')
+    X = np.load(os.path.join('datasets/3dshape/data', a.scene, 'sampled_points.npy'), mmap_mode='r')
     rows = torch.from_numpy(np.array(X[:400000:7][: 3 * a.n])).float()
-    d = torch.from_numpy(np.concatenate([np.asarray(np.load(os.path.join('datasets/3dshape', a.scene, f + '.npy'),
+    d = torch.from_numpy(np.concatenate([np.asarray(np.load(os.path.join('datasets/3dshape/data', a.scene, f + '.npy'),
                                                             mmap_mode='r')[:400000:7][: 3 * a.n])
                                          for f in ('sampled_points', 'speed', 'normal', 'speed_dists', 'speed_angles')],
                                         1)).float()

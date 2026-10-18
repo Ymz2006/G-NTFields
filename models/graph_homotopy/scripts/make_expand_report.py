@@ -147,7 +147,7 @@ models/graph_homotopy/scripts/preprocess_hole.py     training data of the hole c
 train/train_metric_baseline.py                       the original metric NTFields (bundle /home/jeffrey/export_metric)
 models/graph_homotopy/scripts/run_expand_queue.py    GPU-memory-aware queue of the whole campaign
 results/graph_homotopy/plan_expand/                  per-case evaluations; summary/expand_summary.md; figures/expand/
-testing_data/3dshape/, datasets/3dshape/             the new sets and cells (README.md there)</pre>
+testing_data/3dshape/, datasets/3dshape/{obj,data}/       the new sets, meshes and cells (README.md there)</pre>
 </main>
 """
     os.makedirs(os.path.dirname(a.out) or '.', exist_ok=True)

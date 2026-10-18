@@ -53,7 +53,7 @@ def main():
     ap.add_argument('--out', default='')
     a = ap.parse_args()
     import os
-    m = md.Model('/tmp/sel_model', 'datasets/3dshape/Tshape3d_env1', 6, [0.0] * 6, device=a.device)
+    m = md.Model('/tmp/sel_model', 'datasets/3dshape/data/Tshape3d_env1', 6, [0.0] * 6, device=a.device)
     m.load(a.ckpt)
     head = m.network.net
     z = np.load(a.paths)

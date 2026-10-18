@@ -52,7 +52,7 @@ the same machine 94.7 +- 0.4 on T). See `models/graph_homotopy/README.md` and `E
 `train/train_graph_homotopy.py`, `python -m unittest tests.test_graph_homotopy`, `models/graph_homotopy/scripts/`.
 
 Second request (2026-10-17): targeted test sets (long paths, big rotations, tight endpoints; `testing_data/3dshape/README.md`),
-rooms divided by a wall with a shrinking hole (`datasets/3dshape/hole{90,75,66}.obj`), and the original metric NTFields
+rooms divided by a wall with a shrinking hole (`datasets/3dshape/data/hole{90,75,66}.obj`), and the original metric NTFields
 retrained here (`train/train_metric_baseline.py`) as the baseline. Homotopy (8000 epochs, dual planner) vs NTFields (8000
 epochs), SE(3) success on T / L / A: standard 98.9 / 98.9 / 98.9 vs 82.4 / 90.4 / 88.2; hard sets 96.7 / 97.8 / 96.5 vs
 54.3 / 65.0 / 60.6; through a hole 1.1x the plate 85.2 / 93.5 / 81.8 vs 52.4 / 63.6 / 42.8. See `models/graph_homotopy/README.md`

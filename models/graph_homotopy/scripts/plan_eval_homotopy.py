@@ -109,8 +109,8 @@ meta = json.load(open(os.path.join(args.dataPath, 'meta.json')))
 
 def _resolve(path):
     cands = [path, os.path.join(args.dataPath, os.path.basename(path)),
-             os.path.join(args.lie_root, 'datasets/3dshape', os.path.basename(path)),
-             os.path.join(args.graph_root, 'datasets/3dshape', os.path.basename(path))]
+             os.path.join(args.lie_root, 'datasets/3dshape/data/obj', os.path.basename(path)),
+             os.path.join(args.graph_root, 'datasets/3dshape/data/obj', os.path.basename(path))]
     for c in cands:
         if os.path.exists(c):
             return c
@@ -150,7 +150,7 @@ POOL = mp.get_context('fork').Pool(args.workers) if args.workers > 1 else None
 if args.kind == 'graph':
     gn = _load_pkg('graph_native', os.path.join(args.graph_root, 'models', 'graph_native'))
     md = importlib.import_module('graph_native.model_train_metric')
-    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
+    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/data/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
     m.load(args.checkpoint)
     m.network.eval()
     fn = m.function
@@ -162,7 +162,7 @@ else:
     sys.modules.pop('models', None)
     sys.path.insert(0, args.metric_root)
     md = importlib.import_module('models.metric.model_train_metric')
-    m = md.Model('/tmp/metric_eval', 'datasets/3dshape/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
+    m = md.Model('/tmp/metric_eval', 'datasets/3dshape/data/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
     m.load(args.checkpoint)
     m.network.eval()
     fn = m.function

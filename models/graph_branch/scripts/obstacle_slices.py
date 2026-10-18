@@ -35,7 +35,7 @@ se3 = _sib.se3
 def load(ck, dev):
     if ck.startswith('orig:'):
         return chart_metric.load_original(ck[5:], dev)
-    m = gn_train.Model('/tmp/sl', 'datasets/3dshape/Tshape3d_env1', 6, [0.0] * 6, device=dev)
+    m = gn_train.Model('/tmp/sl', 'datasets/3dshape/data/Tshape3d_env1', 6, [0.0] * 6, device=dev)
     m.load(ck)
     m.network.eval()
     return m.network

@@ -1,6 +1,6 @@
 """Summarize the shapes3d pipeline: data, training and metric-baseline planning per cell.
 
-Reads datasets/3dshape/<cell>/, testing_data/3dshape/<cell>/,
+Reads datasets/3dshape/data/<cell>/, testing_data/3dshape/<cell>/,
 Experiments/shapes3d_metric_baseline/<cell>_s1/ and results/shapes3d/plan/,
 plus the T/L/A metric-baseline runs of Lie-Shape-NTFields (same evaluator, same
 4000-epoch recipe) for reference.  Writes results/shapes3d/summary.{md,json}.

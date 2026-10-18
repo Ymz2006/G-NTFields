@@ -1,7 +1,7 @@
 {
   "shape_scale": 1.0,
-  "shape_obj": "/workspace/datasets/3dshape/cube.obj",
-  "env_obj": "/workspace/datasets/3dshape/eastville.obj",
+  "shape_obj": "/workspace/datasets/3dshape/obj/cube.obj",
+  "env_obj": "/workspace/datasets/3dshape/obj/eastville.obj",
   "margin": 0.05,
   "offset": 0.02,
   "rot_norm": 6.283185307179586,

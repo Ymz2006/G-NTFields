@@ -11,7 +11,7 @@ Works with graph_native-format checkpoints (obstacle scenes; --kind graph_native
 graph_method-format ones (obstacle-free; --kind graph). Reports kinks per unit path length.
 
     python models/graph_cover/scripts/kink_census.py --out results/graph_cover/kinks/T_lp2_s0.json \
-        --kind graph_native --ckpt Experiments/graph_cover/T_lp2_s0/latest.pt --dataPath datasets/3dshape/Tshape3d_env1
+        --kind graph_native --ckpt Experiments/graph_cover/T_lp2_s0/latest.pt --dataPath datasets/3dshape/data/Tshape3d_env1
 """
 import argparse
 import json
@@ -49,7 +49,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--kind', default='graph_native', choices=['graph_native', 'graph'])
     ap.add_argument('--ckpt', required=True)
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--n_lines', type=int, default=256)
     ap.add_argument('--length', type=float, default=0.3, help='half-length of each line (scaled twist units)')
     ap.add_argument('--ds', type=float, default=2e-4)

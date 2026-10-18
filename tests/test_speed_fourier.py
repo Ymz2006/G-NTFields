@@ -98,12 +98,12 @@ class SpeedFourierTests(unittest.TestCase):
             x = rows().to(DEV)
             g = n.features(x[:, :6])
             self.assertTrue(torch.allclose(n.net.enc.speed_pred(g), pred.to(DEV)(g)))
-            m = mtl.Model(d, 'datasets/3dshape/x', 6, [0.0] * 6, device=DEV)
+            m = mtl.Model(d, 'datasets/3dshape/data/x', 6, [0.0] * 6, device=DEV)
             m.folder = d
             m.network, m.B = n, torch.zeros(128, 6)
             m.Params['Network']['Graph'] = n.graph
             m.save(name='latest.pt')
-            m2 = mtl.Model(d, 'datasets/3dshape/x', 6, [0.0] * 6, device=DEV)
+            m2 = mtl.Model(d, 'datasets/3dshape/data/x', 6, [0.0] * 6, device=DEV)
             m2.load(os.path.join(d, 'latest.pt'))
             self.assertTrue(torch.equal(m2.network.out(x)[0], n.out(x)[0]))
 

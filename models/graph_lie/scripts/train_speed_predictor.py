@@ -5,7 +5,7 @@ warped exactly as the trainers do (model_train_lie.warp_speeds), MSE in log spac
 split (by pair) reports log-space RMSE, the fraction within a factor 2, and the per-bin median
 ratio s_hat / S_d.
 
-    python models/graph_lie/scripts/train_speed_predictor.py --dataPath datasets/3dshape/Tshape3d_env1 \
+    python models/graph_lie/scripts/train_speed_predictor.py --dataPath datasets/3dshape/data/Tshape3d_env1 \
         --out Experiments/graph_lie/speed_pred/Tshape3d_env1.pt --device cuda:0
 """
 import argparse
@@ -58,7 +58,7 @@ def evaluate(model, g, s, device):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out', required=True)
     ap.add_argument('--device', default='cuda:0')
     ap.add_argument('--epochs', type=int, default=30)

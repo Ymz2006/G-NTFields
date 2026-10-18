@@ -3,7 +3,7 @@ graph_tri_metric ...): triangle inequality under attack, group-element (branch) 
 calibration by clearance bin, and branch-point statistics of the cover head.
 
     python models/graph_cover/scripts/cover_diag.py --out results/graph_cover/diag/T_lp2_s0.json \
-        --ckpt Experiments/graph_cover/T_lp2_s0/latest.pt --dataPath datasets/3dshape/Tshape3d_env1
+        --ckpt Experiments/graph_cover/T_lp2_s0/latest.pt --dataPath datasets/3dshape/data/Tshape3d_env1
 
 Triangle check: x, z are start / goal poses of random dataset pairs (collision-free), y the free-space geodesic
 midpoint, then Adam ascent of T(x, z) - T(x, y) - T(y, z) over body twists of y only ('y', all in-domain) and of
@@ -40,7 +40,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', required=True)
     ap.add_argument('--ckpt', required=True)
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--n', type=int, default=1024)
     ap.add_argument('--n_speed', type=int, default=8192)
     ap.add_argument('--steps', type=int, default=300)

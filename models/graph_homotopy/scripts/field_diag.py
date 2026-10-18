@@ -1,7 +1,7 @@
 """Diagnostics of a trained homotopy (or any graph_native) field on its training scene.
 
     python models/graph_homotopy/scripts/field_diag.py --ckpt Experiments/graph_homotopy/T_hrand_s0/latest.pt \
-        --dataPath datasets/3dshape/Tshape3d_env1 --out results/graph_homotopy/diag/T_hrand_s0.json
+        --dataPath datasets/3dshape/data/Tshape3d_env1 --out results/graph_homotopy/diag/T_hrand_s0.json
 
 * speed calibration: predicted speed 1 / |c| (Lie gradient at the start endpoint of dataset pairs) against the
   true warped clearance speed S_d, per decade of S_d: median log10 ratio per decade and dex = mean |log10 ratio|
@@ -33,7 +33,7 @@ TWO_PI = 2.0 * math.pi
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--ckpt', required=True)
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out', required=True)
     ap.add_argument('--device', default='cuda:0')
     ap.add_argument('--n', type=int, default=40000)

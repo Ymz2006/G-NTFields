@@ -22,7 +22,7 @@ units; the training margin is 0.05, the standard test sets use endpoint offset 0
               (direction asymmetry of the field: T(x, y) vs T(y, x), and the goal-side vs start-side slow band)
 
     docker ... -v Lie-Shape-NTFields:/lieshape:ro -w /lieshape ... python /workspace/models/stress_bench/make_stress_sets.py \
-        --scene Tshape3d_env1 --out /workspace/datasets/3dshape/bench --n 300 --device cuda:0
+        --scene Tshape3d_env1 --out /workspace/datasets/3dshape/data/bench --n 300 --device cuda:0
 """
 import argparse
 import json
@@ -39,7 +39,7 @@ from analysis.common import Scene, TWO_PI, random_rotvec, so3_exp, so3_log, geod
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--scene', default='Tshape3d_env1', help='<shape>_<env> of testing_data/3dshape')
-ap.add_argument('--out', default='/workspace/datasets/3dshape/bench')
+ap.add_argument('--out', default='/workspace/datasets/3dshape/data/bench')
 ap.add_argument('--n', type=int, default=300)
 ap.add_argument('--offset', type=float, default=0.005)
 ap.add_argument('--device', default='cuda:0')
@@ -51,7 +51,7 @@ ap.add_argument('--interp', type=int, default=25, help='interior poses on the st
 args = ap.parse_args()
 
 shape, env = args.scene.split('_')[0], args.scene.split('_')[1]
-scene = Scene(env_obj='datasets/3dshape/{}.obj'.format(env), shape_obj='datasets/3dshape/{}.obj'.format(shape),
+scene = Scene(env_obj='datasets/3dshape/data/{}.obj'.format(env), shape_obj='datasets/3dshape/data/{}.obj'.format(shape),
               device=args.device)
 gen = torch.Generator().manual_seed(args.seed)
 meta_src = os.path.join('testing_data/3dshape', args.scene, 'meta.json')

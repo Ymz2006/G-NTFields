@@ -494,7 +494,7 @@ def main():
                  '<li>On the physics-only synthetic problems the original metric network also avoids the rotation-blind collapse (through its '
                  'rotation-dependent chart features), at the price of its seam.</li></ul>')
     parts.append('<h2>Reproduce</h2><div class="eq">python -m unittest tests.test_branch_decoder\n'
-                 'python train/train_graph_branch.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_bc4e_s0 --seed 0 \\\n'
+                 'python train/train_graph_branch.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_bc4e_s0 --seed 0 \\\n'
                  '    --arch graph_branch_conf --grad lie --speed iso --end-weight 1 --set n_branch=4\n'
                  'python3 models/graph_branch/scripts/run_branch_queue.py --phase main --gpus 0,1,2\n'
                  'python3 models/graph_branch/scripts/aggregate_branch.py</div>')

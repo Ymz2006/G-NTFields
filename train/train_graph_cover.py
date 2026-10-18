@@ -1,6 +1,6 @@
 """Train the cover-quotient metric head (models/graph_method_triangle/cover_decoder.py) in the graph_lie pipeline.
 
-    python train/train_graph_cover.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_cov_lp2_s0 \
+    python train/train_graph_cover.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_cov_lp2_s0 \
         --seed 0 --grad lie --speed iso --set n_cut=2 res_kind="'lp'" res_scale=0.4
 
 Identical to train/train_graph_lie.py (same trainer, loss, random-number sequence) apart from the default
@@ -16,7 +16,7 @@ sys.path.append('.')
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out_root', default='./Experiments/graph_cover')
     ap.add_argument('--name', required=True)
     ap.add_argument('--device', default='cuda:0')

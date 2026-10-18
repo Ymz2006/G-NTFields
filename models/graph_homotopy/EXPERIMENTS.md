@@ -274,7 +274,7 @@ success by rotation / distance / clearance bins. Queue: `scripts/run_expand_queu
 
 `scripts/make_wall_envs.py`: the room of env1 (its wall group, so the normalized frame is that of the standard
 cells: env_scale 210.25, the shapes keep their size) divided by a slab of thickness 8 units perpendicular to z at the
-room's z centre, with a centred square hole of side 90, 75 or 66 units (`datasets/3dshape/hole{90,75,66}.obj`; the
+room's z centre, with a centred square hole of side 90, 75 or 66 units (`datasets/3dshape/data/hole{90,75,66}.obj`; the
 slab is four non-overlapping boxes). The three shapes are flat plates 60 x 10 x 60 (T), 35 x 10 x 60 (L),
 54 x 10 x 60 (A), so a square hole below 60 is impassable for all of them; face-on (plate parallel to the slab) the
 clearance in the hole is 15 / 7.5 / 3 units = 0.071 / 0.036 / 0.014 normalized (the training margin is 0.05, the

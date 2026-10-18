@@ -201,7 +201,7 @@ python -m models.graph_method_triangle.evaluate --ckpt Experiments/graph_method_
 python train/train_graph_triangle.py --config configs/graph_method_triangle/graph_gram_tri.json --seed 0 \
     --name gramtri_sw11k_s0 --out_root ./Experiments/graph_method_triangle_free
 # stage E, merged head (Shape-NTFields at /shape, Lie-Shape-NTFields at /lieshape, read-only);
-# add --set data_path=datasets/3dshape/Lshape3d_env3 (or Ashape3d_env4) for the other environments
+# add --set data_path=datasets/3dshape/data/Lshape3d_env3 (or Ashape3d_env4) for the other environments
 python train/train_graph_triangle.py --config configs/graph_method_triangle/stageE_graph_tri_metric_eq.json --seed 0 \
     --name T_trimetric_eq_s0 --out_root ./Experiments/graph_method_triangle_stageE
 bash models/graph_method_triangle/scripts/eval_shape.sh Experiments/graph_method_triangle_stageE \

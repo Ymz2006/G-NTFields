@@ -1,9 +1,9 @@
 """Write a synthetic SE(2)-in-SE(3) problem (models/graph_branch/synth.py) as an NTFields training set, so the
 heads can be trained with the physics loss alone (no labels) and scored against the exact travel time.
 
-    python models/graph_branch/scripts/synth_dataset.py --kind sector --A 4 --out datasets/3dshape/synth_sector_A4
+    python models/graph_branch/scripts/synth_dataset.py --kind sector --A 4 --out datasets/3dshape/data/synth_sector_A4
 
-Files as in datasets/3dshape/<scene>: sampled_points (N, 12) chart rows (t, rotvec / 2 pi) of start and goal,
+Files as in datasets/3dshape/data/<scene>: sampled_points (N, 12) chart rows (t, rotvec / 2 pi) of start and goal,
 speed / normal / speed_dists / speed_angles. The trainer warps the stored speeds (model_train_lie.warp_speeds), so
 the stored values are the pre-images of the intended speeds: translational S_d = 1 (stored 1), rotational
 S_a = 1 / h(psi) (stored raw_from_warped(1 / h) * ANGLE_MAX). With --speed aniso --planar the loss is

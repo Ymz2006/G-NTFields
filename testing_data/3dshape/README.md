@@ -10,7 +10,7 @@ the expanded comparison of the 8000-epoch homotopy head against the original met
 | `<scene>_bigrot` | same | relative rotation >= 150 deg | 0.02 |
 | `<scene>_tight` | same | both endpoint clearances in [0.005, 0.02] | 0.005 |
 | `<scene>_hard` | same | clearances in [0.005, 0.02], distance >= 0.5, rotation >= 135 deg | 0.005 |
-| `<shape>_hole<side>_through` | room of env1 + slab with a centred square hole (side 90 / 75 / 66 units, `datasets/3dshape/hole*.obj`) | start and goal on opposite sides of the slab, >= 0.05 from it | 0.02 |
+| `<shape>_hole<side>_through` | room of env1 + slab with a centred square hole (side 90 / 75 / 66 units, `datasets/3dshape/obj/hole*.obj`) | start and goal on opposite sides of the slab, >= 0.05 from it | 0.02 |
 
 Files per set: `sampled_points.npy` (N, 12) float32 = [start | goal] in the chart (translation, rotation vector / 2 pi),
 `meta.json` (the scene's meta plus the variant's settings), `env.npy` (the scene's dataset cloud, copied),

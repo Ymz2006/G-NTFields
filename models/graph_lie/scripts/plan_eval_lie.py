@@ -210,7 +210,7 @@ if args.kind == 'graph':
 elif args.kind == 'graph_native':
     gn = _load_pkg('graph_native', os.path.join(args.graph_root, 'models', 'graph_native'))
     md = importlib.import_module('graph_native.model_train_metric')
-    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
+    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/data/Tshape3d_env1/', DIM, [0.0] * DIM, device=args.device)
     m.load(args.checkpoint)
     m.network.eval()
     fn = m.function

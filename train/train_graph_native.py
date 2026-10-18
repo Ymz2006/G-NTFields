@@ -1,6 +1,6 @@
 """Train a graph head inside the original metric NTFields pipeline (models/graph_native).
 
-    python train/train_graph_native.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_gn_trieq_chart_s0 \
+    python train/train_graph_native.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_gn_trieq_chart_s0 \
         --device cuda:0 --seed 0 --arch graph_tri_metric --grad chart --set rot_mode=equivariant
 
 --set KEY=VALUE pairs go to the head (models/graph_native/model_network_metric.DEFAULT_GRAPH keys).
@@ -15,7 +15,7 @@ sys.path.append('.')
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out_root', default='./Experiments/graph_native')
     ap.add_argument('--name', required=True)
     ap.add_argument('--device', default='cuda:0')

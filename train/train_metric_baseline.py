@@ -1,7 +1,7 @@
 """Train the original metric NTFields baseline (the self-contained bundle /home/jeffrey/export_metric, i.e.
 Lie-Shape-NTFields' metric_baseline: models/metric with alpha = 1.0) with a fixed seed and a named run folder.
 
-    python train/train_metric_baseline.py --dataPath /workspace/datasets/3dshape/Tshape3d_env1 --name T_mb_s0 \
+    python train/train_metric_baseline.py --dataPath /workspace/datasets/3dshape/data/Tshape3d_env1 --name T_mb_s0 \
         --seed 0 --epochs 8000 --bundle /export --out_root /workspace/Experiments/metric_baseline
 
 The bundle's trainer is used unchanged (AdamW wd 0.5, lr 5e-4 in the loop, 5 batches of 2000 per epoch, accept /

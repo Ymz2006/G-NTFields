@@ -2,7 +2,7 @@
 
 This package is a copy of the original 3-D shape trainer and loss
 (Lie-Shape-NTFields/models/metric_baseline == this repo's models/metric with the
-TD and normal losses off): the same data (datasets/3dshape/<scene>), the same
+TD and normal losses off): the same data (datasets/3dshape/data/<scene>), the same
 isotropic Eikonal residual 1e-2 (sqrt(S |grad tau|) - 1)^2 weighted by
 exp(-tau / 2), the same AdamW (weight decay 0.5, learning rate 5e-4), the same
 5 batches of 2000 per epoch with the accept / reject rollback, and the same

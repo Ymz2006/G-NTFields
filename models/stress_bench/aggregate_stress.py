@@ -123,7 +123,7 @@ def paired_direction(R, S, fwd, rev):
 
 def blocked_bins(R, S):
     """SE(3) success on the blocked set binned by the colliding fraction of the straight line."""
-    p = os.path.join(HOST, 'datasets/3dshape/bench', SCENES[S] + '_blocked', 'line_stats.npy')
+    p = os.path.join(HOST, 'datasets/3dshape/data/bench', SCENES[S] + '_blocked', 'line_stats.npy')
     if not os.path.exists(p):
         return None, None
     ls = np.load(p)

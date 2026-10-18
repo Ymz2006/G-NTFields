@@ -330,7 +330,7 @@ def main():
                     J['audit_by_theta']['{}|{}|{}|{}'.format(scene, sampler, speed, grad)] = out
             L.append('')
     # ------------------------------------------------------------------ D. free pairs
-    pairs_files = glob.glob(os.path.join('datasets/3dshape/bench', '*_freepairs.npz'))
+    pairs_files = glob.glob(os.path.join('datasets/3dshape/data/bench', '*_freepairs.npz'))
     for pf in pairs_files:
         P = np.load(pf)
         scene_name = os.path.basename(pf).split('_')[0][0]

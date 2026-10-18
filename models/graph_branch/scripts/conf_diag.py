@@ -42,7 +42,7 @@ def main():
     ap.add_argument('ckpts', nargs='+')
     a = ap.parse_args()
     dev = a.device
-    base = os.path.join('datasets/3dshape', a.scene)
+    base = os.path.join('datasets/3dshape/data', a.scene)
     cols = [np.array(np.load(os.path.join(base, f + '.npy'), mmap_mode='r')[:200000:5])
             for f in ('sampled_points', 'speed', 'normal', 'speed_dists', 'speed_angles')]
     d = torch.from_numpy(np.concatenate(cols, 1)).float()

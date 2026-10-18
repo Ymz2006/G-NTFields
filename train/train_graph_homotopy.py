@@ -1,6 +1,6 @@
 """Train the double-cover (homotopy) head in the graph_lie pipeline with lifted training pairs.
 
-    python train/train_graph_homotopy.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_hm_s0 --seed 0 \
+    python train/train_graph_homotopy.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_hm_s0 --seed 0 \
         --lift random --lift-far 0.5 --set res_even=32 res_odd=32 pair_dim=64
 
 --set KEY=VALUE pairs go to the head (python literals). --lift min reproduces a K = 1 conformal branch head
@@ -16,7 +16,7 @@ sys.path.append('.')
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out_root', default='./Experiments/graph_homotopy')
     ap.add_argument('--name', required=True)
     ap.add_argument('--device', default='cuda:0')

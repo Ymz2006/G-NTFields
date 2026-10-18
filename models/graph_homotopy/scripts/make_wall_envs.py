@@ -5,9 +5,9 @@ perpendicular to z at the room's z centre, with a centred square hole of side --
 shapes are 60 units long and 10 thick, so a hole below 60 is impassable for all of them). The slab is written as
 four non-overlapping boxes around the hole (obstacle groups, names without 'wall' / 'null').
 
-    python3 models/graph_homotopy/scripts/make_wall_envs.py --sides 90,75,66 --out datasets/3dshape
+    python3 models/graph_homotopy/scripts/make_wall_envs.py --sides 90,75,66 --out datasets/3dshape/obj
 
-writes datasets/3dshape/hole90.obj, hole75.obj, hole66.obj (standard library only).
+writes datasets/3dshape/obj/hole90.obj, hole75.obj, hole66.obj (standard library only).
 """
 import argparse
 import os
@@ -68,10 +68,10 @@ def write_env(out, lo, hi, side, thick):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--room', default='datasets/3dshape/env1.obj')
+    ap.add_argument('--room', default='datasets/3dshape/obj/env1.obj')
     ap.add_argument('--sides', default='90,75,66')
     ap.add_argument('--thick', type=float, default=8.0)
-    ap.add_argument('--out', default='datasets/3dshape')
+    ap.add_argument('--out', default='datasets/3dshape/obj')
     a = ap.parse_args()
     lo, hi = wall_box(a.room)
     print('room {} .. {}'.format([round(x, 3) for x in lo], [round(x, 3) for x in hi]))

@@ -8,7 +8,7 @@ forward MPPI (`models/graph_method_triangle/scripts/plan_eval_graph.py`, batch 1
 
 Pipeline (run order; everything in the pytorchserver Docker image except the host-side queue):
 
-    make_stress_sets.py   # tightboth tightgoal tightrot blocked squeeze ctrl + reversed copies -> datasets/3dshape/bench
+    make_stress_sets.py   # tightboth tightgoal tightrot blocked squeeze ctrl + reversed copies -> datasets/3dshape/data/bench
     run_stress.py         # host queue: docker containers, GPU-memory aware, reuses identical earlier results
     field_checks.py       # identity / symmetry / triangle inequality / detour factor per checkpoint
     (models/graph_lie/scripts/speed_range_eval.py for the near-contact speed calibration)

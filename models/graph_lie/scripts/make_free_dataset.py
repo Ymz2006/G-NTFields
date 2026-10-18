@@ -8,7 +8,7 @@ speed formulations coincide and the exact travel time is the left-invariant geod
 which solves the Lie Eikonal |c| = 1 at both endpoints. Poses: translations uniform in the T-shape
 scene's box, rotations Haar-uniform, stored as (t, rotvec / 2 pi) with |rotvec| <= pi like the scenes.
 
-    python3 models/graph_lie/scripts/make_free_dataset.py --out datasets/3dshape/free_se3 --n 800000
+    python3 models/graph_lie/scripts/make_free_dataset.py --out datasets/3dshape/data/free_se3 --n 800000
 """
 import argparse
 import json
@@ -33,7 +33,7 @@ def haar_rotvec_turns(rng, n):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--out', default='datasets/3dshape/free_se3')
+    ap.add_argument('--out', default='datasets/3dshape/data/free_se3')
     ap.add_argument('--n', type=int, default=800000)
     ap.add_argument('--seed', type=int, default=0)
     a = ap.parse_args()

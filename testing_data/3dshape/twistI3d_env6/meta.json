@@ -1,7 +1,7 @@
 {
   "shape_scale": 1.0,
-  "shape_obj": "/workspace/datasets/3dshape/twistI3d.obj",
-  "env_obj": "/workspace/datasets/3dshape/env6.obj",
+  "shape_obj": "/workspace/datasets/3dshape/obj/twistI3d.obj",
+  "env_obj": "/workspace/datasets/3dshape/obj/env6.obj",
   "margin": 0.05,
   "offset": 0.02,
   "rot_norm": 6.283185307179586,

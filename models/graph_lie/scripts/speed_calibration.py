@@ -35,7 +35,7 @@ Q = [10, 25, 50, 75, 90]
 
 
 def endpoint_speeds(run_dir, rows, device):
-    m = mtl.Model('/tmp/cal', 'datasets/3dshape/x', 6, [0.0] * 6, device=device)
+    m = mtl.Model('/tmp/cal', 'datasets/3dshape/data/x', 6, [0.0] * 6, device=device)
     m.load(os.path.join(run_dir, 'latest.pt'))
     gt, own, lie_s = [], [], []
     for i in range(0, rows.shape[0], 4096):
@@ -76,7 +76,7 @@ def main():
     data_cache, res = {}, {'log_edges': LOG_EDGES, 'lin_edges': LIN_EDGES, 'quantiles': Q, 'groups': {}}
     for (scene, head, grad), dirs in sorted(runs.items()):
         if scene not in data_cache:
-            data = load_dataset(os.path.join('datasets/3dshape', SCENE[scene]))
+            data = load_dataset(os.path.join('datasets/3dshape/data', SCENE[scene]))
             g = torch.Generator().manual_seed(0)
             data_cache[scene] = data[torch.randperm(data.shape[0], generator=g)[:a.rows]]
         rows = data_cache[scene]

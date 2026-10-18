@@ -128,7 +128,7 @@ def eval_done(r, s):
 def launch_train(r, gpu, epochs):
     arch, sets = HEADS[r['head']]
     cname = 'glie_g{}_{}'.format(gpu, r['name'])
-    args = ('python -u train/train_graph_lie.py --dataPath datasets/3dshape/{env} --name {n} --seed {s} '
+    args = ('python -u train/train_graph_lie.py --dataPath datasets/3dshape/data/{env} --name {n} --seed {s} '
             '--arch {a} --grad {g} --speed {sp} --epochs {ep}').format(env=ENVS[r['env']], n=r['name'], s=r['seed'],
                                                                      a=arch, g=r['grad'], sp=r['speed'], ep=epochs)
     if r['env'] in EXTRA_ARGS:

@@ -13,7 +13,7 @@ the SE(3) geodesic and three interior points of the chart segment are all free w
 inside the box. --n pairs per bin.
 
     docker ... -w /lieshape ... python /workspace/models/graph_lie/scripts/bench/free_tau_eval.py \
-        --scene Tshape3d_env1 --pairs /workspace/datasets/3dshape/bench/Tshape3d_env1_freepairs.npz \
+        --scene Tshape3d_env1 --pairs /workspace/datasets/3dshape/data/bench/Tshape3d_env1_freepairs.npz \
         --out /workspace/results/graph_lie/bench/freepairs <ckpt> [<ckpt> ...]
 Per checkpoint: tau in both directions, |c| and |g| at both endpoints (JSON next to the pairs' arrays).
 """
@@ -65,7 +65,7 @@ def chart_alt(r):
 
 if not os.path.exists(args.pairs):
     shape, env = args.scene.split('_')[0], args.scene.split('_')[1]
-    scene = Scene(env_obj='datasets/3dshape/{}.obj'.format(env), shape_obj='datasets/3dshape/{}.obj'.format(shape),
+    scene = Scene(env_obj='datasets/3dshape/data/{}.obj'.format(env), shape_obj='datasets/3dshape/data/{}.obj'.format(shape),
                   device=args.device)
     gen = torch.Generator().manual_seed(args.seed)
     he = torch.tensor(scene.half_extent, dtype=torch.float32)
@@ -149,7 +149,7 @@ Xb = torch.cat([X[:, 6:], X[:, :6]], 1)
 os.makedirs(args.out, exist_ok=True)
 for ck in args.ckpts:
     name = os.path.basename(os.path.dirname(ck))
-    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/Tshape3d_env1/', 6, [0.0] * 6, device=args.device)
+    m = md.Model('/tmp/analysis_model', 'datasets/3dshape/data/Tshape3d_env1/', 6, [0.0] * 6, device=args.device)
     m.load(ck)
     m.network.eval()
     ckd = torch.load(ck, map_location='cpu')

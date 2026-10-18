@@ -1,6 +1,6 @@
 """Train the multi-branch decoder that learns the cut (models/graph_mb) in the graph_lie pipeline.
 
-    python train/train_graph_mb.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_mb4_s0 --seed 0 \
+    python train/train_graph_mb.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_mb4_s0 --seed 0 \
         --arch graph_mb --set n_branch=4 --spec delta=0.1 w_dist=0.1
     python train/train_graph_mb.py ... --arch graph_mb --end-weight 1          # + end constraint
     python train/train_graph_mb.py ... --arch graph_mb_free --set n_branch=4   # the spec's free heads
@@ -30,7 +30,7 @@ def kv(items):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out_root', default='./Experiments/graph_mb')
     ap.add_argument('--name', required=True)
     ap.add_argument('--device', default='cuda:0')

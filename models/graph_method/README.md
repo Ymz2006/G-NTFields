@@ -159,7 +159,7 @@ Findings (empirical, this benchmark):
 Spec page 6: only after A-D pass; the two-output decoder no longer implies
 smooth targets or physical meanings for a, b. Everything here is empirical.
 
-Setup: `datasets/3dshape/Tshape3d_env1` (800k pose pairs with clearance speeds),
+Setup: `datasets/3dshape/data/Tshape3d_env1` (800k pose pairs with clearance speeds),
 declared position-dependent ellipsoidal speed model with s_t = 1, s_r = 2 pi
 (rotations in turns, as in the baseline), isotropic multiplier = the dataset's
 combined speed after the baseline warp s^2 (2-s)^2; separate endpoint Eikonal

@@ -79,9 +79,9 @@ Outputs (written to ``--out``):
 
 Usage:
     python dataprocessing/preprocess_obj_gibson.py \
-        --env   datasets/3dshape/env1.obj \
-        --shape datasets/3dshape/rectangle.obj \
-        --out   datasets/3dshape/rectangle_env1 \
+        --env   datasets/3dshape/obj/env1.obj \
+        --shape datasets/3dshape/obj/rectangle.obj \
+        --out   datasets/3dshape/data/rectangle_env1 \
         --num_samples 400000 \
         --margin 0.1  --offset 0.01  --shape_scale 1.0
 """
@@ -1213,11 +1213,11 @@ def visual_speed_distribution(speed_pairs, save_path, label='speed', nbins=60):
 def main():
     parser = argparse.ArgumentParser(
         description='OBJ-based preprocessing for 3-D shape path planning.')
-    parser.add_argument('--env', default='datasets/3dshape/env1.obj',
+    parser.add_argument('--env', default='datasets/3dshape/obj/env1.obj',
                         help='Environment OBJ (static obstacles; surface only).')
-    parser.add_argument('--shape', default='datasets/3dshape/rectangle.obj',
+    parser.add_argument('--shape', default='datasets/3dshape/obj/rectangle.obj',
                         help='Shape OBJ (watertight; tetrahedralized for queries).')
-    parser.add_argument('--out', default='datasets/3dshape/rectangle_env1',
+    parser.add_argument('--out', default='datasets/3dshape/data/rectangle_env1',
                         help='Output directory for the .npy training data.')
     parser.add_argument('--num_samples', type=int, default=400000,
                         help='Total number of sampled configs (split into pairs).')

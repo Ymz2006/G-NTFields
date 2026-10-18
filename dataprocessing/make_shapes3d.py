@@ -32,7 +32,7 @@ per side or more, and turns freely in each room (bounding radius <= 34.7), so
 start and goal are connected whenever both lie in the rooms
 (dataprocessing/check_shapes3d.py verifies both).
 
-    python dataprocessing/make_shapes3d.py                # writes datasets/3dshape/*.obj
+    python dataprocessing/make_shapes3d.py                # writes datasets/3dshape/obj/*.obj
     python dataprocessing/make_shapes3d.py --preview out/ # also renders PNG previews
 """
 import argparse

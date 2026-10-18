@@ -115,7 +115,7 @@ def docker_prefix(gpu, cname, workdir, mounts='', threads=2):
 
 def launch_train(r, gpu, epochs):
     cname = 'gct_g{}_{}'.format(gpu, r['name'])
-    args = ('python -u train/train_graph_cover.py --dataPath datasets/3dshape/{sc} --name {n} --seed {s} --arch {a} '
+    args = ('python -u train/train_graph_cover.py --dataPath datasets/3dshape/data/{sc} --name {n} --seed {s} --arch {a} '
             '--grad lie --speed {sp} --epochs {ep}').format(
         sc=SCENES[r['scene']], n=r['name'], s=r['seed'], a=r['arch'], sp=r['speed'], ep=epochs)
     if r['sets']:

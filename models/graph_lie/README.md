@@ -89,13 +89,13 @@ Inside `pytorchserver:latest` with this repo at `/workspace` (and Lie-Shape-NTFi
 
 ```bash
 python -m unittest tests.test_graph_lie
-python train/train_graph_lie.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_gmetric_iso_lie_s0 \
+python train/train_graph_lie.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_gmetric_iso_lie_s0 \
     --seed 0 --arch graph_metric --grad lie --speed iso
-python train/train_graph_lie.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_trieq_aniso_lie_s0 \
+python train/train_graph_lie.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_trieq_aniso_lie_s0 \
     --seed 0 --arch graph_tri_metric --grad lie --speed aniso --set rot_mode=equivariant
 # the whole study (host side; 108 runs, 92 trained; reuses the bitwise-identical graph_native runs)
 python3 models/graph_lie/scripts/run_queue.py --phase all --per-gpu 4 --eval-slots 3
-python3 models/graph_lie/scripts/make_free_dataset.py --out datasets/3dshape/free_se3
+python3 models/graph_lie/scripts/make_free_dataset.py --out datasets/3dshape/data/free_se3
 python3 models/graph_lie/scripts/run_queue.py --phase free --per-gpu 4 --eval-slots 0
 python models/graph_lie/scripts/free_eval.py --oracle Experiments/graph_lie/F_*/latest.pt
 python models/graph_lie/scripts/field_diag.py Experiments/graph_lie/[TLA]_*/latest.pt

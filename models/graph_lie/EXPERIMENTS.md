@@ -59,7 +59,7 @@ through `so3_exp` in the double backward.
 * Field diagnostics (`scripts/field_diag.py`): both Eikonal equations evaluated on every trained
   field, binned by `|rotvec|`.
 * Obstacle-free control with exact ground truth (`scripts/make_free_dataset.py`, `scripts/free_eval.py`):
-  {graph_metric, triangle} x {chart, Lie} x 3 seeds on `datasets/3dshape/free_se3` (all speeds 1, so
+  {graph_metric, triangle} x {chart, Lie} x 3 seeds on `datasets/3dshape/data/free_se3` (all speeds 1, so
   the three formulations coincide). The exact field planned by the same MPPI reaches 98.9 % SE(3)
   success at path cost 1.12 (the planner's own floor) and only 52.6 % under the chart criterion.
 * Primary metric: SE(3) success. Chart success undercounts seam-free fields

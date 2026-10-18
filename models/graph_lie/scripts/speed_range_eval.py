@@ -44,7 +44,7 @@ def rows_for(data_path, n_rows):
 
 
 def endpoint_speeds(run_dir, rows, device, speed_key):
-    m = mtl.Model('/tmp/cal', 'datasets/3dshape/x', 6, [0.0] * 6, device=device)
+    m = mtl.Model('/tmp/cal', 'datasets/3dshape/data/x', 6, [0.0] * 6, device=device)
     m.load(os.path.join(run_dir, 'latest.pt'))
     gt, pred, shat = [], [], []
     enc = getattr(m.network.net, 'enc', None)

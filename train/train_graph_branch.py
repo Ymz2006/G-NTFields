@@ -1,8 +1,8 @@
 """Train a branch-decoder head (or any graph head) in the graph_lie pipeline with the endpoint constraint.
 
-    python train/train_graph_branch.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_branch_s0 \
+    python train/train_graph_branch.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_branch_s0 \
         --seed 0 --arch graph_branch --grad lie --speed iso --set n_branch=4
-    python train/train_graph_branch.py --dataPath datasets/3dshape/Tshape3d_env1 --name T_bconf_s0 \
+    python train/train_graph_branch.py --dataPath datasets/3dshape/data/Tshape3d_env1 --name T_bconf_s0 \
         --seed 0 --arch graph_branch_conf --grad lie --speed iso --end-weight 1 --set n_branch=4
 
 --set KEY=VALUE pairs go to the head (python literals). With --end-weight 0 and a non-branch head this is
@@ -18,7 +18,7 @@ sys.path.append('.')
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--dataPath', default='datasets/3dshape/Tshape3d_env1')
+    ap.add_argument('--dataPath', default='datasets/3dshape/data/Tshape3d_env1')
     ap.add_argument('--out_root', default='./Experiments/graph_branch')
     ap.add_argument('--name', required=True)
     ap.add_argument('--device', default='cuda:0')

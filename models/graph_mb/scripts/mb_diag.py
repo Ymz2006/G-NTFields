@@ -60,11 +60,11 @@ def main():
     a = ap.parse_args()
     name = os.path.basename(os.path.dirname(a.ckpt))
     scene = SCENE[name[0]]
-    m = mtl.Model('/tmp', 'datasets/3dshape/' + scene, 6, [0] * 6, device=a.device)
+    m = mtl.Model('/tmp', 'datasets/3dshape/data/' + scene, 6, [0] * 6, device=a.device)
     m.load(a.ckpt)
     net, head = m.network, m.network.net
     all_values, value_branch, nb, unit_of = branch_api(head)
-    d = load_dataset('datasets/3dshape/' + scene)
+    d = load_dataset('datasets/3dshape/data/' + scene)
     g = torch.Generator().manual_seed(0)
     idx = torch.randperm(d.shape[0], generator=g)[:a.n]
     rows = d[idx].to(a.device)
