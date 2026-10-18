@@ -1,0 +1,33 @@
+# RTX 5070 (Blackwell, sm_120) image. The original Dockerfile (PyTorch 1.12 / CUDA 11.3) has no
+# sm_120 kernels; Blackwell needs CUDA >= 12.8 and PyTorch >= 2.7.
+#
+#   docker build -f Dockerfile.rtx5070 -t ntfields:rtx5070 .
+#   docker run --gpus all --ipc=host -u $(id -u):$(id -g) -e HOME=/tmp \
+#       -v $(pwd):/workspace -ti --rm ntfields:rtx5070
+FROM pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONUNBUFFERED=1 \
+    TORCH_CUDA_ARCH_LIST="12.0" \
+    MPLBACKEND=Agg
+
+# libGL / X libs for igl, matplotlib and the optional viewers
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgl1 libglu1-mesa libxrender1 libxext6 libsm6 git \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN pip install \
+        libigl \
+        pytorch_kinematics \
+        configargparse \
+        scipy \
+        matplotlib \
+        plotly \
+        trimesh
+
+# pickle5 is a backport for Python < 3.8 and does not build on 3.11; models/metric imports it,
+# so provide it as an alias of the standard library module.
+RUN python -c "import site; open(site.getsitepackages()[0] + '/pickle5.py', 'w').write('from pickle import *\n')"
+
+WORKDIR /workspace

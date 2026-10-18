@@ -1,0 +1,15 @@
+[load_obj] '/workspace/datasets/3dshape/Lshape3d.obj': 1 objects/groups
+  [0] 'Body1'  (20 triangles)
+[load_obj] '/workspace/datasets/3dshape/env3.obj': 4 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'Body14'  (12 triangles)
+  [2] 'Body16'  (12 triangles)
+  [3] 'Body17'  (12 triangles)
+scene Lshape3d_env3: shape radius 0.1592, half extent [0.444, 0.308, 0.49], sdf grid (np.int64(89), np.int64(44), np.int64(134)) (0.2s)
+[round 1] drawn 6000 in-band 412 formed 206 verified 204/206 (32s)  banked 204/1000  rrt-fail 2 recheck-fail 0
+[round 2] drawn 6000 in-band 385 formed 192 verified 192/192 (12s)  banked 396/1000  rrt-fail 2 recheck-fail 0
+[round 3] drawn 6000 in-band 375 formed 187 verified 186/187 (23s)  banked 582/1000  rrt-fail 3 recheck-fail 0
+[round 4] drawn 6000 in-band 385 formed 192 verified 189/192 (27s)  banked 771/1000  rrt-fail 6 recheck-fail 0
+[round 5] drawn 6000 in-band 416 formed 207 verified 205/207 (27s)  banked 976/1000  rrt-fail 8 recheck-fail 0
+[round 6] drawn 6000 in-band 420 formed 44 verified 43/44 (15s)  banked 1000/1000  rrt-fail 8 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/Lshape3d_env3_tight (149s): rel angle p50 122 p90 170; |dp| p50 0.47; min clearance p50 0.0094; rrt path length p50 0.85; straight blocked frac mean 0.34

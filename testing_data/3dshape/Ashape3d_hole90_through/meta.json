@@ -1,0 +1,61 @@
+{
+  "shape_scale": 1.0,
+  "shape_obj": "/workspace/datasets/3dshape/Ashape3d.obj",
+  "env_obj": "/workspace/datasets/3dshape/hole90.obj",
+  "margin": 0.05,
+  "offset": 0.02,
+  "rot_norm": 6.283185307179586,
+  "testing_data": true,
+  "yrot": false,
+  "two_d": false,
+  "shape_z_thickness": null,
+  "env_scale": 210.252,
+  "env_center": [
+    99.86713300000001,
+    70.0,
+    -105.126
+  ],
+  "num_tets": 30,
+  "prefilter": {
+    "script": "models/graph_homotopy/scripts/preprocess_hole.py",
+    "delta": 0.004,
+    "shape_points": 1020,
+    "stats": {
+      "drawn": 9490000,
+      "gate_pass0": 2793623,
+      "eval0": 2793623,
+      "band0": 1676318,
+      "x1_drawn": 1676318,
+      "gate_pass1": 203324,
+      "accepted": 200000
+    },
+    "audit": {
+      "n": 300,
+      "free_by_original_test": 14,
+      "free_with_dist_gt_offset": 11
+    },
+    "seconds": 4026.9987654685974,
+    "num_samples": 200000
+  },
+  "variant": "through",
+  "scene": "Ashape3d_hole90",
+  "constraints": {
+    "offset": 0.02,
+    "clear": [
+      0.02,
+      Infinity
+    ],
+    "dp": [
+      0.0,
+      Infinity
+    ],
+    "ang": [
+      0.0,
+      180.0
+    ],
+    "side_gap": 0.05
+  },
+  "rrt_verified": true,
+  "generator": "models/graph_homotopy/scripts/make_test_sets.py",
+  "seed": 1
+}

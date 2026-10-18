@@ -1,0 +1,15 @@
+[load_obj] '/lieshape/datasets/3dshape/Tshape3d.obj': 1 objects/groups
+  [0] 'Body1'  (28 triangles)
+[load_obj] '/lieshape/datasets/3dshape/env1.obj': 5 objects/groups
+  [0] 'Body2'  (12 triangles)
+  [1] 'Body3'  (12 triangles)
+  [2] 'Body4'  (12 triangles)
+  [3] 'Body5'  (12 triangles)
+  [4] 'wall (2)'  (12 triangles)
+scene Tshape3d_env1: shape radius 0.2032, half extent [0.465, 0.323, 0.49], sdf grid (np.int64(140), np.int64(45), np.int64(140)) (0.2s)
+[round 1] drawn 6000 in-band 533 formed 216 verified 216/216 (25s)  banked 216/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 6000 in-band 564 formed 230 verified 230/230 (28s)  banked 446/1000  rrt-fail 0 recheck-fail 0
+[round 3] drawn 6000 in-band 533 formed 210 verified 210/210 (27s)  banked 656/1000  rrt-fail 0 recheck-fail 0
+[round 4] drawn 6000 in-band 579 formed 222 verified 222/222 (27s)  banked 878/1000  rrt-fail 0 recheck-fail 0
+[round 5] drawn 6000 in-band 558 formed 158 verified 158/158 (19s)  banked 1000/1000  rrt-fail 0 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/Tshape3d_env1_long (139s): rel angle p50 114 p90 169; |dp| p50 0.64; min clearance p50 0.0283; rrt path length p50 1.32; straight blocked frac mean 0.49

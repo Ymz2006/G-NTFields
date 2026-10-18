@@ -540,6 +540,9 @@ def build_network(arch, s_t=1.0, s_r=1.0, h_size=256, fourier_sigma=0.5, fourier
     if arch not in ARCHITECTURES:
         from . import multibranch  # multi-branch decoder that learns the cut (graph_mb, graph_mb_free)
         ARCHITECTURES.update(multibranch.ARCHITECTURES)
+    if arch not in ARCHITECTURES:
+        from . import homotopy_decoder  # double-cover head: one cone, one ridge (graph_homotopy)
+        ARCHITECTURES.update(homotopy_decoder.ARCHITECTURES)
     cls, in_dim = ARCHITECTURES[arch]
     in_dim = in_dim // FEATURE_DIM * feature_dim
     B = make_fourier_matrix(h_size // 2, in_dim, fourier_sigma, fourier_seed, fourier_sigma_t, fourier_sigma_r,
