@@ -26,6 +26,7 @@ add new obstacles:
            alternating low / high
     env7   env5 with a 60 x 60 window   (window-size ladder between env4 and env5)
     env8   env5 with a 70 x 70 window
+    env9   env6 with four 70 x 70 windows (same centres)
 
 Every shape passes each window in an axis-aligned pose with 5 units of clearance
 per side or more, and turns freely in each room (bounding radius <= 34.7), so
@@ -41,7 +42,7 @@ import os
 import numpy as np
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-OUT_DIR = os.path.join(ROOT, 'datasets', '3dshape')
+OUT_DIR = os.path.join(ROOT, 'datasets', '3dshape', 'obj')
 
 # Boxes are (x0, x1, y0, y1, z0, z1).
 SHAPES = {
@@ -146,6 +147,17 @@ ENVS = {
                                                             (23, 73, 90, 140)])      # back-left <-> front-left
                           + wall_with_windows('x', 95, 105, [(-51, -1, 35, 85),      # front-left <-> front-right
                                                              (-167, -117, 35, 85)]),  # back-right <-> back-left
+        },
+    },
+    # env6 with every window grown 10 units per side (same centres): 70x70.
+    'env9': {
+        'note': 'env6 with 70x70 windows (env3 room shell + two crossing partitions (z in [-95,-85], x in [95,105]) '
+                '-> four rooms joined in a ring, low / high)',
+        'bodies': {
+            'partitions': wall_with_windows('z', -95, -85, [(117, 187, 80, 150),     # front-right <-> back-right
+                                                            (13, 83, 80, 150)])      # back-left <-> front-left
+                          + wall_with_windows('x', 95, 105, [(-61, 9, 25, 95),       # front-left <-> front-right
+                                                             (-177, -107, 25, 95)]),  # back-right <-> back-left
         },
     },
 }

@@ -23,12 +23,14 @@ VARIANTS = {
     'hm_pair': dict(pair_dim=32, pair_hidden=64),
     'hm_strict': dict(conf=False),
     'hm_wide_pair': dict(res_even=64, res_odd=64, pair_dim=64),
+    'lift': dict(arch='graph_homotopy_lift'),
+    'lift_pair': dict(arch='graph_homotopy_lift', pair_dim=32, pair_hidden=64),
 }
 
 
 def make_net(extra=None, seed=0, perturb=0.05):
     torch.manual_seed(seed)
-    net = gn_network.NN('cpu', 6, None, graph=dict(arch='graph_homotopy', **(extra or {})))
+    net = gn_network.NN('cpu', 6, None, graph=dict({'arch': 'graph_homotopy'}, **(extra or {})))
     with torch.no_grad():
         for p in net.parameters():
             p.add_(perturb * torch.randn_like(p))
@@ -117,7 +119,8 @@ class TestCoverField(unittest.TestCase):
     def test_loss_finite_all_lifts(self):
         from models.graph_homotopy import model_function_homotopy as mfh
         g = torch.Generator().manual_seed(10)
-        for name, extra in (('hm', {}), ('hm_pair', dict(pair_dim=16, pair_hidden=32))):
+        for name, extra in (('hm', {}), ('hm_pair', dict(pair_dim=16, pair_hidden=32)),
+                            ('lift', dict(arch='graph_homotopy_lift'))):
             for lift in ('min', 'random', 'both'):
                 net = make_net(extra)
                 fn = mfh.Function('/tmp', 'cpu', net, 6, lift=lift, lift_far=0.5)
@@ -134,6 +137,37 @@ class TestCoverField(unittest.TestCase):
                     self.assertTrue(torch.isfinite(p.grad).all().item() if p.grad is not None else True, (name, lift))
                 if lift == 'both':
                     self.assertAlmostEqual(fn.last_terms['far'], 0.5)
+
+
+class TestLiftEncoder(unittest.TestCase):
+    """graph_homotopy_lift: the encoder reads (t, q) on the cover, both lifts of every pose."""
+
+    def test_parity_of_the_lifted_embedding(self):
+        net = make_net(VARIANTS['lift']).net
+        self.assertEqual(net.enc.in_dim, 7)
+        t, q = random_poses(64, 11)
+        ee, eo = net.lift_embeddings(t, q)
+        ee2, eo2 = net.lift_embeddings(t, -q)
+        self.assertTrue(torch.allclose(ee, ee2, atol=1e-12))
+        self.assertTrue(torch.allclose(eo, -eo2, atol=1e-12))
+        self.assertGreater(eo.abs().max().item(), 1e-2)        # the odd part is not trivial
+        f = net.enc(torch.cat([t, q], -1))                     # the raw cover encoder is not deck invariant
+        self.assertGreater((f - net.enc(torch.cat([t, -q], -1))).abs().max().item(), 1e-2)
+
+    def test_lie_gradients_match_perturbation(self):
+        for name in ('hm', 'lift'):
+            net = make_net(VARIANTS[name]).net
+            tx, qx = random_poses(32, 12)
+            ty, qy = random_poses(32, 13)
+            Rx, Ry = se3.quat_to_matrix(qx), se3.quat_to_matrix(qy)
+            gx, gy = se3.features(tx, Rx), se3.features(ty, Ry)
+            sig = torch.where(net.sheet_values(gx, gy)[:, 0] <= net.sheet_values(gx, gy)[:, 1], 1.0, -1.0).to(DT)
+            f = lambda a, b: net.sheet_value(a, b, sig)  # noqa: E731
+            from models.graph_method_triangle.geometry import tangents
+            _, cx, cy = tangents.tangent_gradients(f, gx, gy, 1.0, TWO_PI, create_graph=False)
+            _, px, py = tangents.tangent_gradients_perturb(f, tx, Rx, ty, Ry, 1.0, TWO_PI)
+            self.assertTrue(torch.allclose(cx, px, atol=1e-8), name)
+            self.assertTrue(torch.allclose(cy, py, atol=1e-8), name)
 
 
 if __name__ == '__main__':

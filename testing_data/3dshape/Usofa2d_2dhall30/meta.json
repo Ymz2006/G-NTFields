@@ -1,0 +1,28 @@
+{
+  "shape_scale": 1.0,
+  "shape_obj": "/workspace/datasets/3dshape/obj/Usofa2d.obj",
+  "env_obj": "/workspace/datasets/3dshape/obj/2dhall30.obj",
+  "margin": 0.05,
+  "offset": 0.02,
+  "rot_norm": 6.283185307179586,
+  "testing_data": true,
+  "yrot": false,
+  "two_d": true,
+  "shape_z_thickness": 0.01,
+  "env_scale": 170.0,
+  "env_center": [
+    75.0,
+    75.0,
+    0.0
+  ],
+  "num_tets": 30,
+  "feasible_filter": {
+    "generated": 4000,
+    "start_blocked_on_grid": 0,
+    "goal_blocked_on_grid": 0,
+    "connected": 1464,
+    "kept": 1000,
+    "components_seen": 3,
+    "by": "dataprocessing/check_sofa2d.py filter (grid 0.5 units, 1 deg)"
+  }
+}

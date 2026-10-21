@@ -3,7 +3,7 @@
 1. Tetrahedralization: each shape goes through the same tetgen call as
    preprocess_obj.py (env-normalized units) and the tet volumes must add up to
    the mesh volume.
-2. Windows: for every window of env5 / env6 / env7 / env8 and every shape, the best of the 24
+2. Windows: for every window of env5 .. env9 and every shape, the best of the 24
    axis-aligned orientations is translated straight through the window, from one
    room to the next; the minimum clearance along that path must be positive.
 3. Rooms: at the centre of every room, random orientations must all be
@@ -34,7 +34,7 @@ _spec = importlib.util.spec_from_file_location(
 pre = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(pre)
 
-D = os.path.join(ROOT, 'datasets', '3dshape')
+D = os.path.join(ROOT, 'datasets', '3dshape', 'obj')
 SIGN = igl.SignedDistanceType.SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER
 
 # Windows as (travel axis, wall centre along it, window centre (u, y), size) with
@@ -47,6 +47,8 @@ WINDOWS = {
     'env6': [('x', 100.0, (-26.0, 60.0)), ('z', -90.0, (152.0, 115.0)),
              ('x', 100.0, (-142.0, 60.0)), ('z', -90.0, (48.0, 115.0))],   # window centres
 }
+WINDOWS['env9'] = WINDOWS['env6']      # same centres, 70x70
+
 ROOMS = {
     'env5': [(100.0, YC, 0.5 * (-85 + ms.Z1)), (100.0, YC, 0.5 * (ms.Z0 - 95))],
     'env7': [(100.0, YC, 0.5 * (-85 + ms.Z1)), (100.0, YC, 0.5 * (ms.Z0 - 95))],
@@ -54,6 +56,8 @@ ROOMS = {
     'env6': [(0.5 * (ms.X0 + 95), YC, 0.5 * (-85 + ms.Z1)), (0.5 * (105 + ms.X1), YC, 0.5 * (-85 + ms.Z1)),
              (0.5 * (105 + ms.X1), YC, 0.5 * (ms.Z0 - 95)), (0.5 * (ms.X0 + 95), YC, 0.5 * (ms.Z0 - 95))],
 }
+ROOMS['env9'] = ROOMS['env6']
+
 
 
 def axis_rotations():

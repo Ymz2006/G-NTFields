@@ -149,6 +149,7 @@ class Model:
             self.optimizer.param_groups[0]['lr'] = 5e-4
             prev_diff = current_diff
             terms = {}
+            n_nonfinite = 0
             while True:
                 total_train_loss = 0
                 total_diff = 0
@@ -182,8 +183,11 @@ class Model:
                     self.network.load_state_dict(prev_state_queue[random_number], strict=True)
                     self.optimizer.load_state_dict(prev_optimizer_queue[random_number])
                 self._log('RepeatEpoch = {} -- Loss = {:.4e}'.format(epoch, total_diff))
-                if not np.isfinite(total_diff):
-                    self._log('non-finite loss; aborting')
+                # as the original trainer: a non-finite epoch is rolled back and repeated like any rejected one;
+                # give up only if it keeps happening
+                n_nonfinite = n_nonfinite + 1 if not np.isfinite(total_diff) else 0
+                if n_nonfinite > 20:
+                    self._log('non-finite loss in 20 consecutive repeats; aborting')
                     return
             self.total_train_loss.append(total_train_loss)
             beta = 1.0 / total_diff

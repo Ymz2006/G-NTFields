@@ -1,0 +1,17 @@
+[load_obj] '/lieshape/datasets/3dshape/Ashape3d.obj': 1 objects/groups
+  [0] 'Body2'  (40 triangles)
+[load_obj] '/lieshape/datasets/3dshape/env3.obj': 4 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'Body14'  (12 triangles)
+  [2] 'Body16'  (12 triangles)
+  [3] 'Body17'  (12 triangles)
+scene Ashape3d_env3: shape radius 0.1844, half extent [0.444, 0.308, 0.49], sdf grid (123, 44, 134) (1.0s)
+[round 1] drawn 6000 in-band 354 formed 137 verified 137/137 (47s)  banked 137/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 6000 in-band 317 formed 130 verified 130/130 (55s)  banked 267/1000  rrt-fail 0 recheck-fail 0
+[round 3] drawn 6000 in-band 358 formed 146 verified 146/146 (55s)  banked 413/1000  rrt-fail 0 recheck-fail 0
+[round 4] drawn 6000 in-band 348 formed 135 verified 135/135 (44s)  banked 548/1000  rrt-fail 0 recheck-fail 0
+[round 5] drawn 6000 in-band 346 formed 134 verified 134/134 (64s)  banked 682/1000  rrt-fail 0 recheck-fail 0
+[round 6] drawn 6000 in-band 338 formed 135 verified 135/135 (54s)  banked 817/1000  rrt-fail 0 recheck-fail 0
+[round 7] drawn 6000 in-band 355 formed 136 verified 136/136 (45s)  banked 953/1000  rrt-fail 0 recheck-fail 0
+[round 8] drawn 6000 in-band 364 formed 67 verified 67/67 (34s)  banked 1000/1000  rrt-fail 0 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/Ashape3d_env3_hard (513s): rel angle p50 155 p90 175; |dp| p50 0.58; min clearance p50 0.0094; rrt path length p50 1.09; straight blocked frac mean 0.40

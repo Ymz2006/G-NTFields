@@ -20,7 +20,7 @@ the survivors only, so every stored value comes from the original code, and
 the survivors (hence the torch random stream) are the same as without the block.
 
     python dataprocessing/preprocess_obj_fast.py <preprocess_obj.py flags>
-    python dataprocessing/preprocess_obj_fast.py --selftest 2000 --env ... --shape ...  # compare with the original
+    python dataprocessing/preprocess_obj_fast.py --selftest 2000 --env ... --shape ... [--2d]  # compare with the original
 """
 import importlib.util
 import inspect
@@ -110,9 +110,12 @@ def selftest(argv):
     ap.add_argument('--num_env_points', type=int, default=po.DEFAULT_ENV_POINTS)
     ap.add_argument('--device', default='cuda')
     ap.add_argument('--seed', type=int, default=0)
+    ap.add_argument('--2d', dest='two_d', action='store_true', help='planar mode, as preprocess_obj.py --2d')
     a = ap.parse_args(argv)
     np.random.seed(a.seed)
     V, F, names = po.load_obj(a.env)
+    if a.two_d:
+        V[:, 2] = 0.0
     lo, hi = V.min(0), V.max(0)
     scale = float((hi - lo).max())
     Vn = (V - 0.5 * (lo + hi)) / scale
@@ -121,6 +124,10 @@ def selftest(argv):
     half = (hi - lo) / scale * 0.5 - 0.01
     Vs, Fs, _ = po.load_obj(a.shape)
     Vs = (Vs - 0.5 * (Vs.min(0) + Vs.max(0))) / scale
+    if a.two_d:                      # the same flattening / squashing as preprocess_obj.py main
+        half[2] = 0.0
+        z = Vs[:, 2]
+        Vs[:, 2] = (z - 0.5 * (z.max() + z.min())) * (po.TWOD_SHAPE_THICKNESS / float(z.max() - z.min()))
     TV, TT, TF = po.tetrahedralize_shape(Vs, Fs)
     tets = torch.tensor(TV[TT], dtype=torch.float32)
     faces = torch.tensor(TV[TF], dtype=torch.float32)
@@ -131,7 +138,7 @@ def selftest(argv):
         t0 = time.time()
         res = fn(a.selftest, tets, faces, env, half, margin=a.margin, offset=a.offset,
                  rad_points=rp, rad_bins=rb, batch_size=a.batch_size, device=a.device,
-                 track_angle_pts=True)
+                 track_angle_pts=True, two_d=a.two_d)
         out[name] = res
         print('{:8s} {:.1f}s'.format(name, time.time() - t0), flush=True)
     labels = ['pairs', 'dists', 'angles', 'normals', 'trans_n', 'rot_n', 'ang_shape', 'ang_env']

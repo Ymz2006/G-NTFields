@@ -51,6 +51,8 @@ ap.add_argument('--kind', default='graph', choices=['graph', 'metric'],
                 help='graph: this repository\'s heads (graph_native loader); metric: the original metric NTFields '
                      'baseline (models/metric of the self-contained bundle at --metric-root)')
 ap.add_argument('--metric-root', default='/export')
+ap.add_argument('--save-paths', action='store_true',
+                help='also save the chosen plan of every case with its per-waypoint clearance (<out>_chosen.npz)')
 args = ap.parse_args()
 
 sys.path.insert(0, args.lie_root)
@@ -109,8 +111,8 @@ meta = json.load(open(os.path.join(args.dataPath, 'meta.json')))
 
 def _resolve(path):
     cands = [path, os.path.join(args.dataPath, os.path.basename(path)),
-             os.path.join(args.lie_root, 'datasets/3dshape/data/obj', os.path.basename(path)),
-             os.path.join(args.graph_root, 'datasets/3dshape/data/obj', os.path.basename(path))]
+             os.path.join(args.lie_root, 'datasets/3dshape', os.path.basename(path)),
+             os.path.join(args.graph_root, 'datasets/3dshape/obj', os.path.basename(path))]
     for c in cands:
         if os.path.exists(c):
             return c
@@ -258,6 +260,7 @@ cross_all = crosses_seam(arr[:, 3:6], arr[:, 9:12])
 
 records = []
 t_plan = t_check = 0.0
+chosen_paths = {'case': [], 'path': [], 'clear': [], 'iters3': []}
 saved = {'case': [], 'full_plus': [], 'full_minus': [], 'iters3_plus': [], 'iters3_minus': [], 'succ_plus': [], 'succ_minus': []}
 for s in range(0, len(ok_idx), args.batch):
     idx = ok_idx[s:s + args.batch]
@@ -319,6 +322,16 @@ for s in range(0, len(ok_idx), args.batch):
         paths.append(np.concatenate([full[b, :end], goal[b:b + 1]], 0))
     fulls = [full[b] for b in range(len(idx))]
     clears_full = POOL.map(path_clearance, fulls) if POOL is not None else [path_clearance(P) for P in fulls]
+    if args.save_paths:
+        for b, i in enumerate(idx):
+            fp = np.full((args.steps + 1, DIM), np.nan, np.float32)
+            fp[:len(fulls[b])] = fulls[b]
+            cp = np.full(args.steps + 1, np.nan, np.float32)
+            cp[:len(clears_full[b])] = clears_full[b]
+            chosen_paths['case'].append(int(i))
+            chosen_paths['path'].append(fp)
+            chosen_paths['clear'].append(cp)
+            chosen_paths['iters3'].append(int(iters3[b]))
     sheet_ok = None
     if args.planner == 'dual':
         # SE(3) success of each sheet's own plan (collision-checked up to its first SE(3)-converged waypoint)
@@ -479,6 +492,11 @@ if args.planner == 'dual' and saved['case']:
                         succ_plus=np.array(saved['succ_plus']), succ_minus=np.array(saved['succ_minus']),
                         sheet_ok_plus=np.array([r['success_se3_plus'] for r in R]), sheet_ok_minus=np.array([r['success_se3_minus'] for r in R]),
                         sigma_star=np.array([r['sigma_star'] for r in R]))
+if args.save_paths:
+    np.savez_compressed(args.out[:-5] + '_chosen.npz', case=np.array(chosen_paths['case']),
+                        path=np.stack(chosen_paths['path']), clear=np.stack(chosen_paths['clear']),
+                        iters3=np.array(chosen_paths['iters3']), goal=arr[np.array(chosen_paths['case']), 6:],
+                        env_pts=env_pts.astype(np.float32), shape_V=shape_V.astype(np.float32), shape_F=shape_F)
 if POOL is not None:
     POOL.close()
 print(json.dumps(summary))

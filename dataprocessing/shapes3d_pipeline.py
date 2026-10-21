@@ -2,7 +2,11 @@
 
 Cells are ``<shape>_<env>`` for the five shapes on env5, env6 (tight) and env4
 (Ashape3d's env) by default; --shapes / --envs pick others (env7 / env8: env5
-with a 60 / 70 window).  Per cell:
+with a 60 / 70 window; env9: env6 with 70 x 70 windows), --cells lists cells
+outright.  Envs named 2d* are planar (make_sofa2d.py): every step gets --2d, and
+the test set is drawn larger and cut to its pairs whose start and goal are
+connected (check_sofa2d.py filter); their test and shard jobs sample with
+preprocess_obj_2dgrid.py (grid-guided proposals, same distribution).  Per cell:
 
   test   1000 start/goal pairs: original preprocess_obj.py --testing_data --offset 0.02
   shard  4 x 200k training pairs: preprocess_obj_fast.py via preprocess_sharded.py
@@ -20,6 +24,7 @@ GPU jobs start only on a GPU with enough free memory and fewer than
     python3 dataprocessing/shapes3d_pipeline.py            # run / resume the queue
     python3 dataprocessing/shapes3d_pipeline.py --status   # print job states
     python3 dataprocessing/shapes3d_pipeline.py --shapes tripod3d,loop3d --envs env7,env8
+    python3 dataprocessing/shapes3d_pipeline.py --cells Usofa2d_2dhall30,Usofa2d_2dhall34
 """
 import argparse
 import json
@@ -40,6 +45,8 @@ SHARDS = 4
 TRAIN_N = 800000
 TRAIN_BS = 1000
 TEST_N = 1000
+TEST_N_2D = 4000         # drawn before the connectivity filter keeps TEST_N
+TRAIN_BS_2D = 500
 EPOCHS = 4000
 SEED_TAG = 's1'
 
@@ -47,8 +54,15 @@ SEED_TAG = 's1'
 NEED = {'test': 5000, 'shard': 7500, 'train': 3500, 'eval': 10000}
 
 
+CELLS = []               # --cells: replaces the SHAPES x ENVS grid
+
+
 def cells():
-    return ['{}_{}'.format(s, e) for e in ENVS for s in SHAPES]
+    return list(CELLS) or ['{}_{}'.format(s, e) for e in ENVS for s in SHAPES]
+
+
+def planar(cell):
+    return cell.split('_')[1].startswith('2d')
 
 
 def job_list():
@@ -71,19 +85,25 @@ KIND_ORDER = {'eval': 0, 'train': 1, 'merge': 2, 'test': 3, 'shard': 4}
 
 def command(job, kind, cell):
     shape, env = cell.split('_')
+    two_d = ' --2d' if planar(cell) else ''
     log = '/workspace/results/shapes3d/logs/{}.log'.format(job)
     if kind == 'test':
-        cmd = ('python -u /lieshape/dataprocessing/preprocess_obj.py --env datasets/3dshape/obj/{env}.obj '
+        script = 'dataprocessing/preprocess_obj_2dgrid.py' if two_d else '/lieshape/dataprocessing/preprocess_obj.py'
+        cmd = ('python -u ' + script + ' --env datasets/3dshape/obj/{env}.obj '
                '--shape datasets/3dshape/obj/{shape}.obj --out testing_data/3dshape/{cell} '
-               '--num_samples {n} --testing_data --offset 0.02 --batch_size 250 --visualize --device cuda:0'
-               ).format(env=env, shape=shape, cell=cell, n=TEST_N)
+               '--num_samples {n} --testing_data --offset 0.02 --batch_size 250 --visualize --device cuda:0{two_d}'
+               ).format(env=env, shape=shape, cell=cell, n=TEST_N_2D if two_d else TEST_N, two_d=two_d)
+        if two_d:
+            cmd += (' && python -u dataprocessing/check_sofa2d.py filter --data testing_data/3dshape/{cell} '
+                    '--keep {n}').format(cell=cell, n=TEST_N)
     elif kind == 'shard':
         i = int(job.rsplit('_', 1)[1])
         cmd = ('PREPROCESS_OBJ=/lieshape/dataprocessing/preprocess_obj.py python -u dataprocessing/preprocess_sharded.py run '
-               '--script dataprocessing/preprocess_obj_fast.py --shard {i} --shards {S} --env_seed 1 -- '
+               '--script dataprocessing/preprocess_obj_{fast}.py --shard {i} --shards {S} --env_seed 1 -- '
                '--env datasets/3dshape/obj/{env}.obj --shape datasets/3dshape/obj/{shape}.obj '
-               '--out datasets/3dshape/data/{cell} --num_samples {n} --batch_size {bs} --visualize --device cuda:0'
-               ).format(i=i, S=SHARDS, env=env, shape=shape, cell=cell, n=TRAIN_N, bs=TRAIN_BS)
+               '--out datasets/3dshape/data/{cell} --num_samples {n} --batch_size {bs} --visualize --device cuda:0{two_d}'
+               ).format(i=i, S=SHARDS, env=env, shape=shape, cell=cell, n=TRAIN_N, fast='2dgrid' if two_d else 'fast',
+                        bs=TRAIN_BS_2D if two_d else TRAIN_BS, two_d=two_d)
     elif kind == 'merge':
         cmd = ('PREPROCESS_OBJ=/lieshape/dataprocessing/preprocess_obj.py python -u dataprocessing/preprocess_sharded.py merge '
                '--script /lieshape/dataprocessing/preprocess_obj.py --shards {S} --env_seed 1 '
@@ -101,8 +121,8 @@ def command(job, kind, cell):
         cmd = ('cd /lieshape && ck=$(ls {run}/Model_Epoch_0{ep:04d}_*.pt) && OMP_NUM_THREADS=1 python -u '
                'analysis/plan_eval.py --kind metric --checkpoint $ck --dataPath /workspace/testing_data/3dshape/{cell} '
                '--out /workspace/results/shapes3d/plan/{cell}_metric_{tag}.json --device cuda:0 '
-               '--batch 125 --workers 8 --seed 0 2>&1 | grep -v "UserWarning\\|warnings.warn"'
-               ).format(run=run, ep=EPOCHS, cell=cell, tag=SEED_TAG)
+               '--batch 125 --workers 8 --seed 0{two_d} 2>&1 | grep -v "UserWarning\\|warnings.warn"'
+               ).format(run=run, ep=EPOCHS, cell=cell, tag=SEED_TAG, two_d=two_d)
     rc = '/workspace/results/shapes3d/jobs/{}.rc'.format(job)
     return 'set -o pipefail; ( {cmd} ) > {log} 2>&1; echo $? > {rc}'.format(cmd=cmd, log=log, rc=rc)
 
@@ -128,7 +148,10 @@ def gpu_free():
                           '--format=csv,noheader,nounits'], capture_output=True, text=True).stdout
     free = {}
     for line in out.strip().splitlines():
-        i, u, t = (int(x) for x in line.split(','))
+        try:
+            i, u, t = (int(x) for x in line.split(','))
+        except ValueError:         # e.g. 'Unable to determine the device handle' for a GPU that fell off the bus
+            continue
         free[i] = t - u
     return free
 
@@ -161,11 +184,13 @@ def main():
     ap.add_argument('--settle', type=int, default=90, help='seconds to wait after a GPU launch')
     ap.add_argument('--retries', type=int, default=2)
     ap.add_argument('--shapes', default=','.join(SHAPES), help='comma-separated subset of shapes')
-    ap.add_argument('--envs', default=','.join(ENVS), help='comma-separated envs (env4..env8)')
+    ap.add_argument('--envs', default=','.join(ENVS), help='comma-separated envs (env4..env9)')
+    ap.add_argument('--cells', default='', help='comma-separated <shape>_<env> cells (overrides --shapes / --envs)')
     ap.add_argument('--status', action='store_true')
     args = ap.parse_args()
     SHAPES[:] = args.shapes.split(',')
     ENVS[:] = args.envs.split(',')
+    CELLS[:] = [c for c in args.cells.split(',') if c]
     for d in (JOBS, LOGS, os.path.join(OUT, 'plan')):
         os.makedirs(d, exist_ok=True)
     gpus = [int(g) for g in args.gpus.split(',')]

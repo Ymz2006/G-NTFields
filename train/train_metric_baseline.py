@@ -34,6 +34,9 @@ def main():
     ap.add_argument('--epochs', type=int, default=8000)
     ap.add_argument('--alpha', type=float, default=1.0)
     ap.add_argument('--device', default='cuda:0')
+    ap.add_argument('--td-weight', type=float, default=0.0,
+                    help='TD loss weight; the original metric NTFields (G-Shape-NTFields-old models/metric) uses 1e-3')
+    ap.add_argument('--normal-weight', type=float, default=0.0, help='normal-alignment loss weight; original 1e-3')
     ap.add_argument('--keep', default='4000', help='comma list of intermediate epochs whose checkpoints are kept')
     a = ap.parse_args()
 
@@ -53,7 +56,10 @@ def main():
     m.Params['Training']['Number of Epochs'] = a.epochs
     m.Params['Training']['Alpha'] = a.alpha
     m.Params['Training']['Seed'] = a.seed
-    print('data   : {}\noutput : {}\nseed   : {}  epochs {}  alpha {}'.format(a.dataPath, folder, a.seed, a.epochs, a.alpha), flush=True)
+    m.Params['Training']['TD weight'] = a.td_weight
+    m.Params['Training']['Normal weight'] = a.normal_weight
+    print('data   : {}\noutput : {}\nseed   : {}  epochs {}  alpha {}  td {}  normal {}'.format(
+        a.dataPath, folder, a.seed, a.epochs, a.alpha, a.td_weight, a.normal_weight), flush=True)
     t0 = time.time()
     m.train()
     wall = time.time() - t0
@@ -75,7 +81,8 @@ def main():
             os.remove(os.path.join(folder, f))
     loss = [float(x) for x in m.total_train_loss] if hasattr(m, 'total_train_loss') else []
     with open(os.path.join(folder, 'train_summary.json'), 'w') as fh:
-        json.dump({'wall_time_s': wall, 'epochs': a.epochs, 'seed': a.seed, 'alpha': a.alpha, 'dataPath': a.dataPath,
+        json.dump({'wall_time_s': wall, 'epochs': a.epochs, 'seed': a.seed, 'alpha': a.alpha, 'td_weight': a.td_weight,
+                   'normal_weight': a.normal_weight, 'dataPath': a.dataPath,
                    'final_checkpoint': os.path.basename(final) if final else None,
                    'final_loss': loss[-1] if loss else None, 'kept_epochs': sorted(keep)}, fh, indent=1)
 

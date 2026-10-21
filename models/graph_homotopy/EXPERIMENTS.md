@@ -364,3 +364,127 @@ Campaign totals (second request): 21 baseline trainings (9 standard, 12 hole cel
 trainings, 258 per-case evaluations (1000 cases each), 12 targeted and 9 through-the-hole sets (24270 formed pairs,
 15 unsolved within the RRT budget, none failed the exact re-walk), 9 hole cells; queue 12:13-21:03 with 4-7
 containers on the GPU throughout, no failed job.
+
+## H13: new shapes x env4-9, T / L / A x env1 / env3 (third request, design)
+
+Machine: three RTX 3090 (24 GB), 36 cores, image `pytorchserver:latest`; the Lie repo at
+`/media/jeffrey/Lie-Shape-NTFields` (/lieshape), the metric bundle rebuilt at `/media/4tbssd/jeffrey/export_metric`
+(Lie `models/metric_baseline` as `models/metric`, alpha 1.0; only import paths renamed). No checkpoint of H1-H12 is on
+this machine, so every model is trained here.
+
+Data: the five shapes of `dataprocessing/make_shapes3d.py` on env4..env9 (30 training cells, 800k pairs each, and the
+1000-pair standard test sets) brought over from G-Shape-NTFields-old into the new layout (`datasets/3dshape/data/<cell>`,
+meshes in `datasets/3dshape/obj`, `meta.json` paths rewritten), with the newer dataprocessing scripts of that repository
+(env9, the planar sofa pipeline) ported to the new paths. The T / L / A grid on env1 and env3: Tshape3d_env1 and
+Lshape3d_env3 existed; Lshape3d_env1, Ashape3d_env1, Tshape3d_env3, Ashape3d_env3 are preprocessed here
+(`preprocess_sharded.py`, 4 x 200k pairs, `preprocess_obj_fast.py`, offset 0.001); test sets: the Lie repo's standard
+sets and the targeted variants long / bigrot / tight / hard (H11; generated here for the four new cells).
+
+Runs: per cell and seed (0, 1, 2) the homotopy head (`--lift min --lift-far 0.5`, 8000 epochs) and the original metric
+NTFields (8000 epochs, epoch-4000 checkpoint kept); scored with `plan_eval_homotopy.py` on every set of the cell (homotopy
+base and dual planners, NTFields 8000 and 4000 epochs). 216 trainings, 720 evaluations. Queue
+`scripts/run_shapes_queue.py` (one GPU per job, memory-aware, seed tiers in order: the complete seed-0 comparison
+first); tables `scripts/aggregate_shapes.py` -> `results/graph_homotopy/summary/shapes_summary.md`. The old metric runs of
+G-Shape-NTFields-old (`results/shapes3d`: 4000 epochs, seed 1, Lie `analysis/plan_eval.py`, chart criterion) are quoted
+as a reference for the reproduction of the baseline.
+
+Throughput on this machine: 0.37 s / epoch for one homotopy run alone, 0.57 with six on a GPU, about 0.95 with eight
+trainings per GPU plus preprocessing (8000 epochs in about 2.1 h); NTFields 3.1 GB, homotopy 0.7 GB. Preprocessing at
+batch 1000 swung between 3 and 14 GB per shard (caching allocator) and pushed two trainings into an OOM at the start;
+shards were restarted at batch 500 with expandable segments.
+
+## H13 results (queue complete 2026-10-18 16:57; `results/graph_homotopy/summary/shapes_summary.md`)
+
+216 trainings and 720 evaluations, none failed. One trainer change during the run: `loop3d_env6_hminL_s0` hit a NaN loss
+at epoch 72 in every attempt and the trainer aborted; a non-finite epoch is now rolled back and repeated like any
+rejected one (abort after 20 in a row), as the original NTFields trainer does. The run recovered (NaN repeats at 72 and
+152) and trained to 8000. The evaluator's chart and SE(3) success coincide on these runs.
+
+SE(3) success %, mean over 3 seeds, homotopy dual / NTFields 8000:
+
+| env | tripod | crank | loop | twistI | chair | mean |
+|---|---|---|---|---|---|---|
+| env4 open | 98.1 / 88.7 | 98.6 / 89.2 | 96.3 / 85.0 | 98.9 / 88.5 | 98.2 / 88.8 | 98.0 / 88.0 |
+| env8 wall, 70 | 98.4 / 87.6 | 98.9 / 88.9 | 89.3 / 81.0 | 99.4 / 90.6 | 97.5 / 88.5 | 96.7 / 87.3 |
+| env7 wall, 60 | 82.2 / 72.3 | 88.1 / 75.4 | 64.0 / 53.3 | 92.8 / 85.8 | 86.9 / 71.1 | 82.8 / 71.6 |
+| env5 wall, 50 | 53.9 / 51.5 | 63.5 / 54.1 | 48.3 / 47.6 | 57.1 / 53.2 | 55.3 / 50.2 | 55.6 / 51.3 |
+| env9 2 walls, 70 | 94.5 / 67.5 | 96.0 / 68.4 | 88.7 / 62.7 | 95.0 / 76.1 | 96.0 / 67.4 | 94.1 / 68.4 |
+| env6 2 walls, 50 | 28.1 / 25.4 | 41.4 / 28.0 | 25.5 / 24.8 | 37.2 / 28.0 | 36.0 / 27.7 | 33.6 / 26.8 |
+
+- The dual planner is ahead in all 30 shape cells; every seed-matched McNemar test p < 1e-4 (smallest margins loop3d
+  env5 / env6, +24 / -3 and +20 / -0).
+- The gap is in the window crossings: one partition crossed, dual / NTFields 93.5 / 76.7 (env8), 65.9 / 45.5 (env7),
+  11.0 / 4.2 (env5); env9 two partitions 87.2 / 32.3. Same-side cases are 97-100 for both. At 50-unit windows (env5,
+  env6) both mostly fail to cross (env6 two partitions 1.9 / 0.0); the homotopy head nearly always converges there and fails
+  on collisions (non-convergence 1-42 %), NTFields also fails to converge in 55-68 % of env6 cases.
+- The NTFields 4000-epoch numbers reproduce the old G-Shape-NTFields-old runs within a few points on most cells
+  (larger differences: env9 loop / chair 58.8 / 64.9 vs 68.7 / 76.1).
+- T / L / A, mean of the 6 scenes, dual / NTFields 8000: std 99.0 / 85.0, long 98.8 / 71.7, bigrot 99.3 / 84.9,
+  tight 96.8 / 68.5, hard 97.1 / 57.3. The homotopy head stays at 95-99.7 on every targeted set; NTFields loses 13-28
+  points on long / tight / hard.
+- Path length (median translation ratio to straight line, successes): 1.16-1.36 dual vs 1.23-1.44 NTFields.
+
+## H14: Gibson scene eastville, cube and small rectangle (2026-10-18; `shapes_summary.md` section 4)
+
+Cells cube_eastville and rect_small_eastville as preprocessed in G-Shape-NTFields-old (800k pairs, standard 1000-case
+test sets), seeds 0-5; queue `run_shapes_queue.py --grid gibson`. Homotopy head as H13 (8000 epochs, `--lift min`).
+Two NTFields configurations, because the old Gibson runs (results/gibson_metric) did not use the bundle: they trained
+G-Shape-NTFields-old `models/metric` with the TD and normal-alignment terms on (1e-3 each, alpha 1.0, 5000 epochs),
+while the bundle (Lie metric_baseline, used for every other cell here and for the old shapes runs) has both off.
+`train_metric_baseline.py` now takes `--td-weight` / `--normal-weight` (default 0). The evaluators agree: the old
+checkpoints score the same here as in the old evaluator (66.0 / 87.1, 6 seeds), and the bundle checkpoints the same
+in the old evaluator as here (seed 1: cube 54.0 in both, rect_small 74.1 in both).
+
+SE(3) success %, 6 seeds:
+
+| cell | homotopy dual | NTF+TD 8000 | NTF+TD 5000 | old NTF+TD 5000 | NTF (bundle) 8000 |
+|---|---|---|---|---|---|
+| cube_eastville | **84.6 +- 1.9** | 69.8 +- 3.3 | 67.2 | 66.0 | 54.1 |
+| rect_small_eastville | 74.0 +- 1.3 | **88.1 +- 1.7** | 87.3 | 87.1 | 75.9 |
+
+- Cube: the homotopy head is ahead of both (paired vs NTF+TD +1164 / -275, p 3e-130). Its failures are collisions
+  (10.7 %) and non-convergence (6.1 %); NTF+TD collides in 29.9 %.
+- Small rectangle: NTF+TD is ahead (paired +320 / -1168, p 2e-113), the bundle NTFields about level with the homotopy
+  head (+642 / -757, p 0.002). The homotopy head collides in 24.0 % against 9.8 % for NTF+TD: the first cell of these
+  campaigns where it is behind.
+- The TD and normal terms are worth +12 to +16 points for NTFields on this scene. The shapes and T / L / A comparisons
+  (H13) use the bundle, as the old shapes runs did; NTF+TD was not run there.
+
+## H15: the full metric NTFields (TD + normal terms) on the shapes and T / L / A cells (queue complete 2026-10-19 07:21; `shapes_summary.md` section 5)
+
+The H14 configuration (TD and normal-alignment terms 1e-3, 8000 epochs, epoch-4000 checkpoint) on all 36 cells of H13,
+seeds 0-2, GPUs 0 and 1 only: 108 trainings, 360 evaluations, none failed (about 11 h, 14 trainings at a time).
+
+| group | cells | homotopy dual | NTF+TD 8k | NTF 8k | dual ahead / behind (p < 0.01) |
+|---|---|---|---|---|---|
+| shapes, all envs | 30 | 76.8 | 68.1 | 65.6 | 30 / 0 |
+| shapes env4 / env8 / env7 | 5 each | 98.0 / 96.7 / 82.8 | 90.2 / 89.7 / 73.0 | 88.0 / 87.3 / 71.6 | 15 / 0 |
+| shapes env5 / env9 / env6 | 5 each | 55.6 / 94.1 / 33.6 | 51.5 / 76.5 / 27.7 | 51.3 / 68.4 / 26.8 | 15 / 0 |
+| T / L / A std / long / bigrot | 6 each | 99.0 / 98.8 / 99.3 | 86.7 / 75.0 / 86.9 | 85.0 / 71.7 / 84.9 | 18 / 0 |
+| T / L / A tight / hard | 6 each | 96.8 / 97.1 | 72.1 / 61.6 | 68.5 / 57.3 | 12 / 0 |
+
+The terms add 2-4 points on most groups and 8 on env9 (smaller than the 12-16 on eastville); the homotopy head stays
+ahead on all 30 shape cells and all 30 T / L / A sets (smallest margins loop3d env5 / env6: +18 / -3, +10 / -0). With
+H14 the only cell where it is behind remains rect_small_eastville.
+
+## H16. Lifted encoder: the homotopy head with its encoder on the double cover (2026-10-19/20)
+
+Arch `graph_homotopy_lift` (homotopy_decoder.HomotopyLiftNN): the encoder reads the lifted pose (t, q) (7-d Fourier
+features: the translation columns of the 12-d matrix, quaternion columns truncated normal std 0.2) and is run on both lifts
+(t, q), (t, -q); e_even = (f(q) + f(-q)) / 2 feeds E, rho, lam, e_odd = (f(q) - f(-q)) / 2 feeds Q = W e_odd (16 x 263).
+Deck invariance, symmetry, T(x, x) = 0, the conformal cone and the Lie gradients are tested (tests/test_graph_homotopy.py).
+Everything else as hminL (--lift min, 8000 epochs); same 36 cells x 3 seeds and Gibson x 6 seeds (run code hlift,
+run_shapes_queue.py --grid all). Summary section 6 of results/graph_homotopy/summary/shapes_summary.md.
+
+| group | sets | lifted dual | homotopy dual | NTF+TD 8k | lifted vs homotopy ahead / behind (p < 0.01) |
+|---|---|---|---|---|---|
+| shapes + T / L / A | 60 | 87.9 | 87.5 | 72.3 | 9 / 4 |
+| new shapes | 30 | 77.9 | 76.8 | 68.1 | 9 / 1 |
+| shapes env9 | 5 | 95.7 | 94.1 | 76.5 | 3 / 0 |
+| T / L / A | 30 | 98.0 | 98.2 | 76.4 | 0 / 3 |
+| cube_eastville | 1 | 85.4 | 84.6 | 69.8 | 0 / 0 |
+| rect_small_eastville | 1 | 78.6 | 74.0 | 88.1 | 1 / 0 |
+
+The lifted encoder helps where obstacles separate the classes (walled rooms, Gibson: fewer collisions, rect_small 24.0 ->
+17.4 %) and is level to slightly behind on the T / L / A sets, where both heads are near 98 %. It stays ahead of the full
+NTFields on all 60 shape / T / L / A sets; rect_small_eastville is still behind the full NTFields (78.6 vs 88.1).

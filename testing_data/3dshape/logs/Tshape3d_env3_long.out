@@ -1,0 +1,16 @@
+[load_obj] '/lieshape/datasets/3dshape/Tshape3d.obj': 1 objects/groups
+  [0] 'Body1'  (28 triangles)
+[load_obj] '/lieshape/datasets/3dshape/env3.obj': 4 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'Body14'  (12 triangles)
+  [2] 'Body16'  (12 triangles)
+  [3] 'Body17'  (12 triangles)
+scene Tshape3d_env3: shape radius 0.1938, half extent [0.444, 0.308, 0.49], sdf grid (134, 44, 134) (0.7s)
+[round 1] drawn 6000 in-band 598 formed 144 verified 144/144 (47s)  banked 144/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 6000 in-band 585 formed 153 verified 153/153 (47s)  banked 297/1000  rrt-fail 0 recheck-fail 0
+[round 3] drawn 6000 in-band 612 formed 159 verified 159/159 (57s)  banked 456/1000  rrt-fail 0 recheck-fail 0
+[round 4] drawn 6000 in-band 592 formed 150 verified 150/150 (45s)  banked 606/1000  rrt-fail 0 recheck-fail 0
+[round 5] drawn 6000 in-band 618 formed 143 verified 143/143 (45s)  banked 749/1000  rrt-fail 0 recheck-fail 0
+[round 6] drawn 6000 in-band 634 formed 147 verified 147/147 (44s)  banked 896/1000  rrt-fail 0 recheck-fail 0
+[round 7] drawn 6000 in-band 606 formed 135 verified 135/135 (32s)  banked 1000/1000  rrt-fail 0 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/Tshape3d_env3_long (425s): rel angle p50 102 p90 167; |dp| p50 0.63; min clearance p50 0.0290; rrt path length p50 1.00; straight blocked frac mean 0.32

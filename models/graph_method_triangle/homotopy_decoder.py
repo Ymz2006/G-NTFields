@@ -91,12 +91,14 @@ class HomotopyNN(PairValueModel, mng._Siamese):
     pair_hidden / pair_layers / pair_init   MLP width / depth / initial value of P
     """
     has_latent = False
+    IN_DIM = mng.FEATURE_DIM   # encoder input per pose: G(x) = (t, vec R)
+    ODD_WIDTH = 4              # W rows per odd coordinate: Q_m = sum_i q_i (W_i e)_m
 
     def __init__(self, B, s_t=1.0, s_r=1.0, h_size=256, nl1=2, normalize=False, skip_input=False, lip_cap=1.0,
                  res_even=16, res_odd=16, res_scale=1.0, conf=True, rho_init=0.5, lam_init=0.05, lam_min=1e-3,
                  pair_dim=0, pair_hidden=128, pair_layers=2, pair_init=0.05, **extra):
         PairValueModel.__init__(self, s_t, s_r)
-        assert B.shape[1] == mng.FEATURE_DIM, 'the homotopy head reads G(x) = (t, vec R)'
+        assert B.shape[1] == self.IN_DIM, 'encoder input width {} != {}'.format(B.shape[1], self.IN_DIM)
         self.enc = self.ENCODER(B.shape[1], B, h_size, nl1, normalize, skip_input, lip_cap,
                                 **self.encoder_extra(extra))
         self.me, self.mo = int(res_even), int(res_odd)
@@ -104,7 +106,7 @@ class HomotopyNN(PairValueModel, mng._Siamese):
         self.lam_min = float(lam_min)
         self.pair_dim = int(pair_dim)
         self.U = Linear(self.enc.out_dim, self.me, bias=False)
-        self.W = Linear(self.enc.out_dim, self.mo * 4, bias=False)
+        self.W = Linear(self.enc.out_dim, self.mo * self.ODD_WIDTH, bias=False)
         if self.conf:
             self.rho_head = Linear(self.enc.out_dim, 1)
             self.lam_head = Linear(self.enc.out_dim, 1)
@@ -228,9 +230,13 @@ class HomotopyNN(PairValueModel, mng._Siamese):
         a, c, s2, v = self.geometry(tx, qx, ty, qy)
         return self.sheet(a, c, s2, v, Tx, Ty)
 
+    def even_embedding(self, g):
+        """The q-even per-pose embedding the rho, lam and pair heads read."""
+        return self.enc(g)
+
     def endpoint_slope(self, g):
         """Cone slope factor at a goal p: lim T(p exp(eps xi), p) / (eps |xi|_g) = 1 + rho(p) + P(p, p)."""
-        e = self.enc(g)
+        e = self.even_embedding(g)
         s = torch.ones(g.shape[0], dtype=g.dtype, device=g.device)
         if self.conf:
             s = s + torch.nn.functional.softplus(self.rho_head(e)[:, 0])
@@ -244,6 +250,80 @@ class HomotopyNN(PairValueModel, mng._Siamese):
         return free_time(gx, gy, self.s_t, self.s_r)
 
 
+class HomotopyLiftNN(HomotopyNN):
+    """The homotopy head with the encoder on the double cover itself (arch ``graph_homotopy_lift``).
+
+    HomotopyNN encodes G(x) = (t, vec R), a function on SE(3), and makes the odd coordinates by hand,
+    Q = sum_i q_i W_i e(x). Here the encoder reads the lifted pose x~ = (t, q) in R^3 x S^3 and every pose is
+    fed with both of its lifts, x~ and -x~ = (t, -q) (one pair of poses = two lifts of the start and two of
+    the goal). The parity split of the encoder output
+
+        e_even(x) = (f(x~) + f(-x~)) / 2,      e_odd(x~) = (f(x~) - f(-x~)) / 2,     f = enc(t, q)
+
+    is a learned function on the cover that is exactly even / odd under the deck transformation, so the heads
+    keep HomotopyNN's invariants: E = U e_even, rho, lam (and the pair projection) read e_even, the odd
+    coordinates are Q(x~) = W e_odd(x~) with Q(-x~) = -Q(x~). Hence T~(-x~, -y~) = T~(x~, y~) (deck
+    invariance), T~(x~, -y~) is the other homotopy class, and the sheet formula, the fixed geometry and
+    T = min_sigma T~(x~, sigma y~) are HomotopyNN's unchanged.
+
+    Fourier matrix (in_dim 7): the translation columns are the ones of the 12-d matrix build_network made
+    (same frequencies as HomotopyNN), the quaternion columns are a fresh truncated normal with std sigma_q
+    (0.2 ~ the angular resolution of the 0.1 rotation-matrix columns: q moves at half the angle rate of R).
+    The skip input is (t, q), so e has h_size + 7 coordinates.
+    """
+    IN_DIM = 7
+    ODD_WIDTH = 1
+
+    def __init__(self, B, sigma_q=0.2, lift_seed=0, **kw):
+        g = torch.Generator().manual_seed(int(lift_seed) + 7)
+        Bq = torch.randn(B.shape[0], 4, generator=g)
+        bad = Bq.abs() > 2.0
+        while bad.any():
+            Bq[bad] = torch.randn(int(bad.sum()), generator=g)
+            bad = Bq.abs() > 2.0
+        super().__init__(torch.cat([B[:, :3], float(sigma_q) * Bq], 1), **kw)
+
+    def lift_embeddings(self, t, q):
+        """(e_even, e_odd) of the lifted poses (t, q): one encoder pass over both lifts."""
+        n = t.shape[0]
+        f = self.enc(torch.cat([torch.cat([t, q], -1), torch.cat([t, -q], -1)], 0))
+        return 0.5 * (f[:n] + f[n:]), 0.5 * (f[:n] - f[n:])
+
+    def lift_terms(self, t, q):
+        """pose_terms' dict for the lifted poses (t, q)."""
+        ee, eo = self.lift_embeddings(t, q)
+        out = {'ev': self.res_scale * self.U(ee), 'od': self.res_scale * self.W(eo), 'rho': None, 'lam': None,
+               'p': None}
+        if self.conf:
+            out['rho'] = torch.nn.functional.softplus(self.rho_head(ee)[:, 0])
+            out['lam'] = self.lam_min + torch.nn.functional.softplus(self.lam_head(ee)[:, 0])
+        if self.pair_dim:
+            out['p'] = self.pair_proj(ee)
+        return out
+
+    def pair_terms(self, tx, qx, ty, qy):
+        n = tx.shape[0]
+        T = self.lift_terms(torch.cat([tx, ty], 0), torch.cat([qx, qy], 0))
+        split = lambda v: (None, None) if v is None else (v[:n], v[n:])  # noqa: E731
+        parts = {k: split(v) for k, v in T.items()}
+        return {k: v[0] for k, v in parts.items()}, {k: v[1] for k, v in parts.items()}
+
+    def _lifted(self, gx, gy):
+        qx = quat_from_matrix(gx[:, 3:12].reshape(-1, 3, 3))
+        qy = quat_from_matrix(gy[:, 3:12].reshape(-1, 3, 3))
+        Tx, Ty = self.pair_terms(gx[:, :3], qx, gy[:, :3], qy)
+        return qx, qy, Tx, Ty
+
+    def value_cover(self, tx, qx, ty, qy):
+        Tx, Ty = self.pair_terms(tx, qx, ty, qy)
+        a, c, s2, v = self.geometry(tx, qx, ty, qy)
+        return self.sheet(a, c, s2, v, Tx, Ty)
+
+    def even_embedding(self, g):
+        return self.lift_embeddings(g[:, :3], quat_from_matrix(g[:, 3:12].reshape(-1, 3, 3)))[0]
+
+
 ARCHITECTURES = {
     'graph_homotopy': (HomotopyNN, mng.FEATURE_DIM),
+    'graph_homotopy_lift': (HomotopyLiftNN, mng.FEATURE_DIM),
 }
