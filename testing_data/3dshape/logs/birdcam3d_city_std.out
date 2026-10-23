@@ -1,0 +1,21 @@
+[load_obj] '/workspace/datasets/3dshape/obj/birdcam3d.obj': 1 objects/groups
+  [0] 'birdcam3d'  (110 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/city.obj': 7 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'building_1'  (12 triangles)
+  [2] 'building_2'  (12 triangles)
+  [3] 'building_3'  (12 triangles)
+  [4] 'building_4'  (12 triangles)
+  [5] 'building_5'  (12 triangles)
+  [6] 'building_6'  (12 triangles)
+scene birdcam3d_city: shape radius 0.2316, half extent [0.444, 0.308, 0.49], sdf grid (207, 65, 113) (13.4s)
+[round 1] drawn 6000 in-band 214 formed 107 verified 107/107 (262s)  banked 107/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 6000 in-band 231 formed 115 verified 115/115 (250s)  banked 222/1000  rrt-fail 0 recheck-fail 0
+[round 3] drawn 6000 in-band 247 formed 123 verified 123/123 (228s)  banked 345/1000  rrt-fail 0 recheck-fail 0
+[round 4] drawn 6000 in-band 233 formed 116 verified 116/116 (175s)  banked 461/1000  rrt-fail 0 recheck-fail 0
+[round 5] drawn 6000 in-band 217 formed 108 verified 108/108 (192s)  banked 569/1000  rrt-fail 0 recheck-fail 0
+[round 6] drawn 6000 in-band 254 formed 127 verified 127/127 (240s)  banked 696/1000  rrt-fail 0 recheck-fail 0
+[round 7] drawn 6000 in-band 263 formed 131 verified 131/131 (230s)  banked 827/1000  rrt-fail 0 recheck-fail 0
+[round 8] drawn 6000 in-band 231 formed 115 verified 115/115 (183s)  banked 942/1000  rrt-fail 0 recheck-fail 0
+[round 9] drawn 6000 in-band 227 formed 78 verified 78/78 (147s)  banked 1000/1000  rrt-fail 0 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/birdcam3d_city (2933s): rel angle p50 116 p90 168; |dp| p50 0.32; min clearance p50 0.0282; rrt path length p50 0.59; straight blocked frac mean 0.22

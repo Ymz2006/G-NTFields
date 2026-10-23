@@ -1,0 +1,401 @@
+<title>Stretchable Drone Link</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~70ch); figures and charts may run the full 1060px width. */
+:root {
+  --bg: #fbfcfd; --surface: #f1f4f7; --fg: #16202a; --muted: #56626e; --rule: #dce2e9; --accent: #2a78d6;
+  --s-ntf: #2a78d6; --s-ind: #eb6834; --s-dir: #1baf7a; --s-lr: #eda100;
+  --good: #1f7a4d; --bad: #c62f2f;
+  --obs: #d9d2c7; --obs-edge: #8f8579; --link: #1f7a4d; --link-fill: rgba(31, 122, 77, 0.16); --drone-a: #2a78d6;
+  --drone-b: #eb6834; --band: rgba(31, 122, 77, 0.18); --muted-line: #8a96a3; --clear: #c62f2f;
+  --f-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171c; --surface: #1b2228; --fg: #e8ecf0; --muted: #9eabb7; --rule: #2c3640; --accent: #3987e5;
+    --s-ntf: #3987e5; --s-ind: #d95926; --s-dir: #199e70; --s-lr: #c98500; --good: #4cc08a; --bad: #ef6b6b;
+    --obs: #3a3631; --obs-edge: #8f8579; --link: #4cc08a; --link-fill: rgba(76, 192, 138, 0.18); --drone-a: #3987e5;
+    --drone-b: #d95926; --band: rgba(76, 192, 138, 0.22); --muted-line: #73808c; --clear: #ef6b6b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171c; --surface: #1b2228; --fg: #e8ecf0; --muted: #9eabb7; --rule: #2c3640; --accent: #3987e5;
+  --s-ntf: #3987e5; --s-ind: #d95926; --s-dir: #199e70; --s-lr: #c98500; --good: #4cc08a; --bad: #ef6b6b;
+  --obs: #3a3631; --obs-edge: #8f8579; --link: #4cc08a; --link-fill: rgba(76, 192, 138, 0.18); --drone-a: #3987e5;
+  --drone-b: #d95926; --band: rgba(76, 192, 138, 0.22); --muted-line: #73808c; --clear: #ef6b6b; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--f-body); }
+.wrap { max-width: 1060px; margin: 0 auto; padding-block: 40px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 600; line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 4.5vw, 2.8rem); }
+h2 { font-size: 1.6rem; margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.2rem; margin-top: 28px; }
+p, ul { margin: 12px 0 0; }
+li + li { margin-top: 6px; }
+.byline { color: var(--muted); font-size: 0.95rem; margin-top: 10px; }
+.lede { font-size: 1.15rem; margin-top: 18px; }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+code { background: var(--surface); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.math { font-family: var(--f-mono); font-size: 0.9em; background: var(--surface); padding: 10px 14px; border-radius: 6px;
+  overflow-x: auto; white-space: pre; margin-top: 12px; }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px; margin-top: 28px; }
+.tile { background: var(--surface); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.tile .lab { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.tile .pair { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 1.45rem; margin-top: 6px; line-height: 1.2; }
+.tile .pair span.vs { color: var(--muted); font-size: 0.9rem; margin: 0 6px; }
+.tile .sub { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+.k-ntf { color: var(--s-ntf); } .k-ind { color: var(--s-ind); } .k-dir { color: var(--s-dir); }
+.tbl { overflow-x: auto; margin-top: 16px; }
+table { border-collapse: collapse; font-size: 0.92rem; min-width: 100%; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 600; color: var(--muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; white-space: normal; vertical-align: bottom; }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+figure { margin: 22px 0 0; }
+figure img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 6px; background: #fff; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 8px; max-width: 80ch; }
+.chart { margin-top: 18px; position: relative; overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.chart text { fill: var(--muted); font-family: var(--f-body); font-size: 12px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .rowlab { fill: var(--fg); }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 0.9rem; margin-top: 12px; color: var(--fg); }
+.tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--bg); font-size: 0.82rem; padding: 6px 9px; border-radius: 5px; white-space: nowrap; }
+.diagram { margin-top: 20px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.diagram text { font-family: var(--f-body); font-size: 13px; fill: var(--fg); }
+.diagram .m { fill: var(--muted); }
+.diagram .c { fill: var(--clear); }
+.note { background: var(--surface); border-radius: 8px; padding: 12px 16px; margin-top: 18px; font-size: 0.95rem; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<div class="wrap">
+<header class="col">
+  <h1>Stretchable Drone Link</h1>
+  <p class="byline">A box that stretches along one axis, planned in 7 DOF with metric NTFields · results of 2026-10-22 · repo <code>models/drone_link/</code></p>
+  <p class="lede">Two drones fly through a scene and must keep their radio link: see each other and stay in range. We plan them as one body, a box from drone a to drone b that stretches and shrinks between 0.06 and 0.30 (room units), so a pose is drone a's SE(3) pose plus one length. Regular metric NTFields, trained on speeds re-sampled in these 7 DOF, solves 68&nbsp;% of random link queries with the link valid the whole way, against 48&nbsp;% for independent drones and 40&nbsp;% for the direct motion. On the long crossing tasks it reaches only 26&nbsp;%: on long queries the planner stalls in local minima of the learned field. Making a fifth of the training pairs span the room fixes much of that in the forest and corridor, in all three seeds: their crossings rise from 16 to 54&nbsp;% and from 32 to 67&nbsp;%, their random queries from 71 to 83&nbsp;% and from 71 to 84&nbsp;%. In the scaffold it trades random queries for crossings (random 64 → 59&nbsp;%, crossings 13 → 23&nbsp;%). In the windows scene training fails in two of the three seeds (at most 0.7&nbsp;% solved), so the share is not yet safe to make part of the recipe.</p>
+</header>
+
+<div class="tiles" aria-label="Headline results">
+  <div class="tile"><div class="lab">Random queries</div><div class="pair"><span class="k-ntf">68</span><span class="vs">vs</span><span class="k-ind">48</span></div><div class="sub">% solved with the link valid all the way: NTFields vs independent drones, mean of 4 scenes</div></div>
+  <div class="tile"><div class="lab">Crossing tasks</div><div class="pair"><span class="k-ntf">26</span><span class="vs">vs</span><span class="k-ind">15</span></div><div class="sub">the same, on each scene's crossing task (long, through the obstacles)</div></div>
+  <div class="tile"><div class="lab">Line of sight lost</div><div class="pair"><span class="k-ind">70</span></div><div class="sub">% of crossing cases where independent drones lose sight of each other at least once</div></div>
+  <div class="tile"><div class="lab">Length used</div><div class="pair"><span class="k-ntf">50</span></div><div class="sub">% of solved crossings where NTFields shortens the link below both endpoint lengths</div></div>
+</div>
+<div class="legend" aria-hidden="true">
+  <span><span class="sw" style="background:var(--s-ntf)"></span>NTFields, 7 DOF (link planned as one body)</span>
+  <span><span class="sw" style="background:var(--s-ind)"></span>independent drones (each on its shortest path)</span>
+  <span><span class="sw" style="background:var(--s-dir)"></span>direct 7-DOF motion</span>
+</div>
+
+<section>
+<h2>The shape</h2>
+<div class="col">
+<p>The link is the box <i>[−w/2, w/2]² × [0, L]</i> in its own frame. Drone a sits at the body origin, the centre of the end face <i>z</i> = 0; drone b sits at <i>(0, 0, L)</i>, the centre of the far face. A pose is <i>(t, R, L)</i>: <i>t</i> is drone a's position, <i>R</i> turns <i>e<sub>z</sub></i> onto the direction from a to b, and <i>L</i> = |b − a| is the length from a outwards. The SE(3) part embeds drone a and the direction b − a; the seventh coordinate is the length.</p>
+<p>The box has width <i>w</i> = 0.02 (4.4 room units, a drone's size and the width of the line-of-sight beam). The length is limited to <i>[0.06, 0.30]</i>: the drones stay at least three widths apart and within radio range. If the box never touches the scene, neither drone hits anything and nothing ever blocks their line of sight. The limits act as walls of the seventh coordinate, exactly as the room walls do for the translation, and the planner also clamps <i>L</i> into them.</p>
+</div>
+<div class="diagram" role="img" aria-label="Diagram: drone a with its frame, the link box along the frame's z axis to drone b at distance L, an obstacle near the box at clearance c_scene, and a ruler of lengths with the allowed band from L_min = 0.06 to L_max = 0.30.">
+<svg viewBox="0 0 900 340">
+  <defs><marker id="dg-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--fg)"/></marker></defs>
+  <rect x="317.8" y="58.1" width="120.0" height="74.0" rx="3" fill="var(--obs)" stroke="var(--obs-edge)"/>
+  <text x="377.8" y="99.1" text-anchor="middle" class="m">obstacle</text>
+  <polygon points="128.2,221.2 558.2,131.2 561.8,148.8 131.8,238.8" fill="var(--link-fill)" stroke="var(--link)" stroke-width="1.6"/>
+  <line x1="394.8" y1="165.4" x2="387.8" y2="132.1" stroke="var(--clear)" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <text x="397.8" y="152.8" class="c">c_scene</text>
+  <line x1="130.0" y1="230.0" x2="198.5" y2="215.7" stroke="var(--fg)" stroke-width="1.5" marker-end="url(#dg-ar)"/>
+  <line x1="130.0" y1="230.0" x2="120.6" y2="185.0" stroke="var(--fg)" stroke-width="1.5" marker-end="url(#dg-ar)"/>
+  <text x="198.4" y="236.8">R e<tspan baseline-shift="sub" font-size="10">z</tspan></text>
+  <text x="89.8" y="175.1" class="m">R e<tspan baseline-shift="sub" font-size="10">y</tspan></text>
+  <circle cx="130.0" cy="230.0" r="8" fill="var(--drone-a)" stroke="var(--bg)" stroke-width="2"/>
+  <circle cx="560.0" cy="140.0" r="8" fill="var(--drone-b)" stroke="var(--bg)" stroke-width="2"/>
+  <text x="130.0" y="260.0" text-anchor="middle">drone a = t</text>
+  <text x="574.0" y="166.0">drone b = t + L R e<tspan baseline-shift="sub" font-size="10">z</tspan></text>
+  <text x="269.0" y="237.0" class="m">width w = 0.02</text>
+  <line x1="160.0" y1="300.0" x2="760.0" y2="300.0" stroke="var(--muted-line)"/>
+  <rect x="260.0" y="294.0" width="400.0" height="12" fill="var(--band)"/>
+  <line x1="260.0" y1="288.0" x2="260.0" y2="312.0" stroke="var(--fg)" stroke-width="1.4"/>
+  <line x1="660.0" y1="288.0" x2="660.0" y2="312.0" stroke="var(--fg)" stroke-width="1.4"/>
+  <circle cx="510.0" cy="300.0" r="5" fill="var(--link)"/>
+  <text x="260.0" y="330.0" text-anchor="middle">L_min 0.06</text>
+  <text x="660.0" y="330.0" text-anchor="middle">L_max 0.30</text>
+  <text x="510.0" y="330.0" text-anchor="middle" class="m">L</text>
+  <text x="160.0" y="330.0" class="m">length</text>
+  <text x="600" y="60">pose (t, R, L): 6 DOF of SE(3) + 1 length</text>
+  <text x="600" y="84" class="m">clearance c = min(c_scene, L − L_min, L_max − L)</text>
+  <text x="600" y="108" class="m">c ≥ 0: drones clear, line of sight clear,</text>
+  <text x="600" y="128" class="m">length allowed</text>
+</svg>
+</div>
+</section>
+
+<section>
+<h2>The speed, re-sampled in 7 DOF</h2>
+<div class="col">
+<p>The networks read the chart <code>x = (t, rotvec(R) / 2π, L)</code>: the SE(3) chart used by every model in this repository plus the length in room units, so stretching the link by d<i>L</i> costs as much as moving drone a by d<i>L</i>. The clearance of a pose is exact (oriented box against axis-aligned boxes) and folds in the length limits:</p>
+</div>
+<div class="math">c       = min(c_scene(t, R, L), L − L_min, L_max − L)
+s_dist  = clip(c / 0.05, 0.02, 1)
+s_angle = smallest angle about drone a between a link point and a scene point
+          in the same radial shell (shells of the box of length L), divided by π
+speed   = (s_dist + s_angle) / 2            the speed metric NTFields trains on</div>
+<div class="col">
+<p>These are the formulas of the existing SE(3) preprocessing, with the box of each pose's own length. The clearance normal, used by NTFields' normal-alignment term, is the 7-d gradient of <i>c</i>; its length component is <i>ζ n·Re<sub>z</sub></i> for a witness point at fraction <i>ζ</i> of the box (checked against finite differences). Per scene, 800k training pairs: <i>x0</i> uniform (drone a in the room, <i>R</i> uniform, <i>L</i> uniform) inside the band 0.001 &lt; <i>c</i> &lt; 0.05, and <i>x1</i> = <i>x0</i> moved in the 6-d SE(3) chart as in the existing sampler, with a fresh uniform length. 28–44&nbsp;% of the band samples sit at a length limit rather than near an obstacle.</p>
+<p>The model is the original metric NTFields, unchanged except that its input is 7-d: the full recipe of the camera test (TD and normal-alignment terms 1e-3), 8000 epochs, three seeds. Planning uses the same MPPI as every SE(3) evaluation here (50 samples, horizon 5, step 0.015), with <i>L</i> clamped to its limits.</p>
+</div>
+</section>
+
+<section>
+<h2>Four scenes</h2>
+<div class="col">
+<p>All four use the room of env3 (198 × 138 × 218 units). Each breaks the line of sight between two drones in a different way.</p>
+<ul>
+  <li><b>forest</b>: the forest from the camera test, unchanged. Four trees with 12-unit trunks and 30-unit crowns between heights 90 and 120.</li>
+  <li><b>windows</b>: a wall across the room with two 40 × 40 windows, one low and one high. The two rooms see each other only through the windows.</li>
+  <li><b>corridor</b>: two full-height walls make a serpentine corridor of three 67-unit legs. Line of sight has to go around the corners.</li>
+  <li><b>scaffold</b>: a lattice of 3 × 3 columns and beams across the room at two heights.</li>
+</ul>
+</div>
+<figure><img src="img/scenes.png" alt="The four scenes in the same room: forest (four trees), windows (a wall with two windows), corridor (two walls forming a serpentine), scaffold (a lattice of columns and beams), each with a few example link poses drawn as green segments between a blue and an orange drone."><figcaption>The four scenes, each with a few start poses of its crossing set (green: the link; blue: drone a; orange: drone b).</figcaption></figure>
+<div class="col">
+<p>Two test sets per scene, 1000 cases each, both ends at least 0.02 from the scene and from the length limits. <b>Random</b> draws both poses uniformly. <b>Crossing</b> is the scene's signature task: both drones start in one region and end in the other (in front of the trees and behind them; front room and back room; first leg and last leg; the two sides of the lattice). Every case is certified solvable in the 7-d space with the link kept valid: a 60k-node roadmap per scene, built on the GPU with the exact clearance, solved all 8000 cases. The certified paths are the proof that a link-keeping plan exists, not a competitor.</p>
+<p><b>Independent drones</b> is the link-unaware baseline. Each drone flies its own shortest collision-free path; both leave together and arrive together. We then score the link along the way. The <b>direct motion</b> moves drone a in a straight line, slerps the orientation and interpolates the length.</p>
+</div>
+</section>
+
+<section>
+<h2>Results</h2>
+<div class="col"><p>Share of cases solved with the link valid the whole way: the drones reach their goals, never touch the scene, always see each other and keep an allowed distance. NTFields is the mean of 3 seeds with a ± one-standard-deviation whisker. Hover a row for the failure split.</p></div>
+<div class="legend" aria-hidden="true"><span><span class="sw" style="background:var(--s-ntf)"></span>NTFields, 7 DOF</span><span><span class="sw" style="background:var(--s-ind)"></span>independent drones</span><span><span class="sw" style="background:var(--s-dir)"></span>direct 7-DOF motion</span></div>
+<div class="chart" id="chart-main"></div>
+<div class="tbl"><table><thead><tr><th>Scene · set</th><th>Direct motion</th><th>Independent drones</th><th>NTFields (7 DOF)</th><th>Collision</th><th>Stall</th><th>Seeds</th></tr></thead><tbody>
+<tr><td>forest · random</td><td class="num">47</td><td class="num">55</td><td class="num">70.8 ± 2.2</td><td class="num">10</td><td class="num">26</td><td class="num">3</td></tr>
+<tr><td>forest · crossing</td><td class="num">12</td><td class="num">24</td><td class="num">15.7 ± 3.1</td><td class="num">29</td><td class="num">83</td><td class="num">3</td></tr>
+<tr><td>windows · random</td><td class="num">51</td><td class="num">55</td><td class="num">66.7 ± 2.3</td><td class="num">24</td><td class="num">25</td><td class="num">3</td></tr>
+<tr><td>windows · crossing</td><td class="num">2</td><td class="num">21</td><td class="num">43.1 ± 4.9</td><td class="num">48</td><td class="num">39</td><td class="num">3</td></tr>
+<tr><td>corridor · random</td><td class="num">33</td><td class="num">38</td><td class="num">71.4 ± 2.6</td><td class="num">21</td><td class="num">25</td><td class="num">3</td></tr>
+<tr><td>corridor · crossing</td><td class="num">0</td><td class="num">3</td><td class="num">32.3 ± 4.1</td><td class="num">57</td><td class="num">63</td><td class="num">3</td></tr>
+<tr><td>scaffold · random</td><td class="num">27</td><td class="num">42</td><td class="num">63.6 ± 1.3</td><td class="num">27</td><td class="num">23</td><td class="num">3</td></tr>
+<tr><td>scaffold · crossing</td><td class="num">2</td><td class="num">11</td><td class="num">13.2 ± 5.2</td><td class="num">52</td><td class="num">79</td><td class="num">3</td></tr>
+</tbody></table></div>
+<div class="col"><ul>
+<li><b>Random queries.</b> NTFields solves 64–71&nbsp;% of the cases in each scene: 11–33 points more than independent drones and 16–39 more than the direct motion.</li>
+<li><b>Crossings.</b> NTFields drops to 13–43&nbsp;% (scaffold 13&nbsp;% to windows 43&nbsp;%). Where the line of sight must go around corners it still beats ignoring the link by far (corridor: 32&nbsp;% against 3&nbsp;% for independent drones and 0&nbsp;% for the direct motion). In the open forest the independent drones do better (24&nbsp;% against 16&nbsp;%): the drones rarely need each other there, and NTFields stalls on the long trips.</li>
+<li><b>How it fails.</b> A collision is a plan whose link crosses an obstacle somewhere; a stall is a plan that does not converge within 600 steps. They overlap: 36&nbsp;% of all failures are stalls without a collision (most of the forest's), 48&nbsp;% cross an obstacle and then stall (most of the corridor's: through a partition wall), 16&nbsp;% reach the goal through an obstacle (windows: through a window frame).</li>
+<li><b>It uses the length.</b> In 36–58&nbsp;% of the solved cases the link gets shorter than at both ends by more than 0.02 somewhere along the way, most often to squeeze past an obstacle or a window frame.</li>
+</ul></div>
+</section>
+
+<section>
+<h2>Signal contact without the link</h2>
+<div class="col"><p>How independent shortest paths lose the link. Contact means the drones see each other within range; the last column also requires the minimum separation.</p></div>
+<div class="tbl"><table><thead><tr><th>Scene · set</th><th>Contact,&nbsp;% of time</th><th>Line of sight lost,&nbsp;% of cases</th><th>Out of range,&nbsp;% of cases</th><th>Too close,&nbsp;% of cases</th><th>Link valid all the way,&nbsp;% of cases</th></tr></thead><tbody>
+<tr><td>forest · random</td><td class="num">93</td><td class="num">31</td><td class="num">0</td><td class="num">16</td><td class="num">55</td></tr>
+<tr><td>forest · crossing</td><td class="num">89</td><td class="num">63</td><td class="num">1</td><td class="num">25</td><td class="num">24</td></tr>
+<tr><td>windows · random</td><td class="num">96</td><td class="num">23</td><td class="num">6</td><td class="num">26</td><td class="num">55</td></tr>
+<tr><td>windows · crossing</td><td class="num">90</td><td class="num">50</td><td class="num">14</td><td class="num">39</td><td class="num">21</td></tr>
+<tr><td>corridor · random</td><td class="num">95</td><td class="num">44</td><td class="num">0</td><td class="num">32</td><td class="num">38</td></tr>
+<tr><td>corridor · crossing</td><td class="num">90</td><td class="num">90</td><td class="num">0</td><td class="num">46</td><td class="num">3</td></tr>
+<tr><td>scaffold · random</td><td class="num">91</td><td class="num">42</td><td class="num">0</td><td class="num">22</td><td class="num">42</td></tr>
+<tr><td>scaffold · crossing</td><td class="num">87</td><td class="num">78</td><td class="num">0</td><td class="num">29</td><td class="num">11</td></tr>
+</tbody></table></div>
+<div class="col"><ul>
+<li>On average, independent drones keep contact 87–96&nbsp;% of the time, which looks fine. But they lose sight of each other at least once in 23–90&nbsp;% of the cases, and come closer than the minimum separation in 16–46&nbsp;% of them. Range matters mostly in the windows scene, where the two drones often pick different windows (out of range in 14&nbsp;% of its crossings).</li>
+<li>A plan NTFields completes keeps contact 100&nbsp;% of the time by construction, since the link is part of the body it plans. Its failed plans are not a usable alternative: they cross an obstacle or stop short, so the planner should report failure there rather than fly them.</li>
+<li>The certified roadmap paths exist for every case: a link-keeping motion was always available. Their drone paths are 5–13&nbsp;% longer than the independent shortest paths (median, crossing sets): that is the price of the link.</li>
+</ul></div>
+</section>
+
+<section>
+<h2>What the plans look like</h2>
+<div class="col"><p>One crossing case per scene that NTFields solves, chosen where the independent drones keep the link for the shortest time. Left: the NTFields plan, with the link drawn at evenly spaced moments (drone a blue, drone b orange). Right: the independent drones, with the link red wherever the drones cannot see each other. Below: the link length over time against the allowed band, and the contact timeline of both.</p></div>
+<h3>forest</h3><figure><img src="img/showcase_forest.png" alt="Two 3-D views of the forest scene with one crossing case: the NTFields plan with green link segments, and the independent drones with red link segments where they lose sight; below, the link length over time and the contact timelines."><figcaption>Forest. The NTFields plan keeps the link clear of trunks and crowns all the way. The independent drones fly one under and one over the canopy, and the crowns come between them twice.</figcaption></figure><h3>windows</h3><figure><img src="img/showcase_windows.png" alt="Two 3-D views of the windows scene with one crossing case: the NTFields plan with green link segments, and the independent drones with red link segments where they lose sight; below, the link length over time and the contact timelines."><figcaption>Windows. NTFields shortens the link from 0.27 to about 0.13 while the pair passes the wall, then stretches it again. The independent drones drift apart (up to 0.42, beyond the 0.30 range) and lose each other for most of the crossing.</figcaption></figure><h3>corridor</h3><figure><img src="img/showcase_corridor.png" alt="Two 3-D views of the corridor scene with one crossing case: the NTFields plan with green link segments, and the independent drones with red link segments where they lose sight; below, the link length over time and the contact timelines."><figcaption>Corridor. Both plans go around the two walls. NTFields shortens the link to about 0.09 and keeps both drones on the same side of every corner; the independent drones cut each corner separately, so a wall comes between them twice.</figcaption></figure><h3>scaffold</h3><figure><img src="img/showcase_scaffold.png" alt="Two 3-D views of the scaffold scene with one crossing case: the NTFields plan with green link segments, and the independent drones with red link segments where they lose sight; below, the link length over time and the contact timelines."><figcaption>Scaffold. NTFields squeezes the link down to its 0.06 minimum to thread the lattice. The independent drones lose sight of each other behind columns and beams for more than half of the flight.</figcaption></figure>
+</section>
+
+<section>
+<h2>Why NTFields fails the crossings</h2>
+<div class="col"><p>Success falls with the distance drone a has to travel, pooled over scenes, sets and seeds. Hover a point for the numbers.</p></div>
+<div class="legend" aria-hidden="true"><span><span class="sw" style="background:var(--s-ntf)"></span>NTFields, 7 DOF</span><span><span class="sw" style="background:var(--s-ind)"></span>independent drones</span><span><span class="sw" style="background:var(--s-dir)"></span>direct 7-DOF motion</span></div>
+<div class="chart" id="chart-dist"></div>
+<div class="col"><ul>
+<li><b>Stalls, not slow plans.</b> A stalled forest crossing covers a median 4&nbsp;% of the distance to its goal and then jitters in place for the rest of its 600 steps: the planner sits in a local minimum of the learned travel time.</li>
+<li><b>The field is right on average but bumpy.</b> Along each case's certified path, the learned travel time tracks the remaining path length (correlation 0.95–0.99). In the forest and the scaffold, stalled cases have 15&nbsp;% and 12&nbsp;% of the steps along their certified path going uphill, against 5&nbsp;% and 6&nbsp;% for solved cases: bumps a local descent cannot cross. In the corridor and the windows the field along the valid route is as smooth for failed cases as for solved ones (2&nbsp;% and 2&nbsp;% uphill); there the descent leaves the route through a wall, where the field leaks, and stalls on the other side.</li>
+<li><b>The training pairs barely reach crossing distances.</b> Drone a moves a median 0.18–0.19 between the two poses of a training pair, and more than 0.7 in only 2.6–3.2&nbsp;% of the pairs: the SE(3) displacement of the sampler spends half its length on rotation, and long moves leave the room. The crossings need 0.7–1.2. Making a fifth of them long-range lifts the crossings in the forest from 16 to 54&nbsp;%, in the corridor from 32 to 67&nbsp;% (three seeds each); making half of them long-range breaks the field in the forest, windows and scaffold scenes (ablations below).</li>
+<li><b>The planner is not the bottleneck.</b> On 200 forest crossings, four times the MPPI samples and three times the horizon move success from 12.0&nbsp;% to 14.5&nbsp;%.</li>
+<li><b>Training longer helps the long queries most.</b> From 4000 to 8000 epochs the crossings go from 19.0&nbsp;% to 26.1&nbsp;% on average, the random sets from 63.9&nbsp;% to 68.1&nbsp;%.</li>
+</ul></div>
+</section>
+
+<section>
+<h2>Ablations</h2>
+<div class="col"><p>The variant that changes the most, a fifth of the training pairs long-range, against the recipe: one dot per training seed, the same cases for both. Hover a row for the numbers; the table below lists every variant.</p></div>
+<div class="legend" aria-hidden="true"><span><span class="sw" style="background:var(--s-ntf)"></span>NTFields recipe</span><span><span class="sw" style="background:var(--s-lr)"></span>a fifth of the training pairs long-range</span></div>
+<div class="chart" id="chart-seeds"></div>
+<div class="tbl"><table><thead><tr><th>Scene · set</th><th>8000 epochs (seeds)</th><th>4000 epochs (seeds)</th><th>Without TD / normal terms (seed 0)</th><th>Recipe, seed 0</th><th>Band on scene clearance (seed 0)</th><th>Long-range pairs, half (seed 0)</th><th>Long-range pairs, a fifth (seeds)</th></tr></thead><tbody>
+<tr><td>forest · random</td><td class="num">70.8 ± 2.2</td><td class="num">68.4 ± 3.1</td><td class="num">0.2</td><td class="num">72.9</td><td class="num">75.0</td><td class="num">14.0</td><td class="num">82.9 ± 1.6</td></tr>
+<tr><td>forest · crossing</td><td class="num">15.7 ± 3.1</td><td class="num">13.1 ± 2.8</td><td class="num">0.0</td><td class="num">13.1</td><td class="num">13.7</td><td class="num">0.3</td><td class="num">53.7 ± 0.6</td></tr>
+<tr><td>windows · random</td><td class="num">66.7 ± 2.3</td><td class="num">62.0 ± 3.0</td><td class="num">0.3</td><td class="num">69.9</td><td class="num">71.9</td><td class="num">1.1</td><td class="num">23.1 ± 31.7</td></tr>
+<tr><td>windows · crossing</td><td class="num">43.1 ± 4.9</td><td class="num">32.0 ± 4.5</td><td class="num">0.0</td><td class="num">49.5</td><td class="num">51.7</td><td class="num">0.0</td><td class="num">12.6 ± 17.9</td></tr>
+<tr><td>corridor · random</td><td class="num">71.4 ± 2.6</td><td class="num">65.7 ± 4.5</td><td class="num">0.5</td><td class="num">72.9</td><td class="num">74.6</td><td class="num">84.5</td><td class="num">83.5 ± 2.2</td></tr>
+<tr><td>corridor · crossing</td><td class="num">32.3 ± 4.1</td><td class="num">19.2 ± 7.6</td><td class="num">0.0</td><td class="num">38.0</td><td class="num">41.0</td><td class="num">72.1</td><td class="num">66.8 ± 3.2</td></tr>
+<tr><td>scaffold · random</td><td class="num">63.6 ± 1.3</td><td class="num">59.2 ± 0.8</td><td class="num">59.8</td><td class="num">65.4</td><td class="num">62.1</td><td class="num">32.3</td><td class="num">59.5 ± 1.9</td></tr>
+<tr><td>scaffold · crossing</td><td class="num">13.2 ± 5.2</td><td class="num">11.8 ± 5.5</td><td class="num">15.8</td><td class="num">19.7</td><td class="num">17.4</td><td class="num">6.3</td><td class="num">23.3 ± 2.6</td></tr>
+</tbody></table></div>
+<div class="col"><p>Against the recipe on the same cases: seed 0 against seed 0, except a fifth of the pairs long-range, which was trained with all three seeds.</p><ul>
+<li><b>Without the TD and normal-alignment terms</b> (the bundle's default metric NTFields). Training fails in the forest, windows and corridor scenes: those fields solve 0.2–0.5&nbsp;% of the random cases and 0.0&nbsp;% of the crossings, against 70–73&nbsp;% and 13–50&nbsp;% with the terms. Their Eikonal residual stops at 4.5–5.3&nbsp;×&nbsp;10<sup>−3</sup>, against 1.0–1.3&nbsp;×&nbsp;10<sup>−3</sup> with the terms. The field comes out slow and bumpy: along the certified paths of random cases its travel time is 15–21 per unit of path length (with the terms 1.4–2.0), as if the whole room were next to an obstacle, and 32–38&nbsp;% of the steps go uphill (with the terms 0–7&nbsp;%). The planner jitters in place: almost nothing converges. In the scaffold the plain loss trains as well as the full one (residual 1.6&nbsp;×&nbsp;10<sup>−3</sup> against 1.6&nbsp;×&nbsp;10<sup>−3</sup>) and plans almost as well (59.8&nbsp;% against 65.4&nbsp;% random, 15.8&nbsp;% against 19.7&nbsp;% crossings). In 7 DOF the two extra terms are what makes the training work at all.</li>
+<li><b>Long-range pairs</b> (half of the x1 drawn uniformly in the room instead of near x0, so drone a moves up to the room size within a pair). In the corridor the crossings go from 38.0 to 72.1&nbsp;% (random set 72.9 → 84.5&nbsp;%); on its 967 queries where drone a travels 0.7 or more, from 37 to 73&nbsp;%. In the forest, windows and scaffold it breaks the field: random sets 1.1–32.3&nbsp;% (recipe 65–73&nbsp;%), crossings 0.0–6.3&nbsp;% (recipe 13–50&nbsp;%). Their fields come out slow, as without the TD and normal terms: travel time 7–20 per unit of certified path, against 1.4–2.0 for the recipe. </li>
+<li><b>A fifth of the pairs long-range</b> (the same sampler with 20&nbsp;% of the x1 uniform in the room, to see if a smaller share keeps the near field; seeds 0–2 against the recipe's seeds 0–2). In the forest and corridor every seed beats every recipe seed on both sets: crossings 15.7 → 53.7&nbsp;% and 32.3 → 66.8&nbsp;%, random sets 70.8 → 82.9&nbsp;% and 71.4 → 83.5&nbsp;% (means over the seeds); on their 2138 queries where drone a travels 0.7 or more, 60&nbsp;% against 25&nbsp;%. The fields come out alike in every seed and clean: along the certified paths of random cases no step goes uphill (recipe seed 0: up to 6.7&nbsp;%), at a travel time of 1.9–2.0 per unit of path (recipe 1.4–1.5). In the scaffold every seed trades random queries for crossings: crossings 13.2 → 23.3&nbsp;%, random set 63.6 → 59.5&nbsp;%, with more collisions (26.7 → 36.0&nbsp;%); its field is slower, 2.9 per unit of path against 1.9. </li>
+<li><b>In the windows scene a fifth long-range is unstable.</b> Seed 0 stays in the recipe's range (68.0&nbsp;% random, 37.9&nbsp;% crossings; recipe seeds 64.4–69.9&nbsp;% and 37.7–49.5&nbsp;%); seeds 1 and 2 solve 0.6–0.7&nbsp;% of the random cases and 0.0&nbsp;% of the crossings. The training loss shows where it goes wrong. Every run of the recipe and of this variant starts on a plateau (total loss 1.6–3.8&nbsp;×&nbsp;10<sup>−2</sup>) and drops by an order of magnitude once the field forms: the recipe by epoch 82–193 in every scene and seed, this variant by epoch 128–149 in the other scenes. In the windows scene seed 0 drops only at epoch 1340, and seeds 1 and 2 are still on the plateau at epoch 8000 (loss 1.2&nbsp;×&nbsp;10<sup>−2</sup>, against 1.6&nbsp;×&nbsp;10<sup>−3</sup> for seed 0). Their fields look like the collapsed field of the half share: 19.0–19.5 per unit of path with 32.5&nbsp;% of the steps uphill (half share 19.7 and 30.8&nbsp;%; seed 0: 4.0 and none).</li>
+<li><b>Band on the scene clearance only</b> (every x0 within 0.05 of an obstacle, none placed at a length limit): random sets from −3.3 to +2.1 points, crossings from −2.3 to +3.0 points against the recipe; on the 3783 queries where drone a travels 0.7 or more, 26&nbsp;% against 26&nbsp;%.</li>
+</ul></div>
+</section>
+
+<section>
+<h2>Next steps</h2>
+<div class="col"><ul>
+  <li><b>Make the long-range share stable.</b> A fifth of the pairs long-range is the best variant in the forest and corridor (crossings 16 → 54&nbsp;% and 32 → 67&nbsp;%, over three seeds), but in the windows scene it delays the drop off the initial loss plateau from epoch 145–175 (recipe) to 1340 in one seed and past 8000 in the other two. Two cheap fixes target exactly that: switch the long-range pairs on only after the field has formed (the recipe forms it by epoch 193 in every scene), or fine-tune a trained recipe checkpoint with them. Half of the pairs breaks the field in three scenes, so 10&nbsp;% and 30&nbsp;% would then locate the best share.</li>
+  <li><b>The homotopy head in 7 DOF.</b> In SE(3) it removed most of NTFields' stalls on this repository's scenes, because its analytic cone has no spurious minima. The length would enter its encoder as one more coordinate, with the same clearance and speed as here.</li>
+  <li><b>Short queries along a coarse route.</b> NTFields solves most queries shorter than 0.3. Chaining short link-aware queries along a coarse global route (a low-resolution roadmap of the link) would use it where it is reliable.</li>
+  <li><b>Soft contact when the hard link is impossible.</b> Here every case has a link-keeping solution, so contact is a hard constraint and a plan either keeps it the whole way or fails. To maximize contact time where it cannot be kept, give blocked line of sight a low but non-zero speed instead of treating it as an obstacle; the travel time then trades path length against time out of contact.</li>
+</ul></div>
+</section>
+
+<section>
+<h2>Files</h2>
+<div class="col">
+<ul>
+  <li>Code: <code>models/drone_link/</code> (geometry, scripts, README, experiment log), scenes <code>dataprocessing/make_link_scenes.py</code>, trainer <code>train/train_metric_link.py</code>, tests <code>tests/test_drone_link.py</code> (8 tests).</li>
+  <li>Data: <code>datasets/3dshape/data/link_&lt;scene&gt;</code>, test sets <code>testing_data/3dshape/link_&lt;scene&gt;_{std,cross}</code>, runs <code>Experiments/drone_link/</code>, results <code>results/drone_link/</code> (summary in <code>summary/summary.md</code>).</li>
+</ul>
+</div>
+</section>
+</div>
+<script>
+const DATA = {"main": [{"scene": "forest", "set": "std", "ntf": 70.83333333333334, "ntf_sd": 2.191397321852477, "seeds": 3, "col": 10.200000000000003, "stall": 26.466666666666665, "ind": 55.00000000000001, "dir": 47.3}, {"scene": "forest", "set": "cross", "ntf": 15.7, "ntf_sd": 3.062678566222711, "seeds": 3, "col": 28.566666666666666, "stall": 82.63333333333334, "ind": 24.5, "dir": 11.899999999999999}, {"scene": "windows", "set": "std", "ntf": 66.66666666666666, "ntf_sd": 2.3471022323045228, "seeds": 3, "col": 24.4, "stall": 25.133333333333336, "ind": 55.300000000000004, "dir": 51.1}, {"scene": "windows", "set": "cross", "ntf": 43.06666666666667, "ntf_sd": 4.876018412142796, "seeds": 3, "col": 47.599999999999994, "stall": 38.56666666666666, "ind": 21.4, "dir": 2.3}, {"scene": "corridor", "set": "std", "ntf": 71.36666666666667, "ntf_sd": 2.604269997949945, "seeds": 3, "col": 20.666666666666668, "stall": 25.333333333333336, "ind": 38.1, "dir": 32.6}, {"scene": "corridor", "set": "cross", "ntf": 32.266666666666666, "ntf_sd": 4.120140234938074, "seeds": 3, "col": 56.53333333333334, "stall": 63.06666666666666, "ind": 2.7, "dir": 0.0}, {"scene": "scaffold", "set": "std", "ntf": 63.63333333333334, "ntf_sd": 1.2814921857827402, "seeds": 3, "col": 26.733333333333338, "stall": 23.366666666666667, "ind": 41.8, "dir": 27.1}, {"scene": "scaffold", "set": "cross", "ntf": 13.200000000000001, "ntf_sd": 5.151698748956504, "seeds": 3, "col": 51.9, "stall": 78.53333333333335, "ind": 11.4, "dir": 2.0}], "dist": [{"bin": "0.0\u20130.3", "ntf": 91.90613026819923, "dir": 77.01149425287356, "ind": 74.71264367816092, "n": 2088}, {"bin": "0.3\u20130.5", "ntf": 76.78387826444582, "dir": 43.36829117828501, "ind": 50.339296730413324, "n": 4863}, {"bin": "0.5\u20130.7", "ntf": 53.87719298245614, "dir": 15.157894736842104, "ind": 28.263157894736842, "n": 5700}, {"bin": "0.7\u20130.9", "ntf": 26.383526383526384, "dir": 6.353106353106353, "ind": 17.9010179010179, "n": 8547}, {"bin": "\u2265 0.9", "ntf": 11.527480371163454, "dir": 3.747323340471092, "ind": 12.740899357601712, "n": 2802}], "seeds": [{"scene": "forest", "set": "std", "ntf": [72.89999999999999, 71.8, 67.80000000000001], "lr": [85.2, 81.69999999999999, 81.89999999999999]}, {"scene": "forest", "set": "cross", "ntf": [13.100000000000001, 14.000000000000002, 20.0], "lr": [54.300000000000004, 53.900000000000006, 52.800000000000004]}, {"scene": "windows", "set": "std", "ntf": [69.89999999999999, 64.4, 65.7], "lr": [68.0, 0.6, 0.7000000000000001]}, {"scene": "windows", "set": "cross", "ntf": [49.5, 37.7, 42.0], "lr": [37.9, 0.0, 0.0]}, {"scene": "corridor", "set": "std", "ntf": [72.89999999999999, 73.5, 67.7], "lr": [86.0, 84.0, 80.60000000000001]}, {"scene": "corridor", "set": "cross", "ntf": [38.0, 30.3, 28.499999999999996], "lr": [70.1, 67.9, 62.5]}, {"scene": "scaffold", "set": "std", "ntf": [65.4, 63.1, 62.4], "lr": [62.0, 58.9, 57.49999999999999]}, {"scene": "scaffold", "set": "cross", "ntf": [19.7, 12.8, 7.1], "lr": [26.1, 24.0, 19.900000000000002]}]};
+
+const SERIES = [
+  { key: 'dir', name: 'direct 7-DOF motion', color: 'var(--s-dir)' },
+  { key: 'ind', name: 'independent drones', color: 'var(--s-ind)' },
+  { key: 'ntf', name: 'NTFields, 7 DOF', color: 'var(--s-ntf)' },
+];
+const SETNAME = { std: 'random', cross: 'crossing' };
+const ns = 'http://www.w3.org/2000/svg';
+function mk(svg, tag, attrs, text) { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; svg.appendChild(e); return e; }
+function tipper(el) {
+  const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; el.appendChild(tip);
+  return { show(ev, html) { tip.innerHTML = html; tip.hidden = false; const b = el.getBoundingClientRect();
+      let tx = ev.clientX - b.left + el.scrollLeft + 14; const ty = ev.clientY - b.top + 14;
+      if (tx + tip.offsetWidth > el.scrollWidth) tx = ev.clientX - b.left + el.scrollLeft - tip.offsetWidth - 14;
+      tip.style.left = tx + 'px'; tip.style.top = ty + 'px'; }, hide() { tip.hidden = true; } };
+}
+const fmt = v => v == null ? '–' : v.toFixed(1);
+function dotplot(el, rows, label) {
+  const lo = 0, hi = 100, W = 900, left = 170, right = 24, rowH = 24, top = 30, gapH = 12;
+  let y = top, prev = null;
+  rows.forEach(r => { if (prev !== null && r.scene !== prev) y += gapH; r._y = y; y += rowH; prev = r.scene; });
+  const H = y + 30, x = v => left + (v - lo) / (hi - lo) * (W - left - right);
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', label);
+  for (let v = lo; v <= hi; v += 20) {
+    mk(svg, 'line', { x1: x(v), x2: x(v), y1: top - 8, y2: H - 26, class: 'grid' });
+    mk(svg, 'text', { x: x(v), y: H - 8, 'text-anchor': 'middle' }, v + '%');
+  }
+  mk(svg, 'text', { x: left, y: 14 }, 'cases solved with the link kept valid the whole way');
+  prev = null;
+  const tp = tipper(el);
+  rows.forEach(r => {
+    const cy = r._y + rowH / 2;
+    mk(svg, 'text', { x: left - 12, y: cy + 4, 'text-anchor': 'end', class: r.scene !== prev ? 'rowlab' : '' }, (r.scene !== prev ? r.scene + ' · ' : '') + SETNAME[r.set]);
+    prev = r.scene;
+    const vals = SERIES.map(s => r[s.key]).filter(v => v != null);
+    if (vals.length > 1) mk(svg, 'line', { x1: x(Math.min(...vals)), x2: x(Math.max(...vals)), y1: cy, y2: cy, stroke: 'var(--rule)', 'stroke-width': 2 });
+    if (r.ntf != null && r.ntf_sd) mk(svg, 'line', { x1: x(Math.max(0, r.ntf - r.ntf_sd)), x2: x(Math.min(100, r.ntf + r.ntf_sd)), y1: cy, y2: cy, stroke: 'var(--s-ntf)', 'stroke-width': 2, 'stroke-opacity': 0.45 });
+    SERIES.forEach(s => { if (r[s.key] != null) mk(svg, 'circle', { cx: x(r[s.key]), cy, r: 5.5, fill: s.color, stroke: 'var(--bg)', 'stroke-width': 2 }); });
+    const hit = mk(svg, 'rect', { x: 0, y: r._y, width: W, height: rowH, fill: 'transparent' });
+    hit.addEventListener('mousemove', ev => tp.show(ev, `<b>${r.scene}, ${SETNAME[r.set]} set</b><br>NTFields ${fmt(r.ntf)}${r.ntf_sd ? ' ± ' + r.ntf_sd.toFixed(1) : ''} (collision ${fmt(r.col)}, stall ${fmt(r.stall)})<br>independent drones ${fmt(r.ind)} · direct motion ${fmt(r.dir)}`));
+    hit.addEventListener('mouseleave', tp.hide);
+  });
+  el.appendChild(svg);
+}
+function linechart(el, rows, label) {
+  const W = 900, H = 330, left = 60, right = 24, top = 30, bottom = 46;
+  const n = rows.length, x = i => left + (i + 0.5) / n * (W - left - right), y = v => top + (100 - v) / 100 * (H - top - bottom);
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', label);
+  for (let v = 0; v <= 100; v += 20) {
+    mk(svg, 'line', { x1: left, x2: W - right, y1: y(v), y2: y(v), class: 'grid' });
+    mk(svg, 'text', { x: left - 8, y: y(v) + 4, 'text-anchor': 'end' }, v + '%');
+  }
+  rows.forEach((r, i) => mk(svg, 'text', { x: x(i), y: H - 24, 'text-anchor': 'middle' }, r.bin));
+  mk(svg, 'text', { x: (left + W - right) / 2, y: H - 6, 'text-anchor': 'middle' }, 'distance drone a travels from start to goal (normalized room units; the room is 0.90 × 0.63 × 0.99)');
+  mk(svg, 'text', { x: left, y: 16 }, 'cases solved with the link kept valid the whole way');
+  SERIES.forEach(s => {
+    const pts = rows.map((r, i) => r[s.key] == null ? null : [x(i), y(r[s.key])]);
+    let d = '';
+    pts.forEach((p, i) => { if (p) d += (d && pts[i - 1] ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1); });
+    mk(svg, 'path', { d, fill: 'none', stroke: s.color, 'stroke-width': 2 });
+    pts.forEach(p => { if (p) mk(svg, 'circle', { cx: p[0], cy: p[1], r: 4.5, fill: s.color, stroke: 'var(--bg)', 'stroke-width': 2 }); });
+  });
+  const labs = SERIES.filter(s => rows[0][s.key] != null).map(s => ({ s, y: y(rows[0][s.key]) - 8 })).sort((a, b) => a.y - b.y);
+  for (let i = 1; i < labs.length; i++) if (labs[i].y - labs[i - 1].y < 15) labs[i].y = labs[i - 1].y + 15;
+  labs.forEach(l => mk(svg, 'text', { x: x(0) + 12, y: l.y, class: 'rowlab' }, l.s.name));
+  const tp = tipper(el);
+  rows.forEach((r, i) => {
+    const hit = mk(svg, 'rect', { x: x(i) - (W - left - right) / n / 2, y: top, width: (W - left - right) / n, height: H - top - bottom, fill: 'transparent' });
+    hit.addEventListener('mousemove', ev => tp.show(ev, `<b>distance ${r.bin}</b> (${r.n} NTFields plans)<br>NTFields ${fmt(r.ntf)} · independent drones ${fmt(r.ind)} · direct motion ${fmt(r.dir)}`));
+    hit.addEventListener('mouseleave', tp.hide);
+  });
+  el.appendChild(svg);
+}
+const SEEDSER = [
+  { key: 'ntf', name: 'recipe', color: 'var(--s-ntf)', dy: -7 },
+  { key: 'lr', name: 'a fifth long-range', color: 'var(--s-lr)', dy: 7 },
+];
+function seedplot(el, rows, label) {
+  const lo = 0, hi = 100, W = 900, left = 170, right = 24, rowH = 34, top = 30, gapH = 12;
+  let y = top, prev = null;
+  rows.forEach(r => { if (prev !== null && r.scene !== prev) y += gapH; r._y = y; y += rowH; prev = r.scene; });
+  const H = y + 30, x = v => left + (v - lo) / (hi - lo) * (W - left - right);
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', label);
+  for (let v = lo; v <= hi; v += 20) {
+    mk(svg, 'line', { x1: x(v), x2: x(v), y1: top - 8, y2: H - 26, class: 'grid' });
+    mk(svg, 'text', { x: x(v), y: H - 8, 'text-anchor': 'middle' }, v + '%');
+  }
+  mk(svg, 'text', { x: left, y: 14 }, 'cases solved with the link kept valid the whole way, one dot per training seed');
+  prev = null;
+  const tp = tipper(el), list = v => v.length ? v.map(fmt).join(' / ') : '–';
+  const avg = v => v.length ? fmt(v.reduce((a, b) => a + b, 0) / v.length) : '–';
+  rows.forEach((r, i) => {
+    const cy = r._y + rowH / 2;
+    mk(svg, 'text', { x: left - 12, y: cy + 4, 'text-anchor': 'end', class: r.scene !== prev ? 'rowlab' : '' }, (r.scene !== prev ? r.scene + ' · ' : '') + SETNAME[r.set]);
+    prev = r.scene;
+    SEEDSER.forEach(s => {
+      const v = r[s.key], yy = cy + s.dy;
+      if (!v.length) return;
+      const a = Math.min(...v), b = Math.max(...v);
+      if (v.length > 1) mk(svg, 'line', { x1: x(a), x2: x(b), y1: yy, y2: yy, stroke: s.color, 'stroke-width': 2, 'stroke-opacity': 0.45 });
+      v.forEach(val => mk(svg, 'circle', { cx: x(val), cy: yy, r: 5, fill: s.color, stroke: 'var(--bg)', 'stroke-width': 2 }));
+      if (i === 0) {        // direct labels on the first row, beside the dots
+        const right = x(b) + 10 + 7 * s.name.length < W;
+        mk(svg, 'text', { x: right ? x(b) + 10 : x(a) - 10, y: yy + 4, 'text-anchor': right ? 'start' : 'end', class: 'rowlab' }, s.name);
+      }
+    });
+    const hit = mk(svg, 'rect', { x: 0, y: r._y, width: W, height: rowH, fill: 'transparent' });
+    hit.addEventListener('mousemove', ev => tp.show(ev, `<b>${r.scene}, ${SETNAME[r.set]} set</b><br>recipe, seeds 0 / 1 / 2: ${list(r.ntf)} (mean ${avg(r.ntf)})<br>a fifth long-range, seeds 0 / 1 / 2: ${list(r.lr)} (mean ${avg(r.lr)})`));
+    hit.addEventListener('mouseleave', tp.hide);
+  });
+  el.appendChild(svg);
+}
+const chartSeeds = document.getElementById('chart-seeds');
+if (chartSeeds) seedplot(chartSeeds, DATA.seeds, 'Dot plot of the share of cases solved per scene and test set, one dot per training seed, for the NTFields recipe and for a fifth of the training pairs long-range.');
+dotplot(document.getElementById('chart-main'), DATA.main, 'Dot plot of the share of cases solved with the link valid all the way, per scene and test set, for NTFields, independent drones and the direct motion.');
+linechart(document.getElementById('chart-dist'), DATA.dist, 'Line chart of the share of cases solved against the distance between start and goal, for NTFields, independent drones and the direct motion.');
+</script>

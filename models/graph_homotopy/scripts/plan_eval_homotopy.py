@@ -53,6 +53,14 @@ ap.add_argument('--kind', default='graph', choices=['graph', 'metric'],
 ap.add_argument('--metric-root', default='/export')
 ap.add_argument('--save-paths', action='store_true',
                 help='also save the chosen plan of every case with its per-waypoint clearance (<out>_chosen.npz)')
+ap.add_argument('--camera', default='',
+                help='camera json of dataprocessing/make_camera3d.py (tip, base, bird mesh): score every plan by '
+                     'the visibility of the bird from the camera (ray casting against the scene mesh) and the '
+                     'collision of the bird alone, next to the collision of the whole body')
+ap.add_argument('--gpu-clearance', action='store_true',
+                help='exact mesh clearance on the GPU (models/graph_homotopy/scripts/gpu_clearance.py: batched '
+                     'point-triangle distance + generalized winding number) instead of libigl in a process pool; '
+                     'same signs, distances exact where libigl\'s fast-winding path is off by ~1e-4')
 args = ap.parse_args()
 
 sys.path.insert(0, args.lie_root)
@@ -144,8 +152,90 @@ def path_clearance(P):
     return out
 
 
+# ----------------------------------------------------------------------------- camera (visibility of the bird)
+def _rays_blocked(o, d, tri, chunk=4096, eps=1e-6):
+    """segments o -> o + d (N, 3) against triangles (T, 3, 3): True where a segment meets a triangle at a
+    parameter in (eps, 1 - eps) (Moeller-Trumbore, batched)."""
+    a, e1, e2 = tri[:, 0], tri[:, 1] - tri[:, 0], tri[:, 2] - tri[:, 0]
+    T = len(tri)
+    out = []
+    for i in range(0, len(o), chunk):
+        oc, dc = o[i:i + chunk], d[i:i + chunk]
+        n = len(oc)
+        p = torch.cross(dc[:, None, :].expand(n, T, 3), e2[None].expand(n, T, 3), dim=-1)
+        det = (e1[None] * p).sum(-1)
+        ok = det.abs() > 1e-12
+        inv = 1.0 / torch.where(ok, det, torch.ones_like(det))
+        tv = oc[:, None, :] - a[None]
+        u = (tv * p).sum(-1) * inv
+        q = torch.cross(tv, e1[None].expand(n, T, 3), dim=-1)
+        v = (dc[:, None, :] * q).sum(-1) * inv
+        t = (e2[None] * q).sum(-1) * inv
+        hit = ok & (u >= 0) & (v >= 0) & (u + v <= 1) & (t > eps) & (t < 1 - eps)
+        out.append(hit.any(1))
+    return torch.cat(out)
+
+
+CAM = None
+if args.camera:
+    cj = json.load(open(args.camera))
+    cdir = os.path.dirname(os.path.abspath(args.camera))
+    centre = np.asarray(cj['frame_centre'], dtype=np.float64)
+    assert np.allclose(centre, 0.5 * (V_sh.min(0) + V_sh.max(0)), atol=1e-6), 'the camera frame is not the set\'s shape frame'
+    Vb_, Fb_, _ = load_obj(os.path.join(cdir, cj['bird_obj']))
+    bird_V = np.ascontiguousarray((Vb_ - centre) / env_scale * float(meta['shape_scale']), dtype=np.float64)
+    bird_F = np.ascontiguousarray(Fb_, dtype=np.int64)
+    cam_apex = (np.asarray(cj['apex'], dtype=np.float64) - centre) / env_scale
+    _st = np.random.get_state()
+    np.random.seed(12345)
+    S_all = sample_surface_points(bird_V, bird_F, 3000)
+    np.random.set_state(_st)
+    # samples the camera sees in the body frame (not hidden by the bird itself)
+    _o = torch.tensor(np.repeat(cam_apex[None], len(S_all), 0), dtype=torch.float64)
+    _d = torch.tensor(S_all, dtype=torch.float64) - _o
+    _self = _rays_blocked(_o, _d, torch.tensor(bird_V[bird_F], dtype=torch.float64), eps=1e-4).numpy()
+    cam_samples = S_all[~_self][:256]
+    env_tri = ((V_env - env_center) / env_scale)[F_env]
+    CAM = dict(apex=cam_apex, samples=cam_samples, n_tri=len(env_tri), fov_deg=cj.get('fov_deg'))
+    print('camera: tip {} (body frame), {} of {} bird samples in view, {} scene triangles'.format(
+        np.round(cam_apex, 4).tolist(), len(cam_samples), len(S_all), len(env_tri)), flush=True)
+
+
+def path_clearance_bird(P):
+    """clearance of the bird alone along a path (the camera's view volume and the camera itself not counted)."""
+    P = np.asarray(P, dtype=np.float64)
+    out = np.full(len(P), CLEAR_CAP)
+    for k, sel in enumerate(env_tree.query_ball_point(P[:, :3], r=shape_radius + CLEAR_CAP)):
+        if not sel:
+            continue
+        R = _rotvec_to_matrix_np(P[k, 3:6] * TWO_PI)
+        S = igl.signed_distance(np.ascontiguousarray((env_pts[sel] - P[k, :3]) @ R), bird_V, bird_F, _SDF_SIGN)[0]
+        out[k] = min(float(S.min()), CLEAR_CAP)
+    return out
+
+
 import multiprocessing as mp  # noqa: E402
-POOL = mp.get_context('fork').Pool(args.workers) if args.workers > 1 else None
+POOL = mp.get_context('fork').Pool(args.workers) if args.workers > 1 and not args.gpu_clearance else None
+GPU_CLEAR = GPU_CLEAR_BIRD = None
+if args.gpu_clearance:
+    sys.path.insert(0, os.path.join(args.graph_root, 'models', 'graph_homotopy', 'scripts'))
+    from gpu_clearance import GpuClearance  # noqa: E402
+    GPU_CLEAR = GpuClearance(env_pts, shape_V, shape_F, shape_radius + CLEAR_CAP, CLEAR_CAP, args.device)
+    if CAM is not None:
+        GPU_CLEAR_BIRD = GpuClearance(env_pts, bird_V, bird_F, shape_radius + CLEAR_CAP, CLEAR_CAP, args.device)
+
+
+def clear_paths(L):
+    """capped clearance of the whole body along each path of L."""
+    if GPU_CLEAR is not None:
+        return GPU_CLEAR.paths(L)
+    return POOL.map(path_clearance, L) if POOL is not None else [path_clearance(P) for P in L]
+
+
+def clear_paths_bird(L):
+    if GPU_CLEAR_BIRD is not None:
+        return GPU_CLEAR_BIRD.paths(L)
+    return POOL.map(path_clearance_bird, L) if POOL is not None else [path_clearance_bird(P) for P in L]
 
 
 # ----------------------------------------------------------------------------- model
@@ -170,6 +260,25 @@ else:
     fn = m.function
     head = None
 assert args.planner == 'base' or hasattr(head, 'value_cover'), 'cover planning needs the homotopy head'
+
+if CAM is not None:
+    CAM_T = dict(apex=torch.tensor(CAM['apex'], dtype=torch.float32, device=args.device),
+                 samples=torch.tensor(CAM['samples'], dtype=torch.float32, device=args.device),
+                 tri=torch.tensor(env_tri, dtype=torch.float32, device=args.device))
+
+
+def view_fraction(P):
+    """(M,) fraction of the bird's visible samples whose line of sight from the camera is free of the scene, per
+    pose of the chart path P (M, 6)."""
+    Pt = torch.as_tensor(np.asarray(P, dtype=np.float64), dtype=torch.float32, device=args.device)
+    R = se3.so3_exp(TWO_PI * Pt[:, 3:6])
+    t = Pt[:, :3]
+    o = t + torch.einsum('mij,j->mi', R, CAM_T['apex'])
+    sw = t[:, None, :] + torch.einsum('mij,nj->mni', R, CAM_T['samples'])
+    M, N = sw.shape[0], sw.shape[1]
+    d = (sw - o[:, None, :]).reshape(-1, 3)
+    blocked = _rays_blocked(o[:, None, :].expand(M, N, 3).reshape(-1, 3), d, CAM_T['tri']).reshape(M, N)
+    return (~blocked).float().mean(1).cpu().numpy()
 
 
 def base_cost(X, G):
@@ -253,7 +362,7 @@ arr = arr[:n]
 
 t0 = time.time()
 ends = [arr[i].reshape(2, 6) for i in range(n)]
-end_clear = POOL.map(path_clearance, ends) if POOL is not None else [path_clearance(e) for e in ends]
+end_clear = clear_paths(ends)
 ok_idx = [i for i in range(n) if (end_clear[i] >= 0.0).all()]
 t_filter = time.time() - t0
 cross_all = crosses_seam(arr[:, 3:6], arr[:, 9:12])
@@ -321,7 +430,10 @@ for s in range(0, len(ok_idx), args.batch):
         end = int(iters[b]) + 2 if succ[b] else full.shape[1]
         paths.append(np.concatenate([full[b, :end], goal[b:b + 1]], 0))
     fulls = [full[b] for b in range(len(idx))]
-    clears_full = POOL.map(path_clearance, fulls) if POOL is not None else [path_clearance(P) for P in fulls]
+    clears_full = clear_paths(fulls)
+    if CAM is not None:
+        clears_bird = clear_paths_bird(fulls)
+        views_full = [view_fraction(P) for P in fulls]
     if args.save_paths:
         for b, i in enumerate(idx):
             fp = np.full((args.steps + 1, DIM), np.nan, np.float32)
@@ -332,6 +444,13 @@ for s in range(0, len(ok_idx), args.batch):
             chosen_paths['path'].append(fp)
             chosen_paths['clear'].append(cp)
             chosen_paths['iters3'].append(int(iters3[b]))
+            if CAM is not None:
+                vp = np.full(args.steps + 1, np.nan, np.float32)
+                vp[:len(views_full[b])] = views_full[b]
+                bp = np.full(args.steps + 1, np.nan, np.float32)
+                bp[:len(clears_bird[b])] = clears_bird[b]
+                chosen_paths.setdefault('view', []).append(vp)
+                chosen_paths.setdefault('bird_clear', []).append(bp)
     sheet_ok = None
     if args.planner == 'dual':
         # SE(3) success of each sheet's own plan (collision-checked up to its first SE(3)-converged waypoint)
@@ -341,10 +460,9 @@ for s in range(0, len(ok_idx), args.batch):
             for b in range(len(idx)):
                 k3 = int(r_['iters3'][b])
                 segs.append(r_['full'][b, :k3 + 2] if k3 >= 0 else r_['full'][b])
-            cl = POOL.map(path_clearance, segs) if POOL is not None else [path_clearance(P) for P in segs]
+            cl = clear_paths(segs)
             sheet_ok.append([bool(r_['iters3'][b] >= 0) and not bool((cl[b] < 0).any()) for b in range(len(idx))])
-    goal_clear = POOL.map(path_clearance, [goal[b:b + 1] for b in range(len(idx))]) if POOL is not None \
-        else [path_clearance(goal[b:b + 1]) for b in range(len(idx))]
+    goal_clear = clear_paths([goal[b:b + 1] for b in range(len(idx))])
     for b, i in enumerate(idx):
         P = paths[b]
         cf = clears_full[b]
@@ -412,6 +530,17 @@ for s in range(0, len(ok_idx), args.batch):
             else:
                 pick = 0 if sig_star_np[b] > 0 else 1
             rec['success_se3_shorter'] = sheet_ok[pick][b]
+        if CAM is not None:
+            # the camera scores on the SE(3) segment the collision test uses (the whole plan if it never converged)
+            seg = slice(0, k3 + 2) if conv3 else slice(None)
+            v3, cb3 = views_full[b][seg], clears_bird[b][seg]
+            rec['bird_collision_se3'] = bool((cb3 < 0).any())
+            rec['bird_min_clearance_se3'] = float(cb3.min())
+            rec['view_min'] = float(v3.min())
+            rec['view_mean'] = float(v3.mean())
+            rec['view_full_frac'] = float((v3 >= 0.99).mean())
+            rec['cam_view_ok'] = bool(v3.min() >= 0.99)
+            rec['follow_success_se3'] = bool(conv3 and not rec['bird_collision_se3'] and rec['cam_view_ok'])
         rec['_path'] = P
         records.append(rec)
     t_check += time.time() - tb
@@ -473,7 +602,7 @@ summary = {
     'median_tau_frac_increase': float(np.median([r['tau_frac_increase'] for r in R])) if R else None,
     'frac_sigma_minus': float(np.mean([r['sigma_star'] < 0 for r in R])) if R else None,
     'median_sheet_gap': float(np.nanmedian([r['sheet_gap'] for r in R])) if R else None,
-    'seconds': {'filter': t_filter, 'plan_gpu': t_plan, 'collision_cpu': t_check},
+    'seconds': {'filter': t_filter, 'plan_gpu': t_plan, 'collision_cpu': t_check, 'clearance_on': 'gpu' if args.gpu_clearance else 'cpu'},
 }
 if args.planner == 'dual':
     summary['frac_chosen_minus'] = float(np.mean([r['chosen_sigma'] < 0 for r in R]))
@@ -482,6 +611,13 @@ if args.planner == 'dual':
     summary['conv_se3_either'] = float(np.mean([r['conv_se3_plus'] or r['conv_se3_minus'] for r in R]))
     for k in ('success_se3_plus', 'success_se3_minus', 'success_se3_cover', 'success_se3_either', 'success_se3_shorter'):
         summary[k] = float(np.mean([r[k] for r in R]))
+if CAM is not None:
+    for k in ('bird_collision_se3', 'cam_view_ok', 'follow_success_se3'):
+        summary[k + '_rate'] = rate(k)
+    summary['mean_view_mean'] = float(np.mean([r['view_mean'] for r in R])) if R else None
+    summary['median_view_min'] = float(np.median([r['view_min'] for r in R])) if R else None
+    summary['camera'] = dict(file=args.camera, samples=int(len(CAM['samples'])), scene_triangles=int(CAM['n_tri']),
+                             fov_deg=CAM['fov_deg'])
 os.makedirs(os.path.dirname(args.out) or '.', exist_ok=True)
 with open(args.out, 'w') as fh:
     json.dump({'summary': summary, 'records': R}, fh, indent=1, default=float)
@@ -496,7 +632,9 @@ if args.save_paths:
     np.savez_compressed(args.out[:-5] + '_chosen.npz', case=np.array(chosen_paths['case']),
                         path=np.stack(chosen_paths['path']), clear=np.stack(chosen_paths['clear']),
                         iters3=np.array(chosen_paths['iters3']), goal=arr[np.array(chosen_paths['case']), 6:],
-                        env_pts=env_pts.astype(np.float32), shape_V=shape_V.astype(np.float32), shape_F=shape_F)
+                        env_pts=env_pts.astype(np.float32), shape_V=shape_V.astype(np.float32), shape_F=shape_F,
+                        **({'view': np.stack(chosen_paths['view']), 'bird_clear': np.stack(chosen_paths['bird_clear'])}
+                           if CAM is not None else {}))
 if POOL is not None:
     POOL.close()
 print(json.dumps(summary))

@@ -1,0 +1,14 @@
+20 candidates (851 tries, 12s)
+40 candidates (1428 tries, 24s)
+60 candidates (2213 tries, 38s)
+80 candidates (3045 tries, 52s)
+100 candidates (4094 tries, 69s)
+120 candidates (4956 tries, 88s)
+140 candidates (5640 tries, 105s)
+160 candidates (6469 tries, 126s)
+180 candidates (7150 tries, 145s)
+200 candidates (7845 tries, 165s)
+200 candidates from 7845 tries in 165s -> datasets/3dshape/paths/env1_cand.json
+prism length 0.1: free fraction mean over path  q10/50/90 0.911 0.962 0.988; min over path q10/50/90 0.676 0.800 0.903
+prism length 0.15: free fraction mean over path  q10/50/90 0.789 0.867 0.915; min over path q10/50/90 0.494 0.664 0.760
+prism length 0.2: free fraction mean over path  q10/50/90 0.658 0.756 0.809; min over path q10/50/90 0.370 0.515 0.636

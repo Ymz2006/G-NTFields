@@ -1,0 +1,165 @@
+{
+ "shape_scale": 1.0,
+ "shape_obj": null,
+ "env_obj": "/workspace/datasets/3dshape/obj/env4.obj",
+ "env_obj_rel": "datasets/3dshape/obj/env4.obj",
+ "margin": 0.05,
+ "offset": 0.001,
+ "rot_norm": 6.283185307179586,
+ "testing_data": true,
+ "env_scale": 220.457,
+ "env_center": [
+  100.180961,
+  86.09025399999999,
+  -89.991084
+ ],
+ "num_pairs": 800000,
+ "constraint": {
+  "type": "path",
+  "chart": "arclength",
+  "path_file": "path.npz",
+  "path_source": "datasets/3dshape/paths/cm_env4_a.npz",
+  "L": 0.8238504077019014,
+  "body": "pyramid",
+  "pyramid": {
+   "W": 0.21772953455775956,
+   "H": 0.09979270333897314,
+   "D": 0.2268015984976662,
+   "fov_deg": [
+    51.28201164861056,
+    24.81483705480149
+   ]
+  },
+  "camera_raw": {
+   "width": 48.0,
+   "height": 22.0,
+   "depth": 50.0
+  },
+  "anchor": "centre of the base rectangle = centre of the followed shape",
+  "axis": "body +z, from the shape to the camera",
+  "shape": "bird",
+  "shape_parts_raw": [
+   [
+    0.0,
+    40.0,
+    10.0,
+    20.0,
+    15.0,
+    25.0
+   ],
+   [
+    40.0,
+    48.0,
+    10.0,
+    18.0,
+    15.0,
+    25.0
+   ],
+   [
+    14.0,
+    26.0,
+    16.0,
+    20.0,
+    -4.0,
+    44.0
+   ],
+   [
+    0.0,
+    8.0,
+    16.0,
+    20.0,
+    -4.0,
+    44.0
+   ],
+   [
+    0.0,
+    8.0,
+    20.0,
+    28.0,
+    18.0,
+    22.0
+   ]
+  ],
+  "env": "env4",
+  "boxes_raw": [
+   [
+    15.659280999999993,
+    69.968281,
+    88.995191,
+    133.995191,
+    -75.370384,
+    -25.370384
+   ],
+   [
+    85.659281,
+    114.968281,
+    43.995191,
+    63.995191,
+    -55.370384,
+    -25.370384
+   ],
+   [
+    165.659281,
+    194.968281,
+    43.995191,
+    63.995191,
+    -55.370384,
+    -25.370384
+   ],
+   [
+    135.659281,
+    189.968281,
+    63.995191,
+    108.995191,
+    -160.370384,
+    -110.370384
+   ],
+   [
+    55.659281,
+    84.968281,
+    28.995191,
+    48.995191,
+    -150.370384,
+    -120.370384
+   ],
+   [
+    35.65928099999999,
+    64.968281,
+    88.995191,
+    108.995191,
+    -150.370384,
+    -120.370384
+   ]
+  ]
+ },
+ "sampling": {
+  "x0": "uniform l, uniform SO(3), offset < clearance < margin",
+  "x1": "x0 exp(4-d tangent displacement, |.| ~ U[0, 2])",
+  "drawn_x0": 5062656,
+  "env_spacing": 0.005,
+  "seed": 0
+ },
+ "stats": {
+  "speed_dists_mean": 0.5291339159011841,
+  "speed_angles_mean": 0.09257885813713074,
+  "speed_mean": 0.3108564615249634,
+  "clearance_x1_median": 0.028493888676166534
+ },
+ "variant": "seg",
+ "test_settings": {
+  "cell": "datasets/3dshape/data/cm_env4_a",
+  "variant": "seg",
+  "n": 1000,
+  "out": "testing_data/3dshape",
+  "name": "",
+  "seed": 1,
+  "workers": 10,
+  "offset": 0.02,
+  "min_seg": 0.25,
+  "step": 0.05,
+  "res": 0.003,
+  "margin": 0.002,
+  "rrt_iters": 4000,
+  "rrt_time": 60.0
+ }
+}

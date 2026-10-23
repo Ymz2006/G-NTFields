@@ -1,0 +1,28 @@
+{
+ "scene": "corridor",
+ "note": "serpentine corridor: walls z -131..-123 (x < 145) and z -56..-48 (x > 55), full height",
+ "units": "raw OBJ units, rows (x0, x1, y0, y1, z0, z1)",
+ "boxes": [
+  [
+   1.12,
+   145.0,
+   17.09,
+   155.09,
+   -131.0,
+   -123.0
+  ],
+  [
+   55.0,
+   199.24,
+   17.09,
+   155.09,
+   -56.0,
+   -48.0
+  ]
+ ],
+ "groups": [
+  "partition_back",
+  "partition_front"
+ ],
+ "written_by": "dataprocessing/make_link_scenes.py"
+}

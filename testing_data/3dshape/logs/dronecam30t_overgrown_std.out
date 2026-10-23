@@ -1,0 +1,36 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam30t.obj': 1 objects/groups
+  [0] 'dronecam30t'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/overgrown.obj': 24 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'tower_1'  (24 triangles)
+  [2] 'tower_2'  (24 triangles)
+  [3] 'tower_3'  (24 triangles)
+  [4] 'tower_4'  (36 triangles)
+  [5] 'tower_5'  (24 triangles)
+  [6] 'tower_6'  (36 triangles)
+  [7] 'tower_7'  (24 triangles)
+  [8] 'tower_8'  (24 triangles)
+  [9] 'tower_9'  (24 triangles)
+  [10] 'bridge_1'  (12 triangles)
+  [11] 'bridge_2'  (12 triangles)
+  [12] 'bridge_3'  (12 triangles)
+  [13] 'cable_1'  (12 triangles)
+  [14] 'cable_2'  (12 triangles)
+  [15] 'cable_3'  (12 triangles)
+  [16] 'tree_1'  (132 triangles)
+  [17] 'tree_2'  (132 triangles)
+  [18] 'tree_3'  (132 triangles)
+  [19] 'tree_4'  (132 triangles)
+  [20] 'tree_5'  (132 triangles)
+  [21] 'tree_6'  (132 triangles)
+  [22] 'tree_7'  (132 triangles)
+  [23] 'tree_8'  (132 triangles)
+scene dronecam30t_overgrown: shape radius 0.1029, half extent [0.441, 0.298, 0.49], sdf grid (106, 43, 64) (0.8s)
+[round 1] drawn 12000 in-band 318 formed 159 verified 158/159 (98s)  banked 158/1000  rrt-fail 1 recheck-fail 0
+[round 2] drawn 12000 in-band 322 formed 161 verified 153/161 (130s)  banked 311/1000  rrt-fail 9 recheck-fail 0
+[round 3] drawn 12000 in-band 319 formed 159 verified 153/159 (105s)  banked 464/1000  rrt-fail 15 recheck-fail 0
+[round 4] drawn 12000 in-band 363 formed 181 verified 175/181 (126s)  banked 639/1000  rrt-fail 21 recheck-fail 0
+[round 5] drawn 12000 in-band 320 formed 159 verified 154/159 (112s)  banked 793/1000  rrt-fail 26 recheck-fail 0
+[round 6] drawn 12000 in-band 323 formed 161 verified 155/161 (110s)  banked 948/1000  rrt-fail 32 recheck-fail 0
+[round 7] drawn 12000 in-band 332 formed 72 verified 69/72 (53s)  banked 1000/1000  rrt-fail 34 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam30t_overgrown (842s): rel angle p50 117 p90 169; |dp| p50 0.37; min clearance p50 0.0260; rrt path length p50 0.69; straight blocked frac mean 0.28

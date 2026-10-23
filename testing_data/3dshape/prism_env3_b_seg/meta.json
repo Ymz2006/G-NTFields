@@ -1,0 +1,59 @@
+{
+ "shape_scale": 1.0,
+ "shape_obj": null,
+ "env_obj": "/workspace/datasets/3dshape/obj/env3.obj",
+ "env_obj_rel": "datasets/3dshape/obj/env3.obj",
+ "margin": 0.05,
+ "offset": 0.001,
+ "rot_norm": 6.283185307179586,
+ "testing_data": true,
+ "env_scale": 220.457,
+ "env_center": [
+  100.180961,
+  86.0427225,
+  -89.991084
+ ],
+ "num_pairs": 800000,
+ "constraint": {
+  "type": "path",
+  "chart": "arclength",
+  "path_file": "path.npz",
+  "path_source": "datasets/3dshape/paths/env3_b.npz",
+  "L": 1.0535850775939926,
+  "prism_width": 0.02,
+  "prism_length": 0.2,
+  "anchor": "centre of the end face z = 0",
+  "axis": "body +z",
+  "env": "env3"
+ },
+ "sampling": {
+  "x0": "uniform l, uniform SO(3), offset < clearance < margin",
+  "x1": "x0 exp(4-d tangent displacement, |.| ~ U[0, 2])",
+  "drawn_x0": 8552448,
+  "env_spacing": 0.005,
+  "seed": 0
+ },
+ "stats": {
+  "speed_dists_mean": 0.6073083877563477,
+  "speed_angles_mean": 0.07310153543949127,
+  "speed_mean": 0.3402048349380493,
+  "clearance_x1_median": 0.04076068103313446
+ },
+ "variant": "seg",
+ "test_settings": {
+  "cell": "datasets/3dshape/data/prism_env3_b",
+  "variant": "seg",
+  "n": 1000,
+  "out": "testing_data/3dshape",
+  "name": "",
+  "seed": 1,
+  "workers": 10,
+  "offset": 0.02,
+  "min_seg": 0.25,
+  "step": 0.05,
+  "res": 0.003,
+  "margin": 0.002,
+  "rrt_iters": 4000,
+  "rrt_time": 60.0
+ }
+}

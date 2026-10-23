@@ -1,0 +1,24 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam55t.obj': 1 objects/groups
+  [0] 'dronecam55t'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/suburb.obj': 15 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'house_1'  (36 triangles)
+  [2] 'house_2'  (36 triangles)
+  [3] 'house_3'  (36 triangles)
+  [4] 'house_4'  (24 triangles)
+  [5] 'house_5'  (36 triangles)
+  [6] 'house_6'  (24 triangles)
+  [7] 'tree_1'  (156 triangles)
+  [8] 'tree_2'  (132 triangles)
+  [9] 'tree_3'  (156 triangles)
+  [10] 'tree_4'  (132 triangles)
+  [11] 'tree_5'  (156 triangles)
+  [12] 'tree_6'  (132 triangles)
+  [13] 'tree_7'  (156 triangles)
+  [14] 'tree_8'  (132 triangles)
+scene dronecam55t_suburb: shape radius 0.1581, half extent [0.436, 0.299, 0.49], sdf grid (151, 43, 64) (1.6s)
+[round 1] drawn 12000 in-band 693 formed 346 verified 317/346 (1165s)  banked 317/1000  rrt-fail 29 recheck-fail 0
+[round 2] drawn 12000 in-band 599 formed 299 verified 277/299 (1029s)  banked 594/1000  rrt-fail 51 recheck-fail 0
+[round 3] drawn 12000 in-band 651 formed 325 verified 295/325 (1152s)  banked 889/1000  rrt-fail 81 recheck-fail 0
+[round 4] drawn 12000 in-band 674 formed 144 verified 134/144 (517s)  banked 1000/1000  rrt-fail 91 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam55t_suburb (4100s): rel angle p50 114 p90 168; |dp| p50 0.40; min clearance p50 0.0274; rrt path length p50 0.71; straight blocked frac mean 0.27

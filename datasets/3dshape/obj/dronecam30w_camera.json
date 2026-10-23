@@ -1,0 +1,49 @@
+{
+ "apex": [
+  -32,
+  4.0,
+  0.0
+ ],
+ "base": [
+  [
+   -2,
+   -4,
+   -17
+  ],
+  [
+   -2,
+   12,
+   -17
+  ],
+  [
+   -2,
+   12,
+   17
+  ],
+  [
+   -2,
+   -4,
+   17
+  ]
+ ],
+ "frame_centre": [
+  -9.0,
+  4.0,
+  0.0
+ ],
+ "drone_centre": [
+  7.0,
+  4.0,
+  0.0
+ ],
+ "bird_obj": "drone_only.obj",
+ "body_obj": "dronecam30w.obj",
+ "follower_obj": "drone30.obj",
+ "distance": 30,
+ "fov": "w",
+ "units": "raw OBJ units",
+ "fov_deg": [
+  59.077564519116194,
+  29.862834356275105
+ ]
+}

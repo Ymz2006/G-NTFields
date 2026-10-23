@@ -1,0 +1,15 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam30w.obj': 1 objects/groups
+  [0] 'dronecam30w'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/meadow.obj': 8 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'tree_1'  (108 triangles)
+  [2] 'tree_2'  (132 triangles)
+  [3] 'tree_3'  (108 triangles)
+  [4] 'tree_4'  (132 triangles)
+  [5] 'tree_5'  (108 triangles)
+  [6] 'shed_1'  (24 triangles)
+  [7] 'shed_2'  (24 triangles)
+scene dronecam30w_meadow: shape radius 0.1063, half extent [0.444, 0.308, 0.49], sdf grid (109, 55, 87) (2.8s)
+[round 1] drawn 12000 in-band 1826 formed 912 verified 912/912 (728s)  banked 912/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 12000 in-band 1867 formed 114 verified 114/114 (98s)  banked 1000/1000  rrt-fail 0 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam30w_meadow (938s): rel angle p50 121 p90 169; |dp| p50 0.45; min clearance p50 0.0289; rrt path length p50 0.85; straight blocked frac mean 0.28

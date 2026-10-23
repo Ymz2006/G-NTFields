@@ -1,0 +1,4 @@
+env3 h 0.15 slerp success q10/50/90 0.195 0.508 0.781 coll frac median 0.095 n<0.3: 46 n<0.15: 16
+env3 h 0.2 slerp success q10/50/90 0.094 0.359 0.595 coll frac median 0.161 n<0.3: 81 n<0.15: 41
+env3 h 0.25 slerp success q10/50/90 0.047 0.227 0.447 coll frac median 0.248 n<0.3: 129 n<0.15: 67
+env3 h 0.3 slerp success q10/50/90 0.023 0.164 0.352 coll frac median 0.307 n<0.3: 170 n<0.15: 96

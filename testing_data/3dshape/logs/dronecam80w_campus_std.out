@@ -1,0 +1,42 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam80w.obj': 1 objects/groups
+  [0] 'dronecam80w'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/campus.obj': 16 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'block_1'  (36 triangles)
+  [2] 'block_2'  (24 triangles)
+  [3] 'block_3'  (36 triangles)
+  [4] 'block_4'  (36 triangles)
+  [5] 'block_5'  (24 triangles)
+  [6] 'block_6'  (24 triangles)
+  [7] 'bridge_1'  (12 triangles)
+  [8] 'bridge_2'  (12 triangles)
+  [9] 'bridge_3'  (12 triangles)
+  [10] 'tree_1'  (132 triangles)
+  [11] 'tree_2'  (132 triangles)
+  [12] 'tree_3'  (132 triangles)
+  [13] 'tree_4'  (132 triangles)
+  [14] 'tree_5'  (132 triangles)
+  [15] 'tree_6'  (132 triangles)
+scene dronecam80w_campus: shape radius 0.2070, half extent [0.439, 0.291, 0.49], sdf grid (190, 53, 84) (2.1s)
+[round 1] drawn 12000 in-band 94 formed 47 verified 47/47 (115s)  banked 47/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 12000 in-band 98 formed 49 verified 48/49 (127s)  banked 95/1000  rrt-fail 1 recheck-fail 0
+[round 3] drawn 12000 in-band 101 formed 50 verified 50/50 (104s)  banked 145/1000  rrt-fail 1 recheck-fail 0
+[round 4] drawn 12000 in-band 97 formed 48 verified 47/48 (158s)  banked 192/1000  rrt-fail 2 recheck-fail 0
+[round 5] drawn 12000 in-band 86 formed 43 verified 43/43 (127s)  banked 235/1000  rrt-fail 2 recheck-fail 0
+[round 6] drawn 12000 in-band 98 formed 49 verified 48/49 (151s)  banked 283/1000  rrt-fail 3 recheck-fail 0
+[round 7] drawn 12000 in-band 104 formed 52 verified 51/52 (152s)  banked 334/1000  rrt-fail 4 recheck-fail 0
+[round 8] drawn 12000 in-band 87 formed 43 verified 41/43 (145s)  banked 375/1000  rrt-fail 6 recheck-fail 0
+[round 9] drawn 12000 in-band 98 formed 49 verified 48/49 (149s)  banked 423/1000  rrt-fail 7 recheck-fail 0
+[round 10] drawn 12000 in-band 89 formed 44 verified 44/44 (111s)  banked 467/1000  rrt-fail 7 recheck-fail 0
+[round 11] drawn 12000 in-band 94 formed 47 verified 47/47 (103s)  banked 514/1000  rrt-fail 7 recheck-fail 0
+[round 12] drawn 12000 in-band 92 formed 46 verified 46/46 (147s)  banked 560/1000  rrt-fail 7 recheck-fail 0
+[round 13] drawn 12000 in-band 106 formed 53 verified 51/53 (157s)  banked 611/1000  rrt-fail 9 recheck-fail 0
+[round 14] drawn 12000 in-band 103 formed 51 verified 50/51 (159s)  banked 661/1000  rrt-fail 10 recheck-fail 0
+[round 15] drawn 12000 in-band 109 formed 54 verified 53/54 (175s)  banked 714/1000  rrt-fail 11 recheck-fail 0
+[round 16] drawn 12000 in-band 93 formed 46 verified 45/46 (128s)  banked 759/1000  rrt-fail 12 recheck-fail 0
+[round 17] drawn 12000 in-band 104 formed 52 verified 52/52 (142s)  banked 811/1000  rrt-fail 12 recheck-fail 0
+[round 18] drawn 12000 in-band 96 formed 48 verified 48/48 (129s)  banked 859/1000  rrt-fail 12 recheck-fail 0
+[round 19] drawn 12000 in-band 101 formed 50 verified 46/50 (200s)  banked 905/1000  rrt-fail 16 recheck-fail 0
+[round 20] drawn 12000 in-band 106 formed 53 verified 51/53 (185s)  banked 956/1000  rrt-fail 18 recheck-fail 0
+[round 21] drawn 12000 in-band 118 formed 59 verified 56/59 (206s)  banked 1000/1000  rrt-fail 21 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam80w_campus (4625s): rel angle p50 102 p90 169; |dp| p50 0.26; min clearance p50 0.0250; rrt path length p50 0.56; straight blocked frac mean 0.27

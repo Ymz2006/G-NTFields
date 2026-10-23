@@ -1,0 +1,8 @@
+forest: scale 220.457, 8 boxes, shape bird [48.0, 18.0, 48.0] raw, pyramid 0.218 x 0.100 x 0.227 (fov 51.3 x 24.8 deg)
+cand   0: L 0.835 rrt  351 it, free mean 0.779 min 0.427 (>0.02: min 0.095), straight 0.477  (19 tries, 6s)
+cand   1: L 0.990 rrt 1335 it, free mean 0.748 min 0.237 (>0.02: min 0.125), straight 0.320  (37 tries, 12s)
+cand   2: L 0.887 rrt  710 it, free mean 0.755 min 0.549 (>0.02: min 0.195), straight 0.414  (119 tries, 23s)
+cand   3: L 0.772 rrt  110 it, free mean 0.802 min 0.414 (>0.02: min 0.223), straight 0.539  (126 tries, 28s)
+cand   4: L 0.763 rrt   41 it, free mean 0.732 min 0.551 (>0.02: min 0.361), straight 0.633  (187 tries, 37s)
+cand   5: L 0.964 rrt  281 it, free mean 0.622 min 0.305 (>0.02: min 0.066), straight 0.273  (256 tries, 48s)
+6 candidates from 300 tries in 53s -> /scratch/paths_v2/cm_forest_cand.json

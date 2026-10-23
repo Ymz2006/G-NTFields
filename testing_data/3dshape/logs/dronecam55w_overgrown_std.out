@@ -1,0 +1,80 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam55w.obj': 1 objects/groups
+  [0] 'dronecam55w'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/overgrown.obj': 24 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'tower_1'  (24 triangles)
+  [2] 'tower_2'  (24 triangles)
+  [3] 'tower_3'  (24 triangles)
+  [4] 'tower_4'  (36 triangles)
+  [5] 'tower_5'  (24 triangles)
+  [6] 'tower_6'  (36 triangles)
+  [7] 'tower_7'  (24 triangles)
+  [8] 'tower_8'  (24 triangles)
+  [9] 'tower_9'  (24 triangles)
+  [10] 'bridge_1'  (12 triangles)
+  [11] 'bridge_2'  (12 triangles)
+  [12] 'bridge_3'  (12 triangles)
+  [13] 'cable_1'  (12 triangles)
+  [14] 'cable_2'  (12 triangles)
+  [15] 'cable_3'  (12 triangles)
+  [16] 'tree_1'  (132 triangles)
+  [17] 'tree_2'  (132 triangles)
+  [18] 'tree_3'  (132 triangles)
+  [19] 'tree_4'  (132 triangles)
+  [20] 'tree_5'  (132 triangles)
+  [21] 'tree_6'  (132 triangles)
+  [22] 'tree_7'  (132 triangles)
+  [23] 'tree_8'  (132 triangles)
+scene dronecam55w_overgrown: shape radius 0.1572, half extent [0.441, 0.298, 0.49], sdf grid (150, 54, 85) (2.3s)
+[round 1] drawn 12000 in-band 41 formed 20 verified 20/20 (70s)  banked 20/1000  rrt-fail 0 recheck-fail 0
+[round 2] drawn 12000 in-band 46 formed 23 verified 21/23 (131s)  banked 41/1000  rrt-fail 2 recheck-fail 0
+[round 3] drawn 12000 in-band 52 formed 26 verified 25/26 (122s)  banked 66/1000  rrt-fail 3 recheck-fail 0
+[round 4] drawn 12000 in-band 41 formed 20 verified 20/20 (87s)  banked 86/1000  rrt-fail 3 recheck-fail 0
+[round 5] drawn 12000 in-band 40 formed 20 verified 20/20 (83s)  banked 106/1000  rrt-fail 3 recheck-fail 0
+[round 6] drawn 12000 in-band 42 formed 21 verified 21/21 (92s)  banked 127/1000  rrt-fail 3 recheck-fail 0
+[round 7] drawn 12000 in-band 35 formed 17 verified 17/17 (121s)  banked 144/1000  rrt-fail 3 recheck-fail 0
+[round 8] drawn 12000 in-band 29 formed 14 verified 14/14 (80s)  banked 158/1000  rrt-fail 3 recheck-fail 0
+[round 9] drawn 12000 in-band 35 formed 17 verified 17/17 (104s)  banked 175/1000  rrt-fail 3 recheck-fail 0
+[round 10] drawn 12000 in-band 49 formed 24 verified 24/24 (91s)  banked 199/1000  rrt-fail 3 recheck-fail 0
+[round 11] drawn 12000 in-band 46 formed 23 verified 23/23 (46s)  banked 222/1000  rrt-fail 3 recheck-fail 0
+[round 12] drawn 12000 in-band 42 formed 21 verified 21/21 (85s)  banked 243/1000  rrt-fail 3 recheck-fail 0
+[round 13] drawn 12000 in-band 38 formed 19 verified 19/19 (46s)  banked 262/1000  rrt-fail 3 recheck-fail 0
+[round 14] drawn 12000 in-band 37 formed 18 verified 18/18 (51s)  banked 280/1000  rrt-fail 3 recheck-fail 0
+[round 15] drawn 12000 in-band 37 formed 18 verified 18/18 (76s)  banked 298/1000  rrt-fail 3 recheck-fail 0
+[round 16] drawn 12000 in-band 44 formed 22 verified 22/22 (62s)  banked 320/1000  rrt-fail 3 recheck-fail 0
+[round 17] drawn 12000 in-band 46 formed 23 verified 23/23 (100s)  banked 343/1000  rrt-fail 3 recheck-fail 0
+[round 18] drawn 12000 in-band 41 formed 20 verified 20/20 (77s)  banked 363/1000  rrt-fail 3 recheck-fail 0
+[round 19] drawn 12000 in-band 33 formed 16 verified 16/16 (80s)  banked 379/1000  rrt-fail 3 recheck-fail 0
+[round 20] drawn 12000 in-band 26 formed 13 verified 13/13 (30s)  banked 392/1000  rrt-fail 3 recheck-fail 0
+[round 21] drawn 12000 in-band 39 formed 19 verified 19/19 (56s)  banked 411/1000  rrt-fail 3 recheck-fail 0
+[round 22] drawn 12000 in-band 36 formed 18 verified 18/18 (63s)  banked 429/1000  rrt-fail 3 recheck-fail 0
+[round 23] drawn 12000 in-band 44 formed 22 verified 22/22 (58s)  banked 451/1000  rrt-fail 3 recheck-fail 0
+[round 24] drawn 12000 in-band 47 formed 23 verified 23/23 (88s)  banked 474/1000  rrt-fail 3 recheck-fail 0
+[round 25] drawn 12000 in-band 41 formed 20 verified 20/20 (66s)  banked 494/1000  rrt-fail 3 recheck-fail 0
+[round 26] drawn 12000 in-band 46 formed 23 verified 23/23 (73s)  banked 517/1000  rrt-fail 3 recheck-fail 0
+[round 27] drawn 12000 in-band 46 formed 23 verified 23/23 (105s)  banked 540/1000  rrt-fail 3 recheck-fail 0
+[round 28] drawn 12000 in-band 42 formed 21 verified 21/21 (76s)  banked 561/1000  rrt-fail 3 recheck-fail 0
+[round 29] drawn 12000 in-band 37 formed 18 verified 18/18 (62s)  banked 579/1000  rrt-fail 3 recheck-fail 0
+[round 30] drawn 12000 in-band 37 formed 18 verified 18/18 (54s)  banked 597/1000  rrt-fail 3 recheck-fail 0
+[round 31] drawn 12000 in-band 41 formed 20 verified 20/20 (61s)  banked 617/1000  rrt-fail 3 recheck-fail 0
+[round 32] drawn 12000 in-band 45 formed 22 verified 22/22 (112s)  banked 639/1000  rrt-fail 3 recheck-fail 0
+[round 33] drawn 12000 in-band 26 formed 13 verified 13/13 (61s)  banked 652/1000  rrt-fail 3 recheck-fail 0
+[round 34] drawn 12000 in-band 35 formed 17 verified 17/17 (88s)  banked 669/1000  rrt-fail 3 recheck-fail 0
+[round 35] drawn 12000 in-band 47 formed 23 verified 23/23 (46s)  banked 692/1000  rrt-fail 3 recheck-fail 0
+[round 36] drawn 12000 in-band 33 formed 16 verified 16/16 (30s)  banked 708/1000  rrt-fail 3 recheck-fail 0
+[round 37] drawn 12000 in-band 39 formed 19 verified 19/19 (29s)  banked 727/1000  rrt-fail 3 recheck-fail 0
+[round 38] drawn 12000 in-band 54 formed 27 verified 27/27 (61s)  banked 754/1000  rrt-fail 3 recheck-fail 0
+[round 39] drawn 12000 in-band 33 formed 16 verified 16/16 (71s)  banked 770/1000  rrt-fail 3 recheck-fail 0
+[round 40] drawn 12000 in-band 44 formed 22 verified 22/22 (50s)  banked 792/1000  rrt-fail 3 recheck-fail 0
+[round 41] drawn 12000 in-band 43 formed 21 verified 21/21 (66s)  banked 813/1000  rrt-fail 3 recheck-fail 0
+[round 42] drawn 12000 in-band 33 formed 16 verified 16/16 (55s)  banked 829/1000  rrt-fail 3 recheck-fail 0
+[round 43] drawn 12000 in-band 44 formed 22 verified 22/22 (39s)  banked 851/1000  rrt-fail 3 recheck-fail 0
+[round 44] drawn 12000 in-band 45 formed 22 verified 22/22 (98s)  banked 873/1000  rrt-fail 3 recheck-fail 0
+[round 45] drawn 12000 in-band 41 formed 20 verified 20/20 (64s)  banked 893/1000  rrt-fail 3 recheck-fail 0
+[round 46] drawn 12000 in-band 37 formed 18 verified 18/18 (44s)  banked 911/1000  rrt-fail 3 recheck-fail 0
+[round 47] drawn 12000 in-band 34 formed 17 verified 17/17 (43s)  banked 928/1000  rrt-fail 3 recheck-fail 0
+[round 48] drawn 12000 in-band 45 formed 22 verified 21/22 (121s)  banked 949/1000  rrt-fail 4 recheck-fail 0
+[round 49] drawn 12000 in-band 37 formed 18 verified 18/18 (51s)  banked 967/1000  rrt-fail 4 recheck-fail 0
+[round 50] drawn 12000 in-band 36 formed 18 verified 18/18 (23s)  banked 985/1000  rrt-fail 4 recheck-fail 0
+[round 51] drawn 12000 in-band 40 formed 20 verified 20/20 (95s)  banked 1000/1000  rrt-fail 4 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam55w_overgrown (7278s): rel angle p50 99 p90 166; |dp| p50 0.25; min clearance p50 0.0239; rrt path length p50 0.59; straight blocked frac mean 0.28

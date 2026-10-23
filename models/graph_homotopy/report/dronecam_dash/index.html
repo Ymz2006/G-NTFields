@@ -1,0 +1,394 @@
+<style>
+  /* one column of cards; the scene panels sit three abreast and stack when narrow */
+  .dc { font-family: var(--font-anthropic-sans); max-width: 80rem; margin-inline: auto; display: grid; gap: var(--cds-gap-lg); }
+  .dc h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .dc h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-xs); }
+  .dc p { margin: 0; line-height: 1.5; }
+  .dc .take { color: var(--color-fg); max-width: 62rem; }
+  .dc .note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .dc-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-md); min-width: 0; }
+  .dc-idea { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-lg); align-items: center; }
+  .dc-idea .txt { display: grid; gap: var(--cds-gap-sm); max-width: 40rem; }
+  .dc-spec { display: grid; grid-template-columns: auto 1fr; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .dc-spec dt { color: var(--color-fg-muted); } .dc-spec dd { margin: 0; }
+  .dc-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-md); }
+  .dc-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .dc-tile .lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .dc-tile .n { font-family: var(--font-anthropic-serif); font-size: 2.1rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .dc-tile .sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .dc-tile .sub b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+  .dc-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--cds-gap-md); }
+  .dc-fig { display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .dc-fig canvas, .dc-idea canvas { width: 100%; height: auto; display: block; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: #fbfaf7; }
+  .dc-fig .cap { font-size: var(--cds-font-size-caption); line-height: 1.45; }
+  .dc-fig .cap b, .dc-pov-row .cap b { font-weight: var(--cds-font-weight-medium); }
+  .dc-key { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .dc-key span::before { content: ""; display: inline-block; width: 0.7em; height: 0.7em; border-radius: 2px; margin-right: 0.4em; vertical-align: -0.05em; background: var(--k); }
+  .dc-key[hidden] { display: none; }
+  .dc-head { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); align-items: flex-start; justify-content: space-between; }
+  .dc-head > div:first-child { min-width: 0; flex: 1 1 24rem; }
+  .dc-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; flex: none; }
+  .dc-seg button { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-md); border: 0; background: var(--color-panel); color: var(--color-fg-muted); cursor: pointer; }
+  .dc-seg button + button { border-left: 1px solid var(--color-border-line); }
+  .dc-seg button[aria-pressed=true] { background: var(--color-fg); color: var(--color-bg); }
+  .dc-pov { display: grid; gap: var(--cds-gap-lg); }
+  .dc-pov-row { display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .dc-pov-row .cap { font-size: var(--cds-font-size-caption); line-height: 1.45; }
+  .dc-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-sm); }
+  .dc-frame { display: grid; gap: 2px; min-width: 0; }
+  .dc-frame canvas { width: 100%; height: auto; display: block; border-radius: 4px; border: 2px solid var(--color-border-line); }
+  .dc-frame.bad canvas { border-color: #e34948; }
+  .dc-frame .lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .dc-frame.bad .lab { color: var(--color-bad); }
+  /* the scene x camera matrices */
+  .dc-mwrap { overflow-x: auto; }
+  .dc-matrix { display: grid; gap: 3px; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; min-width: 40rem; }
+  .dc-matrix .h { color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); align-self: end; }
+  .dc-matrix .r { color: var(--color-fg); font-weight: var(--cds-font-weight-medium); padding: var(--cds-pad-xs) var(--cds-pad-sm); align-self: center; }
+  .dc-matrix .c { border-radius: 4px; padding: var(--cds-pad-xs) var(--cds-pad-sm); display: grid; gap: 1px; background: var(--color-bg); border: 1px solid var(--color-border-line); min-height: 3.2rem; }
+  .dc-matrix .c .a { font-family: var(--font-anthropic-serif); font-size: 1.25rem; line-height: 1.1; }
+  .dc-matrix .c .b { color: var(--color-fg-muted); }
+  .dc-matrix .c .b b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+  .dc-matrix .c.gap1 { background: color-mix(in srgb, var(--color-bad) 10%, var(--color-bg)); }
+  .dc-matrix .c.gap2 { background: color-mix(in srgb, var(--color-bad) 22%, var(--color-bg)); }
+  .dc-matrix .c.gap3 { background: color-mix(in srgb, var(--color-bad) 36%, var(--color-bg)); }
+  .dc-matrix .c.none { color: var(--color-fg-muted); align-content: center; text-align: center; }
+  .dc-legend { display: flex; gap: var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); flex-wrap: wrap; }
+  .dc-twrap { overflow-x: auto; }
+  .dc table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .dc th, .dc td { padding: var(--cds-pad-xs) var(--cds-pad-sm); text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .dc th:nth-child(-n+4), .dc td:nth-child(-n+4) { text-align: left; }
+  .dc th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .dc tr.body td { font-weight: var(--cds-font-weight-medium); }
+  .dc tr.scene td { background: var(--color-bg); color: var(--color-fg-muted); text-align: left; font-weight: var(--cds-font-weight-medium); }
+  .dc-paired { display: grid; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); }
+  .dc-paired div { display: grid; grid-template-columns: minmax(14rem, 2fr) minmax(8rem, 1fr) auto; gap: var(--cds-gap-md); align-items: baseline; padding-block: 2px; border-bottom: 1px solid var(--color-border-line); }
+  .dc-pill { display: inline-block; padding: 0 0.5em; border-radius: 1em; border: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); }
+  .dc-pill.ok { color: var(--color-ok); } .dc-pill.bad { color: var(--color-bad); }
+  .dc-method { display: grid; gap: var(--cds-gap-sm); max-width: 64rem; }
+  .dc-method p { font-size: var(--cds-font-size-body); }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+<div class="dc">
+  <header>
+    <h1 id="title">Drone chase camera</h1>
+    <p class="take" id="takeaway" data-source="headline" data-where="metric=takeaway" data-field="value">—</p>
+  </header>
+
+  <section class="dc-card" id="idea">
+    <div class="dc-idea" data-source="showcase">
+      <canvas id="bodyfig" width="1200" height="760"></canvas>
+      <div class="txt">
+        <h2>The camera's field of view is part of the shape</h2>
+        <p>A small delta-wing drone is followed by a chase camera on its axis. The camera is a point; what it sees up to the drone is a rectangle-based pyramid with its tip at the camera and its base on the drone's back. Drone, camera and pyramid are planned as one rigid body in SE(3): a collision-free path means the drone flies, the camera flies, and nothing enters the shot. The same planners that move a shape through a room move this body; no camera-specific cost, no second planner. Six set-ups: the camera 30, 55 or 80 units behind the drone (1.5, 2.75 or 4 wing spans), each with a tight or a wide field of view.</p>
+        <dl class="dc-spec">
+          <dt>Drone</dt><dd>14 units long, 20 wing span, 8 tall (room 198 × 138 × 218)</dd>
+          <dt>Camera</dt><dd>30 / 55 / 80 units behind the wing, on the drone's axis</dd>
+          <dt>Field of view</dt><dd>tight 22 × 10 at the drone (40° × 19° to 16° × 7°); wide 34 × 16 (59° × 30° to 24° × 11°)</dd>
+          <dt>Follower baseline</dt><dd>the same drone with the camera as a point: plan the drone, attach the camera</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="dc-tiles" id="headline-tiles"></section>
+
+  <section class="dc-card" id="matrix-follow">
+    <div><h2>Keeping the drone in frame: camera-aware body vs rigid follower</h2><p class="note">Share of 1000 pairs per scene and camera set-up where the plan converges, the drone never collides and the camera sees at least 99% of its visible drone samples at every waypoint. Lifted-encoder model, mean over seeds. Big number: the model planned the whole body. Small number: the same model planned the drone alone with the camera attached behind it, scored on the same pairs. Darker cells: a bigger loss for the follower.</p></div>
+    <div class="dc-mwrap" data-source="results"><div class="dc-matrix" id="matrix-a"></div></div>
+  </section>
+
+  <section class="dc-card" id="matrix-models">
+    <div><h2>Camera-aware body: lifted encoder vs full NTFields</h2><p class="note">The same measure for the camera-aware body planned by the lifted-encoder head (big number) and by the full metric NTFields (small number), both at 4000 epochs on the same 400k training pairs per cell. Darker cells: a bigger gap in favour of the lifted encoder.</p></div>
+    <div class="dc-mwrap" data-source="results"><div class="dc-matrix" id="matrix-b"></div></div>
+  </section>
+
+  <div id="scene-cards" style="display: grid; gap: var(--cds-gap-lg);"></div>
+
+  <section class="dc-card" id="table">
+    <div><h2>All outcomes</h2><p class="note">Percent of 1000 pairs, mean over seeds (± sd for the success rates). Clean frame: converged and the whole body (drone, camera, view pyramid) collision-free, so nothing of the scene enters the field of view all along. Follow success as above. View blocked: pairs where the camera lost part of the drone at some waypoint. Lifted encoder with the dual (double cover) planner; NTFields with the base planner.</p></div>
+    <div class="dc-twrap"><table data-source="results" data-row-key="key" id="results-table">
+      <thead><tr><th data-field="scene">Scene</th><th data-field="camera">Camera</th><th data-field="model">Model</th><th data-field="trained_on">Planned as</th><th data-field="success_se3">Clean frame</th><th data-field="follow_success">Follow success</th><th data-field="drone_collision">Drone collides</th><th data-field="view_blocked">View blocked</th><th data-field="not_converged">Not converged</th><th data-field="mean_view">Mean view</th><th data-field="seeds">Seeds</th></tr></thead>
+      <tbody></tbody></table></div>
+  </section>
+
+  <section class="dc-card" id="paired">
+    <div><h2>Paired comparisons</h2><p class="note">Seed-matched cases: pairs the first solves and the second does not, and the reverse; exact McNemar p; a difference counts below p = 0.01.</p></div>
+    <div class="dc-paired" data-source="paired" id="paired-list"></div>
+  </section>
+
+  <section class="dc-card dc-method" id="method">
+    <h2>How the test was run</h2>
+    <p>Bodies and scenes: dataprocessing/make_dronecam3d.py. The drone is a polycube delta wing (fuselage 14 × 4 × 4, wing span 20, fin 4 tall). The view pyramid's base is a 2-unit plate on the drone's back, 22 × 10 (tight, the silhouette plus a 1-unit margin) or 34 × 16 (wide); its tip is the camera 30, 55 or 80 units behind. The follower body is the same drone plus a 1-unit cube at the camera, so both bodies of a distance share one frame and one set of test pairs.</p>
+    <p>Five scenes in the room of the shape cells, easiest to hardest: meadow (five trees, two sheds), suburb (six houses along two streets, eight trees whose 22–30-unit branches overhang the streets), campus (six blocks 64–95 high, three sky bridges, six trees, porticos), downtown (a 3 × 3 grid of towers 84–130 high with streets 40 and 44 wide, four sky bridges, masts, porticos, four street trees) and overgrown (the tower grid with eight kerb trees whose branches cross the streets, three cables, three sky bridges). Trees have a 6 × 6 trunk, a stepped crown and two to four 4 × 4 branches with a leaf clump: thin, high things the drone clears easily and a camera 30–80 units behind it does not.</p>
+    <p>Training: 400k narrow-band pairs per cell (sharded preprocessing on signed-distance grids with exact fallback, preprocess_obj_fast.py), 4000 epochs, seeds 0–2, for the lifted-encoder head (graph_homotopy_lift) and the full metric NTFields (TD and normal terms 1e-3). Test sets: 1000 RRT-verified pairs of the camera-aware body per scene and camera set-up (make_test_sets.py --variant std).</p>
+    <p>Scoring (plan_eval_homotopy.py --camera): the same planner and collision test as every other comparison (50k scene surface points inside the placed body); in addition, at every waypoint the camera casts a ray to each of its visible drone surface samples against the scene mesh, and the drone alone is collision-checked. The scene views draw the plan up to SE(3) convergence, the drone's path, the camera's path, the body at the start, the end and the frame where the camera first loses the drone or the body first collides; the camera views are the field of view itself at six waypoints.</p>
+  </section>
+</div>
+<script src="render3d.js"></script>
+<script src="scenes.js"></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const fmt1 = v => (v == null || v === '' || Number.isNaN(Number(v))) ? '—' : Number(v).toFixed(1);
+  const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
+  const SCENES = ['meadow', 'suburb', 'campus', 'downtown', 'overgrown'];
+  const CAMS = ['30t', '30w', '55t', '55w', '80t', '80w'];
+  const camName = c => c.slice(0, -1) + ' behind, ' + (c.endsWith('t') ? 'tight' : 'wide');
+  const PLANS = [['lifted_body', 'Camera-aware body, lifted encoder'], ['lifted_follower', 'Rigid follower, lifted encoder'], ['ntf_body', 'Camera-aware body, full NTFields']];
+  const rowsOf = id => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
+  const pick = (rows, scene, cam, model, kind) => rows.find(r => r.scene === scene && r.camera === cam && r.model_code === model && r.kind === kind);
+  const num = r => (r ? Number(r.follow_success) : null);
+
+  // The showcase file is rows {part, data}: 'common' (bodies, cameras) and one per scene.
+  let showcaseCache = null, showcaseSrc = null;
+  function showcaseObj(rows) {
+    if (!rows || !rows.length) return null;
+    if (rows === showcaseSrc) return showcaseCache;
+    const D = { scenes: {} };
+    for (const r of rows) {
+      const v = typeof r.data === 'string' ? JSON.parse(r.data) : r.data;
+      if (r.part === 'common') Object.assign(D, v); else D.scenes[r.part] = v;
+    }
+    showcaseSrc = rows; showcaseCache = D;
+    return D;
+  }
+
+  dash.calc('headline', {
+    inputs: ['results'],
+    title: 'Headline follow success',
+    description: 'Per scene the follow success of the lifted-encoder camera-aware body and its rigid follower, averaged over the camera set-ups present; the full NTFields body over everything; the takeaway sentence.',
+    fn: (results) => {
+      const scenes = ['meadow', 'suburb', 'campus', 'downtown', 'overgrown'];
+      const mean = a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null;
+      const sel = (scene, model, kind) => results.filter(r => (scene == null || r.scene === scene) && r.model_code === model && r.kind === kind && r.follow_success !== '').map(r => Number(r.follow_success));
+      const out = [];
+      const bodies = [], fols = [], gaps = [];
+      for (const s of scenes) {
+        const b = mean(sel(s, 'hlift', 'body')), f = mean(sel(s, 'hlift', 'follower'));
+        out.push({ metric: s + '_body', value: b }, { metric: s + '_follower', value: f }, { metric: s + '_cams', value: sel(s, 'hlift', 'body').length });
+        if (b != null) bodies.push(b); if (f != null) fols.push(f); if (b != null && f != null) gaps.push(b - f);
+      }
+      const ntf = mean(sel(null, 'mbtd', 'body')), lift = mean(sel(null, 'hlift', 'body'));
+      out.push({ metric: 'ntf_body', value: ntf }, { metric: 'lifted_body', value: lift }, { metric: 'cells', value: sel(null, 'hlift', 'body').length });
+      const worst = results.filter(r => r.model_code === 'hlift' && r.kind === 'follower' && r.follow_success !== '').sort((a, b) => Number(a.follow_success) - Number(b.follow_success))[0];
+      let take = '';
+      if (bodies.length) {
+        take = 'Planning the drone together with its camera\'s field of view keeps the drone in frame on ' + mean(bodies).toFixed(1) + '% of the test pairs (lifted encoder, over ' + sel(null, 'hlift', 'body').length + ' scene and camera set-ups so far); the same model planning the drone alone, with the camera attached behind it, keeps it in frame on ' + mean(fols).toFixed(1) + '%';
+        if (worst) take += ', down to ' + Number(worst.follow_success).toFixed(1) + '% in the ' + worst.scene + ' with the camera ' + worst.camera.slice(0, -1) + ' units behind';
+        if (ntf != null) take += '. The full metric NTFields on the camera-aware body reaches ' + ntf.toFixed(1) + '%';
+        take += '.';
+      }
+      out.push({ metric: 'takeaway', value: take });
+      return out;
+    },
+  });
+
+  function drawTiles(h) {
+    const box = $('headline-tiles');
+    box.textContent = '';
+    for (const s of SCENES) {
+      const b = h[s + '_body'], f = h[s + '_follower'], n = h[s + '_cams'];
+      const t = document.createElement('div'); t.className = 'dc-tile';
+      const lab = document.createElement('div'); lab.className = 'lab'; lab.textContent = cap(s) + ': drone kept in frame';
+      const nv = document.createElement('div'); nv.className = 'n';
+      const span = document.createElement('span'); span.dataset.source = 'headline'; span.dataset.where = 'metric=' + s + '_body'; span.dataset.field = 'value';
+      span.textContent = b != null ? fmt1(b) : '—'; nv.appendChild(span);
+      const small = document.createElement('small'); small.textContent = '%'; nv.appendChild(small);
+      const sub = document.createElement('div'); sub.className = 'sub';
+      if (f != null) { sub.textContent = 'rigid follower '; const bb = document.createElement('b'); bb.dataset.source = 'headline'; bb.dataset.where = 'metric=' + s + '_follower'; bb.dataset.field = 'value'; bb.textContent = fmt1(f); sub.appendChild(bb); sub.appendChild(document.createTextNode('%' + (n ? ' · ' + n + ' camera set-up' + (n === 1 ? '' : 's') : ''))); }
+      else sub.textContent = n ? '' : 'not run yet';
+      t.append(lab, nv, sub); box.appendChild(t);
+    }
+    const t = document.createElement('div'); t.className = 'dc-tile';
+    const lab = document.createElement('div'); lab.className = 'lab'; lab.textContent = 'Full NTFields, camera-aware body';
+    const nv = document.createElement('div'); nv.className = 'n';
+    const span = document.createElement('span'); span.dataset.source = 'headline'; span.dataset.where = 'metric=ntf_body'; span.dataset.field = 'value';
+    span.textContent = h.ntf_body != null ? fmt1(h.ntf_body) : '—'; nv.appendChild(span);
+    const small = document.createElement('small'); small.textContent = '%'; nv.appendChild(small);
+    const sub = document.createElement('div'); sub.className = 'sub';
+    if (h.lifted_body != null) { sub.textContent = 'lifted encoder '; const bb = document.createElement('b'); bb.dataset.source = 'headline'; bb.dataset.where = 'metric=lifted_body'; bb.dataset.field = 'value'; bb.textContent = fmt1(h.lifted_body); sub.appendChild(bb); sub.appendChild(document.createTextNode('% over the same cells')); }
+    t.append(lab, nv, sub); box.appendChild(t);
+  }
+
+  function drawMatrix(el, rows, bigModel, bigKind, smallModel, smallKind, gapScale) {
+    el.textContent = '';
+    el.style.gridTemplateColumns = 'auto repeat(' + CAMS.length + ', minmax(5.5rem, 1fr))';
+    const h0 = document.createElement('div'); h0.className = 'h'; h0.textContent = 'scene \\ camera'; el.appendChild(h0);
+    for (const c of CAMS) { const h = document.createElement('div'); h.className = 'h'; h.textContent = camName(c); el.appendChild(h); }
+    for (const s of SCENES) {
+      const r = document.createElement('div'); r.className = 'r'; r.textContent = cap(s); el.appendChild(r);
+      for (const c of CAMS) {
+        const cell = document.createElement('div'); cell.className = 'c';
+        const a = rows ? pick(rows, s, c, bigModel, bigKind) : null, b = rows ? pick(rows, s, c, smallModel, smallKind) : null;
+        if (!a && !b) { cell.classList.add('none'); cell.textContent = rows ? 'not run yet' : '—'; el.appendChild(cell); continue; }
+        const av = num(a), bv = num(b);
+        const big = document.createElement('div'); big.className = 'a'; big.textContent = av != null ? av.toFixed(1) + '%' : '—';
+        const sm = document.createElement('div'); sm.className = 'b';
+        if (bv != null) { const bb = document.createElement('b'); bb.textContent = bv.toFixed(1) + '%'; sm.append(bb, document.createTextNode(smallKind === 'follower' ? ' follower' : ' NTFields')); }
+        else sm.textContent = (smallKind === 'follower' ? 'follower' : 'NTFields') + ' pending';
+        if (av != null && bv != null) { const g = (av - bv) / gapScale; cell.classList.add(g > 0.66 ? 'gap3' : g > 0.33 ? 'gap2' : g > 0.08 ? 'gap1' : 'gap0'); }
+        cell.append(big, sm); el.appendChild(cell);
+      }
+    }
+  }
+
+  function drawTable(rows) {
+    const tb = $('results-table').querySelector('tbody');
+    tb.textContent = '';
+    if (!rows) return;
+    let last = null;
+    const order = r => SCENES.indexOf(r.scene) * 100 + CAMS.indexOf(r.camera) * 4 + (r.model_code === 'mbtd' ? 2 : 0) + (r.kind === 'follower' ? 1 : 0);
+    for (const r of [...rows].sort((a, b) => order(a) - order(b))) {
+      if (r.scene !== last) {
+        const tr = document.createElement('tr'); tr.className = 'scene';
+        const td = document.createElement('td'); td.colSpan = 11; td.textContent = cap(r.scene); tr.appendChild(td); tb.appendChild(tr);
+        last = r.scene;
+      }
+      const tr = document.createElement('tr'); tr.dataset.key = r.key; if (r.kind === 'body') tr.className = 'body';
+      const cells = [cap(r.scene), camName(r.camera), r.model, r.trained_on, fmt1(r.success_se3) + (r.success_sd !== '' ? ' ± ' + fmt1(r.success_sd) : ''),
+        fmt1(r.follow_success) + (r.follow_sd !== '' ? ' ± ' + fmt1(r.follow_sd) : ''), fmt1(r.drone_collision), fmt1(r.view_blocked), fmt1(r.not_converged), fmt1(r.mean_view), r.seeds];
+      for (const c of cells) { const td = document.createElement('td'); td.textContent = c; tr.appendChild(td); }
+      tb.appendChild(tr);
+    }
+  }
+
+  function drawPaired(rows) {
+    const box = $('paired-list');
+    box.textContent = '';
+    if (!rows) return;
+    for (const r of rows) {
+      const div = document.createElement('div');
+      const a = document.createElement('span'); a.textContent = cap(r.scene) + ', camera ' + camName(r.camera) + ': ' + r.comparison;
+      const b = document.createElement('span'); b.textContent = '+' + r.wins + ' / −' + r.losses + (r.p !== '' ? ', p ' + r.p : '');
+      const c = document.createElement('span'); c.className = 'dc-pill' + (/ahead$/.test(r.verdict) && !/follower|NTFields/.test(r.verdict) ? ' ok' : /follower ahead|NTFields ahead/.test(r.verdict) ? ' bad' : ''); c.textContent = r.verdict;
+      div.append(a, b, c); box.appendChild(div);
+    }
+  }
+
+  function caption(label, plan) {
+    const o = plan.outcome, n = o.steps;
+    let s = '<b>' + label + '.</b> ';
+    if (o.follow_success_se3) s += 'Reaches the goal in ' + n + ' steps; the camera sees the whole drone at every step (lowest ' + Math.round(100 * o.view_min) + '%).';
+    else {
+      const parts = [];
+      if (!plan.converged) parts.push('does not converge within 200 steps');
+      if (plan.view_lost_at != null) parts.push('the camera loses part of the drone at step ' + plan.view_lost_at + ' (lowest view ' + Math.round(100 * o.view_min) + '%)');
+      if (plan.bird_hit_at != null) parts.push('the drone itself collides at step ' + plan.bird_hit_at);
+      else if (plan.body_hit_at != null && plan.view_lost_at == null) parts.push('the body collides at step ' + plan.body_hit_at);
+      const t = parts.length ? parts.join('; ') + '.' : 'fails.'; s += cap(t);
+    }
+    return s;
+  }
+  function povCaption(label, plan, D, env, planKey) {
+    const o = plan.outcome;
+    let t = '<b>' + label + '.</b> ';
+    if (plan.view_lost_at != null) {
+      const inObst = camInside(D, env, planKey, plan.view_lost_at);
+      t += (inObst ? 'The camera point itself flies into ' + inObst + ' at step ' + plan.view_lost_at : 'Something enters the field of view at step ' + plan.view_lost_at) + '; the lowest view is ' + Math.round(100 * o.view_min) + '% of the drone.';
+    }
+    else if (plan.bird_hit_at != null) t += 'The view stays clear, but the drone collides at step ' + plan.bird_hit_at + '.';
+    else t += 'Nothing enters the field of view; the camera sees the whole drone on all ' + (plan.poses.length - 1) + ' steps.';
+    if (!plan.converged) t += ' The plan does not reach the goal within 200 steps.';
+    return t;
+  }
+
+  const modes = {};   // per scene: 'scene' | 'camera'
+  const povCache = new Map(), POV_W = 420, povQueue = [];
+  let povBusy = false;
+  function pumpPOV() {   // one frame per task: the strips fill in without freezing the page
+    if (povBusy) return;
+    const job = povQueue.shift();
+    if (!job) return;
+    povBusy = true;
+    setTimeout(() => { const [cv, D, env, key, k] = job; try { drawPOV(cv, D, env, key, k, POV_W, 1.5); } catch (e) {} povBusy = false; pumpPOV(); }, 0);
+  }
+  function drawCameraMode(D, env, box) {
+    const S = D.scenes[env], B = D.bodies[S.camera], wrap = document.createElement('div'); wrap.className = 'dc-pov';
+    for (const [key, label] of PLANS) {
+      const plan = S.plans[key];
+      if (!plan) continue;
+      const row = document.createElement('div'); row.className = 'dc-pov-row';
+      const c = document.createElement('div'); c.className = 'cap'; c.innerHTML = povCaption(label, plan, D, env, key);
+      const strip = document.createElement('div'); strip.className = 'dc-strip';
+      for (const k of povFrames(plan, 6)) {
+        const ck = env + ':' + key + ':' + k;
+        let cv = povCache.get(ck);
+        if (!cv) {
+          cv = document.createElement('canvas'); cv.width = POV_W; cv.height = Math.round(POV_W * B.camera.base[2][1] / B.camera.base[2][2]);
+          povCache.set(ck, cv); povQueue.push([cv, D, env, key, k]);
+        }
+        const v = plan.view[k], bad = v < 0.99 || plan.bird_hit_at === k;
+        const fr = document.createElement('div'); fr.className = 'dc-frame' + (bad ? ' bad' : '');
+        const lab = document.createElement('div'); lab.className = 'lab';
+        const inObst = camInside(D, env, key, k);
+        lab.textContent = 'step ' + k + ' · sees ' + Math.round(100 * v) + '% of the drone' + (plan.bird_hit_at === k ? ' · drone collides' : '') + (inObst ? ' · camera inside ' + inObst : '');
+        fr.append(cv, lab); strip.appendChild(fr);
+      }
+      row.append(c, strip); wrap.appendChild(row);
+    }
+    box.appendChild(wrap);
+    pumpPOV();
+  }
+
+  function sceneCard(env) {
+    let sec = $('card-' + env);
+    if (sec) return sec;
+    sec = document.createElement('section'); sec.className = 'dc-card'; sec.id = 'card-' + env;
+    sec.innerHTML = '<div class="dc-head"><div><h2>' + cap(env) + ': one start-goal pair, three plans</h2><p class="note" id="note-' + env + '">—</p></div>' +
+      '<div class="dc-seg" role="group" aria-label="View mode"><button type="button" data-mode="scene" aria-pressed="true">Scene view</button><button type="button" data-mode="camera" aria-pressed="false">Camera view</button></div></div>' +
+      '<div class="dc-panels" data-source="showcase" id="panels-' + env + '"></div>' +
+      '<div class="dc-key" data-mode-key="scene"><span style="--k:#eb6834">drone and its path</span><span style="--k:#2a78d6">camera and its path; field of view</span><span style="--k:#e34948">frame where the view breaks or the body collides</span><span style="--k:#1baf7a">goal</span></div>' +
+      '<div class="dc-key" data-mode-key="camera" hidden><span style="--k:#eb6834">the drone</span><span style="--k:#e34948">inside the field of view, in front of the drone: blocks the shot</span><span style="--k:#c9ccd0">beyond the drone (faded)</span><span style="--k:#e34948">red frame: the camera sees less than 99% of the drone</span></div>';
+    $('scene-cards').appendChild(sec);
+    sec.querySelectorAll('[data-mode]').forEach(b => b.addEventListener('click', () => {
+      if (modes[env] === b.dataset.mode) return;
+      modes[env] = b.dataset.mode; drawScene(lastD, env);
+    }));
+    return sec;
+  }
+
+  function drawScene(D, env) {
+    const S = D && D.scenes && D.scenes[env];
+    if (!S) return;
+    const sec = sceneCard(env), mode = modes[env] || 'scene';
+    const box = $('panels-' + env), note = $('note-' + env), B = D.bodies[S.camera];
+    box.textContent = '';
+    sec.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+    sec.querySelectorAll('[data-mode-key]').forEach(k => { k.hidden = k.dataset.modeKey !== mode; });
+    box.className = mode === 'scene' ? 'dc-panels' : '';
+    if (mode === 'camera') {
+      note.textContent = 'Pair ' + S.case + ', camera ' + camName(S.camera) + ', seen from the camera. Each image is the field of view itself (' + Math.round(B.camera.fov_deg[0]) + '° × ' + Math.round(B.camera.fov_deg[1]) + '°): six waypoints per plan, evenly spaced, with the first frame where the view breaks swapped in.';
+      drawCameraMode(D, env, box);
+      return;
+    }
+    note.textContent = 'Pair ' + S.case + ' of the ' + env + ' set with the camera ' + camName(S.camera) + ' field of view: ' + S.trans_dist.toFixed(2) + ' of the room\'s width to travel with a ' + S.rot_deg.toFixed(0) + '° rotation. One view for all three plans; the body is drawn at the start, at the end and at the frame where the camera first loses the drone or the body first collides.';
+    for (const [key, label] of PLANS) {
+      const plan = S.plans[key];
+      if (!plan) continue;
+      const fig = document.createElement('div'); fig.className = 'dc-fig';
+      const cv = document.createElement('canvas'); cv.width = 1400; cv.height = 900;
+      const c = document.createElement('div'); c.className = 'cap'; c.innerHTML = caption(label, plan);
+      fig.append(cv, c); box.appendChild(fig);
+      try { drawPlan(cv, D, env, key, 1400, 900, {}); } catch (e) {}
+    }
+  }
+
+  let lastD = null, drawnBody = false;
+  dash.onData(() => {
+    const D = showcaseObj(rowsOf('showcase'));
+    lastD = D;
+    if (D && !drawnBody) { try { drawBodies($('bodyfig'), D, 1200, 760); drawnBody = true; } catch (e) {} }
+    if (D) for (const env of SCENES) drawScene(D, env);
+    const res = rowsOf('results');
+    drawMatrix($('matrix-a'), res, 'hlift', 'body', 'hlift', 'follower', 60);
+    drawMatrix($('matrix-b'), res, 'hlift', 'body', 'mbtd', 'body', 30);
+    drawTable(res); drawPaired(rowsOf('paired'));
+    const hrows = rowsOf('headline') || [];
+    const hv = Object.fromEntries(hrows.map(r => [r.metric, r.value]));
+    drawTiles(hv);
+    $('takeaway').textContent = hv.takeaway ? hv.takeaway : '—';
+  });
+})();
+</script>

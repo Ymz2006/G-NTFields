@@ -1,0 +1,4 @@
+1104 cases drawn (138s)
+roadmap: 60000 nodes, 436108 candidate edges, 429873 valid (170s for the motions), 1 components, largest 60000
+queries: 1104 / 1104 solved (655s)
+{"n": 1000, "tried": 1000, "unsolved": 0, "certificate": "prm", "roadmap_nodes": 60000, "roadmap_edges": 429873, "roadmap_components": 1, "seconds": 895.6650211811066, "direct_ok": 0.0, "rrt_len_median": 1.6679497361183167, "rrt_waypoints_median": 6.0, "dist_t_median": 0.7716776010541595, "angle_deg_median": 132.19149676744232}

@@ -1,0 +1,31 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam55w.obj': 1 objects/groups
+  [0] 'dronecam55w'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/campus.obj': 16 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'block_1'  (36 triangles)
+  [2] 'block_2'  (24 triangles)
+  [3] 'block_3'  (36 triangles)
+  [4] 'block_4'  (36 triangles)
+  [5] 'block_5'  (24 triangles)
+  [6] 'block_6'  (24 triangles)
+  [7] 'bridge_1'  (12 triangles)
+  [8] 'bridge_2'  (12 triangles)
+  [9] 'bridge_3'  (12 triangles)
+  [10] 'tree_1'  (132 triangles)
+  [11] 'tree_2'  (132 triangles)
+  [12] 'tree_3'  (132 triangles)
+  [13] 'tree_4'  (132 triangles)
+  [14] 'tree_5'  (132 triangles)
+  [15] 'tree_6'  (132 triangles)
+scene dronecam55w_campus: shape radius 0.1536, half extent [0.439, 0.291, 0.49], sdf grid (147, 53, 84) (2.8s)
+[round 1] drawn 12000 in-band 210 formed 105 verified 102/105 (250s)  banked 102/1000  rrt-fail 3 recheck-fail 0
+[round 2] drawn 12000 in-band 227 formed 113 verified 112/113 (286s)  banked 214/1000  rrt-fail 4 recheck-fail 0
+[round 3] drawn 12000 in-band 223 formed 111 verified 109/111 (312s)  banked 323/1000  rrt-fail 6 recheck-fail 0
+[round 4] drawn 12000 in-band 234 formed 117 verified 111/117 (285s)  banked 434/1000  rrt-fail 12 recheck-fail 0
+[round 5] drawn 12000 in-band 216 formed 108 verified 106/108 (319s)  banked 540/1000  rrt-fail 14 recheck-fail 0
+[round 6] drawn 12000 in-band 228 formed 114 verified 111/114 (320s)  banked 651/1000  rrt-fail 17 recheck-fail 0
+[round 7] drawn 12000 in-band 225 formed 112 verified 109/112 (342s)  banked 760/1000  rrt-fail 20 recheck-fail 0
+[round 8] drawn 12000 in-band 206 formed 103 verified 102/103 (245s)  banked 862/1000  rrt-fail 21 recheck-fail 0
+[round 9] drawn 12000 in-band 216 formed 108 verified 108/108 (245s)  banked 970/1000  rrt-fail 21 recheck-fail 0
+[round 10] drawn 12000 in-band 256 formed 50 verified 49/50 (182s)  banked 1000/1000  rrt-fail 22 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam55w_campus (3966s): rel angle p50 110 p90 168; |dp| p50 0.31; min clearance p50 0.0253; rrt path length p50 0.58; straight blocked frac mean 0.25

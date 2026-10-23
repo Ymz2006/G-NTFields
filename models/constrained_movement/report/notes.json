@@ -1,0 +1,19 @@
+{
+ "lede": "A camera follows a bird through five scenes. The camera is a rectangle-based pyramid whose base is centred on the bird: it moves with the bird along the bird's RRT path and can only turn about the bird's centre. Planning happens in t + rotation, with the original metric NTFields as the model.",
+ "scenes": {
+  "forest": "The bird flies low between the trunks and around one tree, under the crowns. 90 % of the collisions (both seeds) happen in the first quarter of the path, where the camera room is smallest (32 % of rotations free over the first tenth).",
+  "city": "The bird skims a low roof, passes a tall building and crosses a street. The camera has room almost everywhere, failures are spread along the path, and it is the scene NTFields handles best.",
+  "env1": "The bird descends diagonally between the upper and lower slabs. The camera room stays near 23 % over the first 40 % of the path, and that is where NTFields fails: 75 % of the collisions (both seeds) happen in the first quarter. This scene has the largest seed spread (74.6 and 84.9 %).",
+  "env4": "The bird starts just under the ceiling above one box and descends past two others. Failures come in two clusters: at the start, the tightest spot of any path (21 % of rotations free over the first tenth), and at t/L 0.6-0.7, just before the camera room collapses from 77 % to 28 %.",
+  "corridor2": "The bird flies the whole serpentine, two U-turns around the walls, 2.14 long; the straight camera motion succeeds in 0.1 % of the cases. This is the model trained with pairs up to 2.75 apart (see the corridor table), one seed. Its failures differ from the other scenes: 81 % of them end in the first tenth of the path although the camera has plenty of room there (67 % of rotations free), and two thirds are plans that never get going. That is the field's long-range accuracy over a 2.14-long path, not the geometry."
+ },
+ "findings": [
+  "NTFields learns the constrained problem. On the whole-path query (the bird flies the whole path, the camera starts and ends in given orientations) it solves 79.8-91.7 % of the cases in forest, city, env1 and env4 (mean of two seeds) and 63.2 % in the 2.14-long corridor, where the straight camera motion succeeds in 0.1-26.6 %. On sub-paths it solves 91.8-99.0 %.",
+  "In the short scenes it fails where the camera has the least room. In forest, env1 and env4, 75-90 % of the collisions happen in the first quarter of the path, where the fraction of free camera rotations is lowest; in env4 a second cluster sits just before the room collapses at t/L 0.7. The start of every path is also the end of M with the fewest training pairs, so the two effects coincide there.",
+  "Long paths need training pairs as long as the path, and longer training. The corridor goes from 4 % (pairs at most 2.0 apart, epoch 2000) to 63 % (pairs up to 2.75, epoch 8000); its remaining failures are plans that stall at the start, where the camera has plenty of room.",
+  "Constraining the bird to move forward costs nothing: the free mode (t may decrease) is 0.6-4.1 points worse in the short scenes and 11.9 points worse in the corridor.",
+  "Single runs are noisy on the whole-path query: the two seeds differ by up to 10 points (env1 74.6 vs 84.9 %, env4 81.8 vs 91.2 %), and one run moves by up to 9 points between epochs 2000 and 8000. Sub-paths agree within 3.5 points across seeds."
+ ],
+ "corridor_run": "corridor2",
+ "corridor": "The corridor path is 2.14 long, more than twice the others. With training pairs at most 2.0 apart (the bound the prism study used for paths up to L = 1) NTFields solves 4-33 % of the whole-path cases; with the bound raised to sqrt(L\u00b2 + 3) = 2.75 it solves 26-63 %, improving with training. Stretching the pairs along t (third run) does not help: it peaks at 42 % and ends at 24 %. On sub-paths all three solve about 90 %. MPPI gets 860 steps here (400 \u00d7 L)."
+}

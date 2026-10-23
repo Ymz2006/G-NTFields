@@ -1,0 +1,353 @@
+<style>
+  /* one column of cards; the scene panels sit three abreast and stack when narrow */
+  .cf { font-family: var(--font-anthropic-sans); max-width: 78rem; margin-inline: auto; display: grid; gap: var(--cds-gap-lg); }
+  .cf h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; text-wrap: balance; }
+  .cf h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0 0 var(--cds-gap-xs); }
+  .cf p { margin: 0; line-height: 1.5; }
+  .cf .take { color: var(--color-fg); max-width: 60rem; }
+  .cf .note { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .cf-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: grid; gap: var(--cds-gap-md); min-width: 0; }
+  .cf-idea { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); gap: var(--cds-gap-lg); align-items: center; }
+  .cf-idea .txt { display: grid; gap: var(--cds-gap-sm); max-width: 38rem; }
+  .cf-spec { display: grid; grid-template-columns: auto 1fr; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .cf-spec dt { color: var(--color-fg-muted); } .cf-spec dd { margin: 0; }
+  .cf-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr)); gap: var(--cds-gap-md); }
+  .cf-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .cf-tile .lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cf-tile .n { font-family: var(--font-anthropic-serif); font-size: 2.1rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .cf-tile .sub { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cf-panels { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--cds-gap-md); }
+  .cf-fig { display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .cf-fig canvas, .cf-idea canvas { width: 100%; height: auto; display: block; border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: #fbfaf7; }
+  .cf-fig .cap { font-size: var(--cds-font-size-caption); line-height: 1.45; }
+  .cf-fig .cap b { font-weight: var(--cds-font-weight-medium); }
+  .cf-key { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cf-key span::before { content: ""; display: inline-block; width: 0.7em; height: 0.7em; border-radius: 2px; margin-right: 0.4em; vertical-align: -0.05em; background: var(--k); }
+  .cf-chart { width: 100%; min-height: 16rem; }
+  .cf-legend { display: flex; gap: var(--cds-gap-lg); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); flex-wrap: wrap; }
+  .cf-legend span::before { content: ""; display: inline-block; width: 0.8em; height: 0.8em; border-radius: 2px; margin-right: 0.4em; vertical-align: -0.05em; background: var(--k); }
+  .cf-twrap { overflow-x: auto; }
+  .cf table { border-collapse: collapse; width: 100%; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .cf th, .cf td { padding: var(--cds-pad-xs) var(--cds-pad-sm); text-align: right; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .cf th:first-child, .cf td:first-child, .cf th:nth-child(2), .cf td:nth-child(2), .cf th:nth-child(3), .cf td:nth-child(3) { text-align: left; }
+  .cf th { color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); }
+  .cf tr.body td { font-weight: var(--cds-font-weight-medium); }
+  .cf tr.scene td { background: var(--color-bg); color: var(--color-fg-muted); text-align: left; font-weight: var(--cds-font-weight-medium); }
+  .cf-paired { display: grid; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); }
+  .cf-paired div { display: grid; grid-template-columns: minmax(12rem, 2fr) minmax(8rem, 1fr) auto; gap: var(--cds-gap-md); align-items: baseline; padding-block: 2px; border-bottom: 1px solid var(--color-border-line); }
+  .cf-pill { display: inline-block; padding: 0 0.5em; border-radius: 1em; border: 1px solid var(--color-border-line); font-size: var(--cds-font-size-caption); }
+  .cf-pill.ok { color: var(--color-ok); } .cf-pill.bad { color: var(--color-bad); }
+  .cf-method { display: grid; gap: var(--cds-gap-sm); max-width: 62rem; }
+  .cf-method p { font-size: var(--cds-font-size-body); }
+  .cf-head { display: flex; flex-wrap: wrap; gap: var(--cds-gap-sm) var(--cds-gap-lg); align-items: flex-start; justify-content: space-between; }
+  .cf-head > div:first-child { min-width: 0; flex: 1 1 24rem; }
+  .cf-key[hidden] { display: none; }
+  .cf-seg { display: inline-flex; border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); overflow: hidden; flex: none; }
+  .cf-seg button { font: inherit; font-size: var(--cds-font-size-caption); padding: var(--cds-pad-xs) var(--cds-pad-md); border: 0; background: var(--color-panel); color: var(--color-fg-muted); cursor: pointer; }
+  .cf-seg button + button { border-left: 1px solid var(--color-border-line); }
+  .cf-seg button[aria-pressed=true] { background: var(--color-fg); color: var(--color-bg); }
+  .cf-pov { display: grid; gap: var(--cds-gap-lg); }
+  .cf-pov-row { display: grid; gap: var(--cds-gap-xs); min-width: 0; }
+  .cf-pov-row .cap { font-size: var(--cds-font-size-caption); line-height: 1.45; }
+  .cf-pov-row .cap b { font-weight: var(--cds-font-weight-medium); }
+  .cf-strip { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); gap: var(--cds-gap-sm); }
+  .cf-frame { display: grid; gap: 2px; min-width: 0; }
+  .cf-frame canvas { width: 100%; height: auto; display: block; border-radius: 4px; border: 2px solid var(--color-border-line); }
+  .cf-frame.bad canvas { border-color: #e34948; }
+  .cf-frame .lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; }
+  .cf-frame.bad .lab { color: var(--color-bad); }
+  [data-dash-source-state=empty] { color: transparent; }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+</style>
+<div class="cf">
+  <header>
+    <h1 id="title">Camera-follow planning</h1>
+    <p class="take" id="takeaway" data-source="headline" data-where="metric=takeaway" data-field="value">—</p>
+  </header>
+
+  <section class="cf-card" id="idea">
+    <div class="cf-idea" data-source="showcase">
+      <canvas id="bodyfig" width="1200" height="760"></canvas>
+      <div class="txt">
+        <h2>The camera's view is part of the shape</h2>
+        <p>A camera follows a bird-like glider and must keep it in frame. The camera is a point; what it sees is a rectangle-based pyramid with its tip at the camera and its base pressed on the bird's back. Bird, camera and pyramid are planned as one rigid body in SE(3): a collision-free path means the bird flies, the camera flies, and nothing enters the line of sight. The same planners that move a shape through walls move this body; no camera-specific cost, no second planner.</p>
+        <dl class="cf-spec">
+          <dt>Bird</dt><dd>48 units long, 48 wingspan, 18 tall (room 198 × 138 × 218)</dd>
+          <dt>Camera</dt><dd>50 units behind the bird, on its axis</dd>
+          <dt>Field of view</dt><dd id="fov">51° × 25° (base 48 × 22 units)</dd>
+          <dt>Follower baseline</dt><dd>the same bird with the camera as a point, no view volume</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section class="cf-tiles" id="headline-tiles">
+    <div class="cf-tile"><div class="lab">Forest: camera keeps the bird in view</div><div class="n"><span data-source="headline" data-where="metric=forest_body_follow" data-field="value">—</span><small>%</small></div><div class="sub">camera-aware body, lifted encoder</div></div>
+    <div class="cf-tile"><div class="lab">Forest: rigid follower, bird planned alone</div><div class="n"><span data-source="headline" data-where="metric=forest_follower_follow" data-field="value">—</span><small>%</small></div><div class="sub">same model, camera as a point</div></div>
+    <div class="cf-tile"><div class="lab">City: camera keeps the bird in view</div><div class="n"><span data-source="headline" data-where="metric=city_body_follow" data-field="value">—</span><small>%</small></div><div class="sub">camera-aware body, lifted encoder</div></div>
+    <div class="cf-tile"><div class="lab">City: rigid follower, bird planned alone</div><div class="n"><span data-source="headline" data-where="metric=city_follower_follow" data-field="value">—</span><small>%</small></div><div class="sub">same model, camera as a point</div></div>
+    <div class="cf-tile"><div class="lab">Full NTFields, camera-aware body</div><div class="n"><span data-source="headline" data-where="metric=ntf_body_follow" data-field="value">—</span><small>%</small></div><div class="sub">forest and city, 1000 pairs each</div></div>
+  </section>
+
+  <section class="cf-card" id="forest">
+    <div class="cf-head"><div><h2>Forest: one start-goal pair, three plans</h2><p class="note" id="forest-note">—</p></div><div class="cf-seg" role="group" aria-label="View mode"><button type="button" data-mode="scene" aria-pressed="true">Scene view</button><button type="button" data-mode="camera" aria-pressed="false">Camera view</button></div></div>
+    <div class="cf-panels" data-source="showcase" id="forest-panels"></div>
+    <div class="cf-key" data-mode-key="scene"><span style="--k:#eb6834">bird and its path</span><span style="--k:#2a78d6">camera and its path; view pyramid</span><span style="--k:#e34948">frame where the view breaks or the body collides</span><span style="--k:#1baf7a">goal</span></div>
+    <div class="cf-key" data-mode-key="camera" hidden><span style="--k:#eb6834">the bird</span><span style="--k:#e34948">inside the view pyramid, in front of the bird: blocks the camera</span><span style="--k:#c9ccd0">beyond the bird, outside the pyramid (faded)</span><span style="--k:#e34948">red frame: the camera sees less than 99% of the bird</span></div>
+  </section>
+
+  <section class="cf-card" id="city">
+    <div class="cf-head"><div><h2>City: one start-goal pair, three plans</h2><p class="note" id="city-note">—</p></div><div class="cf-seg" role="group" aria-label="View mode"><button type="button" data-mode="scene" aria-pressed="true">Scene view</button><button type="button" data-mode="camera" aria-pressed="false">Camera view</button></div></div>
+    <div class="cf-panels" data-source="showcase" id="city-panels"></div>
+    <div class="cf-key" data-mode-key="scene"><span style="--k:#eb6834">bird and its path</span><span style="--k:#2a78d6">camera and its path; view pyramid</span><span style="--k:#e34948">frame where the view breaks or the body collides</span><span style="--k:#1baf7a">goal</span></div>
+    <div class="cf-key" data-mode-key="camera" hidden><span style="--k:#eb6834">the bird</span><span style="--k:#e34948">inside the view pyramid, in front of the bird: blocks the camera</span><span style="--k:#c9ccd0">beyond the bird, outside the pyramid (faded)</span><span style="--k:#e34948">red frame: the camera sees less than 99% of the bird</span></div>
+  </section>
+
+  <section class="cf-card" id="chart">
+    <div><h2>Follow success by planner</h2><p class="note">Share of 1000 pairs per scene where the plan converges, the bird never collides and the camera sees at least 99% of its visible bird samples at every waypoint. Mean of 3 seeds. Camera-aware: the model planned the whole body; rigid follower: the model planned the bird with the camera as a point, scored on the same pairs.</p></div>
+    <div class="cf-legend"><span id="lg-body">camera-aware body</span><span id="lg-fol">rigid follower</span></div>
+    <div class="cf-chart" data-source="results" id="chart-box"></div>
+  </section>
+
+  <section class="cf-card" id="table">
+    <div><h2>All outcomes</h2><p class="note">Percent of 1000 pairs, mean over 3 seeds (± sd for the success rates). SE(3) success: converged and the whole body (bird, camera, view pyramid) collision-free. Follow success as above. View blocked: pairs where the camera lost part of the bird at some waypoint. Homotopy heads with the dual (double cover) planner; NTFields with the base planner.</p></div>
+    <div class="cf-twrap"><table data-source="results" data-row-key="key" id="results-table">
+      <thead><tr><th data-field="scene">Scene</th><th data-field="model">Model</th><th data-field="trained_on">Planned as</th><th data-field="success_se3">SE(3) success</th><th data-field="follow_success">Follow success</th><th data-field="bird_collision">Bird collides</th><th data-field="body_collision">Body collides</th><th data-field="view_blocked">View blocked</th><th data-field="not_converged">Not converged</th><th data-field="mean_view">Mean view</th><th data-field="seeds">Seeds</th></tr></thead>
+      <tbody></tbody></table></div>
+  </section>
+
+  <section class="cf-card" id="paired">
+    <div><h2>Paired comparisons</h2><p class="note">Seed-matched cases: pairs the first solves and the second does not, and the reverse; exact McNemar p; a difference counts below p = 0.01.</p></div>
+    <div class="cf-paired" data-source="paired" id="paired-list"></div>
+  </section>
+
+  <section class="cf-card cf-method" id="method">
+    <h2>How the test was run</h2>
+    <p>Bodies and scenes: dataprocessing/make_camera3d.py. The bird is a polycube glider (fuselage, head, wings, tail plane, fin). The view pyramid's base is a 2-unit plate covering the bird's silhouette with a 2-unit margin; its tip is the camera, 50 units behind. The follower body is the same bird plus a 1-unit cube at the camera, so both bodies share one frame and one set of test pairs.</p>
+    <p>Forest: four trees (12-unit trunks to y = 96, 30-unit crowns at y 90..120) in the room of the shape cells. City: six buildings 45..100 units high in two rows, streets 40, 56 and 60 wide. With the view pyramid 3.5% (forest) and 4.5% (city) of uniformly random placements are collision-free, against 4.3% for the same body in env9.</p>
+    <p>Training: 400k narrow-band pairs per cell (sharded preprocessing with an exact signed-distance gate, preprocess_obj_fast.py), 8000 epochs, seeds 0-2, for the lifted-encoder head (graph_homotopy_lift), the homotopy head (graph_homotopy, --lift min) and the full metric NTFields (TD and normal terms 1e-3). Test sets: 1000 RRT-verified pairs of the camera-aware body per scene (make_test_sets.py --variant std).</p>
+    <p>Scoring (plan_eval_homotopy.py --camera): the same MPPI planner and collision test as every other comparison (50k scene surface points inside the placed body); in addition, at every waypoint the camera casts a ray to each of its visible bird surface samples against the scene mesh (visible = not hidden by the bird itself), and the bird alone is collision-checked. The scene views above draw the plan up to SE(3) convergence, the bird's path, the camera's path, the body at the start, the end and the frame where the camera first loses the bird or the body first collides.</p>
+  </section>
+</div>
+<script src="render3d.js"></script>
+<script src="scenes.js"></script>
+<script>
+(function () {
+  const $ = id => document.getElementById(id);
+  const fmt1 = v => (v == null || v === '' || Number.isNaN(Number(v))) ? '—' : Number(v).toFixed(1);
+  const PLANS = [['lifted_body', 'Camera-aware body, lifted encoder'], ['lifted_follower', 'Rigid follower, lifted encoder'], ['ntf_body', 'Camera-aware body, full NTFields']];
+  const rowsOf = id => { const d = dash.data(id); return d.status === 'ok' ? d.data : null; };
+  const pick = (rows, scene, model, body) => rows.find(r => r.scene === scene && r.model_code === model && r.body === body && r.planner === (model === 'mbtd' ? 'base' : 'dual'));
+
+  // The showcase file is rows {part, data}: 'common' (bodies, camera) and one per scene.
+  let showcaseCache = null, showcaseSrc = null;
+  function showcaseObj(rows) {
+    if (!rows || !rows.length) return null;
+    if (rows === showcaseSrc) return showcaseCache;
+    const D = { scenes: {} };
+    for (const r of rows) {
+      const v = typeof r.data === 'string' ? JSON.parse(r.data) : r.data;
+      if (r.part === 'common') Object.assign(D, v); else D.scenes[r.part] = v;
+    }
+    showcaseSrc = rows; showcaseCache = D;
+    return D;
+  }
+
+  dash.calc('headline', {
+    inputs: ['results'],
+    title: 'Headline follow success',
+    description: 'Follow success of the lifted-encoder camera-aware body and its rigid follower per scene, and of the full NTFields body over both scenes; the takeaway sentence.',
+    fn: (results) => {
+      const pick = (scene, model, body) => results.find(r => r.scene === scene && r.model_code === model && r.body === body && r.planner === (model === 'mbtd' ? 'base' : 'dual'));
+      const v = r => (r ? Number(r.follow_success) : null);
+      const fb = v(pick('forest', 'hlift', 'birdcam3d')), ff = v(pick('forest', 'hlift', 'bird3d'));
+      const cb = v(pick('city', 'hlift', 'birdcam3d')), cf = v(pick('city', 'hlift', 'bird3d'));
+      const nf = v(pick('forest', 'mbtd', 'birdcam3d')), nc = v(pick('city', 'mbtd', 'birdcam3d'));
+      const ntf = (nf != null && nc != null) ? Math.round(5 * (nf + nc)) / 10 : null;
+      const take = (fb == null || cb == null) ? '' :
+        'Planning the bird together with its camera\'s view pyramid keeps the bird in frame on ' + fb.toFixed(1) + '% of the forest pairs and ' + cb.toFixed(1) +
+        '% of the city pairs (lifted encoder); the same model planning the bird alone, with the camera attached rigidly, keeps it in frame on ' + ff.toFixed(1) + '% and ' + cf.toFixed(1) +
+        '%, and the full metric NTFields on the camera-aware body reaches ' + ntf.toFixed(1) + '% over both scenes.';
+      return [['forest_body_follow', fb], ['forest_follower_follow', ff], ['city_body_follow', cb], ['city_follower_follow', cf], ['ntf_body_follow', ntf], ['takeaway', take]]
+        .map(([metric, value]) => ({ metric, value }));
+    },
+  });
+
+  function drawChart(rows) {
+    const box = $('chart-box');
+    box.textContent = '';
+    if (!rows) return;
+    const W = Math.max(320, box.clientWidth), scenes = ['forest', 'city'], models = [['hlift', 'Lifted encoder'], ['hminL', 'Homotopy head'], ['mbtd', 'Full NTFields']];
+    const cw = scenes.length > 1 && W >= 640 ? W / 2 : W, H = 260, m = { t: 28, r: 12, b: 44, l: 36 };
+    const colBody = dash.colors[0], colFol = 'var(--cds-chart-muted)';
+    $('lg-body').style.setProperty('--k', colBody); $('lg-fol').style.setProperty('--k', colFol);
+    const svg = d3.select(box).append('svg').attr('width', '100%').attr('viewBox', '0 0 ' + (cw * scenes.length) + ' ' + H).attr('font-family', 'inherit');
+    scenes.forEach((scene, si) => {
+      const g = svg.append('g').attr('transform', 'translate(' + (si * cw) + ',0)');
+      const x0 = d3.scaleBand().domain(models.map(m => m[0])).range([m.l, cw - m.r]).paddingInner(0.3).paddingOuter(0.15);
+      const x1 = d3.scaleBand().domain(['birdcam3d', 'bird3d']).range([0, x0.bandwidth()]).paddingInner(0.08);
+      const y = d3.scaleLinear().domain([0, 100]).range([H - m.b, m.t]);
+      g.append('text').attr('x', m.l).attr('y', 16).attr('fill', 'var(--color-fg)').attr('font-size', 13).attr('font-weight', 500).text(scene === 'forest' ? 'Forest' : 'City');
+      [0, 25, 50, 75, 100].forEach(v => {
+        g.append('line').attr('x1', m.l).attr('x2', cw - m.r).attr('y1', y(v)).attr('y2', y(v)).attr('stroke', v === 0 ? 'var(--cds-chart-axis)' : 'var(--cds-chart-grid)');
+        g.append('text').attr('x', m.l - 6).attr('y', y(v) + 4).attr('text-anchor', 'end').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11).text(v);
+      });
+      models.forEach(([code, label]) => {
+        ['birdcam3d', 'bird3d'].forEach(body => {
+          const r = pick(rows, scene, code, body);
+          const v = r ? Number(r.follow_success) : 0;
+          const bx = x0(code) + x1(body), bw = Math.min(32, x1.bandwidth());
+          g.append('rect').attr('x', bx).attr('y', y(v)).attr('width', bw).attr('height', Math.max(0, y(0) - y(v))).attr('rx', 3)
+            .attr('fill', body === 'birdcam3d' ? colBody : colFol);
+          g.append('text').attr('x', bx + bw / 2).attr('y', y(v) - 4).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg)').attr('font-size', 11).text(r ? v.toFixed(1) : '');
+        });
+        g.append('text').attr('x', x0(code) + x0.bandwidth() / 2).attr('y', H - m.b + 16).attr('text-anchor', 'middle').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11).text(label);
+      });
+    });
+  }
+
+  function drawTable(rows) {
+    const tb = $('results-table').querySelector('tbody');
+    tb.textContent = '';
+    if (!rows) return;
+    let last = null;
+    const main = rows.filter(r => r.planner === (r.model_code === 'mbtd' ? 'base' : 'dual'));   // the planner of each model in the chart
+    for (const r of [...main].sort((a, b) => a.scene.localeCompare(b.scene) * -1 || a.order - b.order)) {
+      if (r.scene !== last) {
+        const tr = document.createElement('tr'); tr.className = 'scene';
+        const td = document.createElement('td'); td.colSpan = 11; td.textContent = r.scene === 'forest' ? 'Forest' : 'City'; tr.appendChild(td); tb.appendChild(tr);
+        last = r.scene;
+      }
+      const tr = document.createElement('tr'); tr.dataset.key = r.key; if (r.body === 'birdcam3d') tr.className = 'body';
+      const cells = [r.scene === 'forest' ? 'Forest' : 'City', r.model, r.trained_on, fmt1(r.success_se3) + (r.success_sd !== '' ? ' ± ' + fmt1(r.success_sd) : ''),
+        fmt1(r.follow_success) + (r.follow_sd !== '' ? ' ± ' + fmt1(r.follow_sd) : ''), fmt1(r.bird_collision), fmt1(r.body_collision), fmt1(r.view_blocked), fmt1(r.not_converged), fmt1(r.mean_view), r.seeds];
+      for (const c of cells) { const td = document.createElement('td'); td.textContent = c; tr.appendChild(td); }
+      tb.appendChild(tr);
+    }
+  }
+
+  function drawPaired(rows) {
+    const box = $('paired-list');
+    box.textContent = '';
+    if (!rows) return;
+    for (const r of rows) {
+      const div = document.createElement('div');
+      const a = document.createElement('span'); a.textContent = (r.scene === 'forest' ? 'Forest: ' : 'City: ') + r.comparison;
+      const b = document.createElement('span'); b.textContent = '+' + r.wins + ' / −' + r.losses + (r.p !== '' ? ', p ' + r.p : '');
+      const c = document.createElement('span'); c.className = 'cf-pill' + (r.verdict === 'first ahead' ? ' ok' : r.verdict === 'second ahead' ? ' bad' : ''); c.textContent = r.verdict;
+      div.append(a, b, c); box.appendChild(div);
+    }
+  }
+
+  function caption(key, label, plan, S) {
+    const o = plan.outcome, n = o.steps;
+    let s = '<b>' + label + '.</b> ';
+    if (o.follow_success_se3) s += 'Reaches the goal in ' + n + ' steps; the camera sees the whole bird at every step (lowest ' + Math.round(100 * o.view_min) + '%).';
+    else {
+      const parts = [];
+      if (!plan.converged) parts.push('does not converge within 200 steps');
+      if (plan.view_lost_at != null) parts.push('the camera loses part of the bird at step ' + plan.view_lost_at + ' (lowest view ' + Math.round(100 * o.view_min) + '%)');
+      if (plan.bird_hit_at != null) parts.push('the bird itself collides at step ' + plan.bird_hit_at);
+      else if (plan.body_hit_at != null && plan.view_lost_at == null) parts.push('the body collides at step ' + plan.body_hit_at);
+      const t = parts.length ? parts.join('; ') + '.' : 'fails.'; s += t.charAt(0).toUpperCase() + t.slice(1);
+    }
+    return s;
+  }
+
+  let mode = 'scene';
+  const povCache = new Map();   // rendered camera frames, kept across redraws
+  function povCaption(label, plan) {
+    const o = plan.outcome;
+    let t = '<b>' + label + '.</b> ';
+    if (plan.view_lost_at != null) t += 'Something enters the view pyramid at step ' + plan.view_lost_at + '; the lowest view is ' + Math.round(100 * o.view_min) + '% of the bird.';
+    else if (plan.bird_hit_at != null) t += 'The view stays clear, but the bird collides at step ' + plan.bird_hit_at + '.';
+    else t += 'Nothing enters the view pyramid; the camera sees the whole bird on all ' + (plan.poses.length - 1) + ' steps.';
+    if (!plan.converged) t += ' The plan does not reach the goal within 200 steps.';
+    return t;
+  }
+  function drawCameraMode(D, env, box) {
+    const S = D.scenes[env], wrap = document.createElement('div'); wrap.className = 'cf-pov';
+    for (const [key, label] of PLANS) {
+      const plan = S.plans[key];
+      if (!plan) continue;
+      const row = document.createElement('div'); row.className = 'cf-pov-row';
+      const cap = document.createElement('div'); cap.className = 'cap'; cap.innerHTML = povCaption(label, plan);
+      const strip = document.createElement('div'); strip.className = 'cf-strip';
+      for (const k of povFrames(plan, 6)) {
+        const ck = env + ':' + key + ':' + k;
+        let cv = povCache.get(ck);
+        if (!cv) {
+          cv = document.createElement('canvas'); cv.width = POV_W; cv.height = Math.round(POV_W * D.camera.base[2][1] / D.camera.base[2][2]);
+          povCache.set(ck, cv); povQueue.push([cv, D, env, key, k]);
+        }
+        const v = plan.view[k], bad = v < 0.99 || plan.bird_hit_at === k;
+        const fr = document.createElement('div'); fr.className = 'cf-frame' + (bad ? ' bad' : '');
+        const lab = document.createElement('div'); lab.className = 'lab';
+        lab.textContent = 'step ' + k + ' · sees ' + Math.round(100 * v) + '% of the bird' + (plan.bird_hit_at === k ? ' · bird collides' : '');
+        fr.append(cv, lab); strip.appendChild(fr);
+      }
+      row.append(cap, strip); wrap.appendChild(row);
+    }
+    box.appendChild(wrap);
+    pumpPOV();
+  }
+  const POV_W = 420, povQueue = [];
+  let povBusy = false;
+  function pumpPOV() {   // one frame per task: the strips fill in without freezing the page
+    if (povBusy) return;
+    const job = povQueue.shift();
+    if (!job) return;
+    povBusy = true;
+    setTimeout(() => { const [cv, D, env, key, k] = job; drawPOV(cv, D, env, key, k, POV_W, 1.5); povBusy = false; pumpPOV(); }, 0);
+  }
+
+  function drawScenes(D) {
+    for (const env of ['forest', 'city']) {
+      const box = $(env + '-panels'), note = $(env + '-note'), sec = $(env);
+      box.textContent = '';
+      sec.querySelectorAll('[data-mode]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === mode)));
+      sec.querySelectorAll('[data-mode-key]').forEach(k => { k.hidden = k.dataset.modeKey !== mode; });
+      const S = D && D.scenes && D.scenes[env];
+      if (!S) { note.textContent = '—'; continue; }
+      box.className = mode === 'scene' ? 'cf-panels' : '';
+      if (mode === 'camera') {
+        note.textContent = 'Pair ' + S.case + ' of the ' + env + ' set, seen from the camera. Each image is the view pyramid itself (' + Math.round(D.camera.fov_deg[0]) + '° × ' + Math.round(D.camera.fov_deg[1]) + '°): six waypoints per plan, evenly spaced, with the first frame where the view breaks swapped in.';
+        drawCameraMode(D, env, box);
+        continue;
+      }
+      note.textContent = 'Pair ' + S.case + ' of the ' + env + ' set: ' + S.trans_dist.toFixed(2) + ' of the room\'s width to travel with a ' + S.rot_deg.toFixed(0) + '° rotation. One view for all three plans; the body is drawn at the start, at the end and at the frame where the camera first loses the bird or the body first collides.';
+      for (const [key, label] of PLANS) {
+        const plan = S.plans[key];
+        if (!plan) continue;
+        const fig = document.createElement('div'); fig.className = 'cf-fig';
+        const cv = document.createElement('canvas'); cv.width = 1400; cv.height = 900;
+        const cap = document.createElement('div'); cap.className = 'cap'; cap.innerHTML = caption(key, label, plan, S);
+        fig.append(cv, cap); box.appendChild(fig);
+        drawPlan(cv, D, env, key, 1400, 900, {});
+      }
+    }
+  }
+  let lastD = null;
+  document.querySelectorAll('.cf-seg [data-mode]').forEach(b => b.addEventListener('click', () => {
+    if (mode === b.dataset.mode) return;
+    mode = b.dataset.mode; drawScenes(lastD);
+  }));
+
+  let drawnBody = false;
+  dash.onData(() => {
+    const D = showcaseObj(rowsOf('showcase'));
+    lastD = D;
+    if (D && !drawnBody) { drawBody($('bodyfig'), D, 1200, 760); drawnBody = true; }
+    drawScenes(D);
+    const res = rowsOf('results');
+    drawChart(res); drawTable(res); drawPaired(rowsOf('paired'));
+    const hrows = rowsOf('headline') || [];
+    const hv = Object.fromEntries(hrows.map(r => [r.metric, r.value]));
+    for (const id of ['forest_body_follow', 'forest_follower_follow', 'city_body_follow', 'city_follower_follow', 'ntf_body_follow']) {
+      const el = document.querySelector('[data-where="metric=' + id + '"]');
+      if (el) el.textContent = hv[id] != null ? fmt1(hv[id]) : '—';
+    }
+    $('takeaway').textContent = hv.takeaway ? hv.takeaway : '—';
+  });
+})();
+</script>

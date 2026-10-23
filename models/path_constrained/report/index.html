@@ -1,0 +1,330 @@
+<title>Camera Follow on a Path</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column (~70ch) with figures allowed to run wider; numbers set in mono. */
+:root {
+  --bg: #fbfcfd; --surface: #f1f4f7; --fg: #16202a; --muted: #56626e; --rule: #dce2e9;
+  --accent: #2a78d6;
+  --s-hd: #2a78d6; --s-ntf: #eb6834; --s-hb: #1baf7a;
+  --bad: #c62f2f; --good: #1f7a4d;
+  --f-display: "Newsreader", Georgia, "Times New Roman", serif;
+  --f-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171c; --surface: #1b2228; --fg: #e8ecf0; --muted: #9eabb7; --rule: #2c3640;
+    --accent: #3987e5; --s-hd: #3987e5; --s-ntf: #d95926; --s-hb: #199e70;
+    --bad: #ef6b6b; --good: #4cc08a; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171c; --surface: #1b2228; --fg: #e8ecf0; --muted: #9eabb7; --rule: #2c3640;
+  --accent: #3987e5; --s-hd: #3987e5; --s-ntf: #d95926; --s-hb: #199e70;
+  --bad: #ef6b6b; --good: #4cc08a; color-scheme: dark;
+}
+body { background: var(--bg); color: var(--fg); font: 17px/1.6 var(--f-body); }
+.wrap { max-width: 1060px; margin: 0 auto; padding-block: 40px 80px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.col { max-width: 70ch; }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 600; line-height: 1.2; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(2rem, 4.5vw, 2.8rem); }
+h2 { font-size: 1.6rem; margin-top: 56px; padding-top: 18px; border-top: 1px solid var(--rule); }
+h3 { font-size: 1.2rem; margin-top: 28px; }
+p, ul { margin: 12px 0 0; }
+li + li { margin-top: 6px; }
+.byline { color: var(--muted); font-size: 0.95rem; margin-top: 10px; }
+.lede { font-size: 1.15rem; margin-top: 18px; }
+code, .mono { font-family: var(--f-mono); font-size: 0.86em; }
+code { background: var(--surface); padding: 1px 5px; border-radius: 4px; overflow-wrap: anywhere; }
+.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.k-hd { color: var(--s-hd); } .k-ntf { color: var(--s-ntf); }
+.sw { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-top: 28px; }
+.tile { background: var(--surface); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.tile .lab { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.tile .pair { font-family: var(--f-mono); font-variant-numeric: tabular-nums; font-size: 1.45rem; margin-top: 6px; line-height: 1.2; }
+.tile .pair span.vs { color: var(--muted); font-size: 0.9rem; margin: 0 6px; }
+.tile .sub { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+
+.tbl { overflow-x: auto; margin-top: 16px; }
+table { border-collapse: collapse; font-size: 0.92rem; min-width: 100%; }
+th, td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { font-weight: 600; color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; }
+td.num { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+td.best { font-weight: 600; }
+
+figure { margin: 22px 0 0; }
+figure img { display: block; width: 100%; height: auto; border: 1px solid var(--rule); border-radius: 6px; background: #fff; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 8px; max-width: 80ch; }
+.pair-fig { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 720px) { .pair-fig { grid-template-columns: 1fr; } }
+.pair-fig > * { min-width: 0; }
+
+.chart { margin-top: 18px; position: relative; overflow-x: auto; }
+.chart svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.chart text { fill: var(--muted); font-family: var(--f-body); font-size: 12px; }
+.chart .grid { stroke: var(--rule); stroke-width: 1; }
+.chart .rowlab { fill: var(--fg); }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; font-size: 0.9rem; margin-top: 12px; color: var(--fg); }
+.tip { position: absolute; pointer-events: none; background: var(--fg); color: var(--bg); font-size: 0.82rem; padding: 6px 9px; border-radius: 5px; white-space: nowrap; }
+.diagram { margin-top: 20px; overflow-x: auto; }
+.diagram svg { display: block; width: 100%; min-width: 560px; height: auto; }
+.diagram text { font-family: var(--f-body); font-size: 13px; fill: var(--fg); }
+.diagram .m { fill: var(--muted); }
+.note { background: var(--surface); border-radius: 8px; padding: 12px 16px; margin-top: 18px; font-size: 0.95rem; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+
+<div class="wrap">
+<header class="col">
+  <h1>Camera Follow on a Path</h1>
+  <p class="byline">Homotopy head vs metric NTFields on a path-constrained prism · results of 2026-10-21 · repo <code>models/path_constrained/</code></p>
+  <p class="lede">A camera follows an object moving along a known path and must keep it in view. We model the line of sight as a thin square prism glued to the object at one end, free to rotate, and plan its motion with two learned travel-time fields. The homotopy head solves almost every case. Metric NTFields fails on 8–14% of whole-path cases, mostly right at the start of the path.</p>
+</header>
+
+<div class="tiles" aria-label="Headline results">
+  <div class="tile"><div class="lab">Whole path</div><div class="pair"><span class="k-hd">99.7</span><span class="vs">vs</span><span class="k-ntf">91.5</span></div><div class="sub">success %, mean of env1/3/4, 3 seeds</div></div>
+  <div class="tile"><div class="lab">Tight endpoints</div><div class="pair"><span class="k-hd">99.8</span><span class="vs">vs</span><span class="k-ntf">85.9</span></div><div class="sub">both ends 0.005–0.02 from the scene</div></div>
+  <div class="tile"><div class="lab">Camera farther (0.3)</div><div class="pair"><span class="k-hd">98.7–100</span><span class="vs">vs</span><span class="k-ntf">74–94</span></div><div class="sub">prism length 0.3, one seed</div></div>
+  <div class="tile"><div class="lab">Line of sight blocked</div><div class="pair"><span class="k-hd">0</span><span class="vs">vs</span><span class="k-ntf">2.8–7.2</span></div><div class="sub">% of whole-path cases with a collision</div></div>
+</div>
+<div class="legend" aria-hidden="true">
+  <span><span class="sw" style="background:var(--s-hd)"></span>homotopy head, dual planner</span>
+  <span><span class="sw" style="background:var(--s-hb)"></span>homotopy head, base planner</span>
+  <span><span class="sw" style="background:var(--s-ntf)"></span>metric NTFields</span>
+</div>
+
+<section>
+<h2>The problem</h2>
+<div class="col">
+<p>The object is a point moving along a given path <i>p(l)</i>, with <i>l</i> the arc length from 0 to <i>L</i>. The camera's line of sight is a square prism (side <i>w</i> = 0.02, length <i>h</i> = 0.2 in normalized room units). One end is glued to the object and the other end is the camera. The prism may turn freely about the glued end. Start and goal orientations are given. If the prism never touches the scene, nothing ever blocks the camera's view of the object, and the camera never hits anything.</p>
+<p>The viewer below draws the line of sight as a <b>view pyramid</b>: apex at the camera, base the <i>w</i>&nbsp;×&nbsp;<i>w</i> square around the object. The pyramid sits inside the planned prism, so a clear prism means a clear pyramid.</p>
+</div>
+
+<div class="diagram" role="img" aria-label="Diagram: the object on its path with the view pyramid to the camera, and the same path unrolled onto a straight segment.">
+<svg viewBox="0 0 980 300">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/></marker>
+  </defs>
+  <!-- left: the world -->
+  <text x="20" y="26" font-weight="600">In the room</text>
+  <rect x="300" y="60" width="90" height="70" fill="var(--surface)" stroke="var(--muted)" stroke-width="1"/>
+  <text x="345" y="100" text-anchor="middle" class="m">obstacle</text>
+  <path d="M40,250 C120,240 150,150 230,160 S350,250 440,200" fill="none" stroke="var(--fg)" stroke-width="2.5"/>
+  <text x="44" y="272" class="m">l = 0</text><text x="420" y="226" class="m">l = L</text>
+  <polygon points="195,163 207,151 120,70" fill="var(--s-hd)" fill-opacity="0.28" stroke="var(--s-hd)" stroke-width="1.5"/>
+  <circle cx="201" cy="157" r="6" fill="#f2b705" stroke="var(--fg)" stroke-width="1"/>
+  <circle cx="120" cy="70" r="4" fill="var(--fg)"/>
+  <text x="70" y="58">camera</text>
+  <text x="214" y="182">object at p(l)</text>
+  <path d="M95,110 A40,40 0 0 1 140,95" fill="none" stroke="var(--muted)" stroke-width="1.2" marker-end="url(#ar)"/>
+  <text x="60" y="128" class="m">free rotation R</text>
+  <!-- arrow -->
+  <path d="M480,160 L560,160" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#ar)"/>
+  <text x="520" y="148" text-anchor="middle" class="m">unroll</text>
+  <!-- right: the chart -->
+  <text x="590" y="26" font-weight="600">What the models see</text>
+  <line x1="600" y1="200" x2="950" y2="200" stroke="var(--fg)" stroke-width="2.5"/>
+  <line x1="600" y1="192" x2="600" y2="208" stroke="var(--fg)" stroke-width="2"/><line x1="950" y1="192" x2="950" y2="208" stroke="var(--fg)" stroke-width="2"/>
+  <text x="600" y="228" text-anchor="middle" class="m">x = −L/2</text><text x="950" y="228" text-anchor="middle" class="m">x = +L/2</text>
+  <polygon points="733,198 747,198 690,96" fill="var(--s-hd)" fill-opacity="0.28" stroke="var(--s-hd)" stroke-width="1.5"/>
+  <circle cx="740" cy="200" r="6" fill="#f2b705" stroke="var(--fg)" stroke-width="1"/>
+  <text x="600" y="262">pose = (l − L/2, 0, 0) × R: a 4-d slice of SE(3)</text>
+  <text x="600" y="284" class="m">translation only along x, rotation anywhere</text>
+</svg>
+</div>
+
+<div class="col">
+<h3>How the idea was made to work</h3>
+<ul>
+  <li><b>It is SE(3) planning on a slice.</b> The allowed poses are path position × rotation about the object, a 4-d piece of SE(3). Feeding the models the path unrolled onto the x axis makes that slice literal, so both networks, the double cover and the MPPI planner run unchanged.</li>
+  <li><b>"xyz speed along the path direction"</b> became an exact projection of the Eikonal residual: only the gradient component along the path tangent is kept from the translation part, plus the full rotation part.</li>
+  <li><b>The clearance speed slows motion along the path too, not only rotation.</b> With speed on rotation alone, sliding along the path costs the same near an obstacle as in free space, so a plan could slide straight through one.</li>
+  <li><b>Forward-only planning.</b> A camera that follows an object cannot make the object go back, so every MPPI sample keeps <i>dl</i> ≥ 0. This costs nothing in success (below).</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Setup</h2>
+<div class="col">
+<ul>
+  <li><b>Scenes:</b> env1, env3, env4 (rooms with 4, 3 and 6 boxes). There is no env2 mesh on this machine. Clearance is computed exactly for the prism against the boxes.</li>
+  <li><b>Paths:</b> one smooth path per scene (a), length 1.2–1.5, picked so that turning straight from the start to the goal orientation usually collides; a second path (b) per scene as a check.</li>
+  <li><b>Test sets</b> (1000 cases each, every case confirmed solvable by an RRT that never moves the object backward): <code>full</code> whole path; <code>tight</code> both ends 0.005–0.02 from the scene; <code>bigrot</code> turn ≥ 150°; <code>hard</code> tight and ≥ 135°; <code>seg</code> sub-paths of at least 0.25.</li>
+  <li><b>Models:</b> homotopy head (graph_homotopy, double cover, isotropic speed) and the original metric NTFields, each with its own training recipe, 8000 epochs, 800k pairs per scene, 3 seeds.</li>
+  <li><b>Success:</b> reaches the goal pose within 0.01 and the prism clearance stays ≥ 0 at every waypoint and at 4 sub-steps between waypoints.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Success by scene and test set</h2>
+<div class="col"><p>Forward mode, mean of 3 seeds (the NTFields whisker is ± one standard deviation across seeds; the homotopy head's spread is at most 0.4 points). The axis starts at 70%. Turning straight to the goal would succeed in only 6–25% of the whole-path cases and 43–58% of the sub-path cases.</p></div>
+<div class="chart" id="chart-main"></div>
+
+<div class="tbl"><table>
+<thead><tr><th>Set (mean of 3 scenes)</th><th>Turn straight</th><th>Homotopy, dual</th><th>Homotopy, base</th><th>NTFields</th></tr></thead>
+<tbody>
+<tr><td>full: whole path</td><td class="num">9.0</td><td class="num best">99.7</td><td class="num">97.4</td><td class="num">91.5</td></tr>
+<tr><td>tight: ends close to obstacles</td><td class="num">14.3</td><td class="num best">99.8</td><td class="num">98.5</td><td class="num">85.9</td></tr>
+<tr><td>bigrot: turn ≥ 150°</td><td class="num">11.0</td><td class="num best">99.7</td><td class="num">97.4</td><td class="num">91.7</td></tr>
+<tr><td>hard: tight and ≥ 135°</td><td class="num">14.7</td><td class="num best">99.8</td><td class="num">98.8</td><td class="num">86.3</td></tr>
+<tr><td>seg: sub-paths</td><td class="num">50.7</td><td class="num best">99.7</td><td class="num">98.1</td><td class="num">98.5</td></tr>
+</tbody></table></div>
+<div class="col">
+<p>Paired case by case (same seed, exact McNemar test), the dual homotopy planner solves 225–514 whole-path cases out of 3000 that NTFields misses, against 0–21 the other way (p &lt; 1e-58 on every whole-path set). On sub-paths the gap is small but still significant: +17/−2, +22/−4, +92/−19.</p>
+</div>
+</section>
+
+<section>
+<h2>What the plans look like</h2>
+<div class="col"><p>Two cases where the homotopy head succeeds and NTFields lets the line of sight hit the scene. The overview shows both plans at the moment NTFields is most blocked (blue: homotopy, orange/red: NTFields, black: object path, red pyramid: touching the scene). The strips show each model's camera view, looking at the object from the camera end of the prism with a 40° field of view and opaque obstacles; the square around the object is the base of the view pyramid.</p></div>
+
+<h3>env1, case 125: blocked right at the start</h3>
+<figure><img src="img/overview_env1_a_case125.png" alt="env1 overview: the NTFields view pyramid, drawn in red, pokes into a box near the start of the path while the homotopy plan is further along."><figcaption>NTFields at step 22, object at l/L = 0.05. Its pyramid (red) touches the scene. The homotopy camera (blue) has already moved on.</figcaption></figure>
+<figure><img src="img/camera_env1_a_case125.png" alt="Camera views along both plans. Top row, homotopy: the object stays centered with clear surroundings from start to goal. Bottom row, NTFields: the first frame has a red border with a box beside the line of sight, then the camera stops near l/L = 0.1."><figcaption>Top: homotopy head, six steps from start to goal; its smallest clearance along the whole plan is 0.026. Bottom: NTFields. Step 22 is blocked (clearance −0.026); afterwards it stalls at l/L ≈ 0.1 and never reaches the goal.</figcaption></figure>
+
+<h3>env3, case 244: the camera leaves the room halfway along</h3>
+<figure><img src="img/overview_env3_a_case244.png" alt="env3 overview: the NTFields view pyramid, drawn in red, reaches up through the ceiling halfway along the path."><figcaption>NTFields at step 80, object at l/L = 0.47: the camera end of its prism is 0.026 above the ceiling.</figcaption></figure>
+<figure><img src="img/camera_env3_a_case244.png" alt="Camera views along both plans in env3. The NTFields frame at step 80 has a red border."><figcaption>The NTFields frame at step 80 is outlined in red. The camera is above the ceiling there; the ceiling is drawn only as edges, so the view looks clear even though the camera has left the room. The homotopy plan keeps a clearance of at least 0.021 throughout.</figcaption></figure>
+</section>
+
+<section>
+<h2>How each model fails</h2>
+<div class="tbl"><table>
+<thead><tr><th>Whole path, forward mode</th><th>Homotopy dual: collision / stall</th><th>Homotopy base: collision / stall</th><th>NTFields: collision / stall</th></tr></thead>
+<tbody>
+<tr><td>env1 full</td><td class="num">0.0 / 0.0</td><td class="num">0.0 / 0.0</td><td class="num">4.5 / 7.5</td></tr>
+<tr><td>env3 full</td><td class="num">0.0 / 0.0</td><td class="num">0.0 / 0.0</td><td class="num">3.5 / 7.7</td></tr>
+<tr><td>env4 full</td><td class="num">0.0 / 1.0</td><td class="num">0.2 / 7.8</td><td class="num">2.8 / 10.1</td></tr>
+<tr><td>env1 tight</td><td class="num">0.0 / 0.0</td><td class="num">0.0 / 0.0</td><td class="num">4.8 / 12.0</td></tr>
+<tr><td>env3 tight</td><td class="num">0.0 / 0.0</td><td class="num">0.0 / 0.1</td><td class="num">7.2 / 12.0</td></tr>
+<tr><td>env4 tight</td><td class="num">0.0 / 0.6</td><td class="num">0.0 / 4.3</td><td class="num">5.1 / 16.7</td></tr>
+</tbody></table></div>
+<div class="col">
+<ul>
+  <li><b>NTFields breaks down near the start of the path.</b> Its collisions happen at a median 2%, 19% and 1% of the path (env1, env3, env4), and its stalls stop by 4–12%. On sub-paths it fails 3–7× more often when the start lies in the first 10% of the path. The likely cause is sparse training data at that end of the path, where fewer random displacements stay on the path.</li>
+  <li><b>The homotopy head never blocked the view</b> with the dual planner, in any forward-mode evaluation of the main scenes. Its few failures are stalls.</li>
+  <li><b>Planning both rotation directions matters in env4.</b> The base planner stalls on 7.8% of whole-path cases, all at one place on the path (l ≈ 0.58 L). Planning toward both lifts of the goal rotation and keeping the plan that converges reaches 99.0%, equal to the best of the two directions picked per case.</li>
+</ul>
+</div>
+</section>
+
+<section>
+<h2>Harder settings and other paths</h2>
+<div class="col"><p>One seed each. With the camera farther from the object (prism length 0.3), turning straight works in only 1–5% of cases. The second path per scene (b) uses the prism of length 0.2.</p></div>
+<div class="chart" id="chart-extra"></div>
+<div class="col">
+<p>env3 path b is the one tie (98.1 vs 98.1). There, all of the homotopy head's 1.9% failures are stalls, while NTFields has 0.7% collisions plus 1.9% stalls.</p>
+</div>
+</section>
+
+<section>
+<h2>Checks and ablations</h2>
+<div class="tbl"><table>
+<thead><tr><th>Question</th><th>Homotopy head</th><th>NTFields</th></tr></thead>
+<tbody>
+<tr><td>Forward-only vs unconstrained planning</td><td>same success within 0.8 points</td><td>same within 0.8 points</td></tr>
+<tr><td>Unconstrained plans that move the object backward</td><td colspan="2">0.2–11% of whole-path plans, 6–19% of sub-path plans: plan forward-only</td></tr>
+<tr><td>Unrolled path vs real 3-D anchor position as input</td><td>within 0.4 (dual) / 2.3 (base) points</td><td>unrolled is better by 1.5–7.2 points</td></tr>
+<tr><td>4000 vs 8000 training epochs</td><td>within 0.4 points</td><td>within 1.2 points</td></tr>
+<tr><td>Clearance of successful plans (median)</td><td class="num">0.028–0.029</td><td class="num">0.039–0.041</td></tr>
+<tr><td>Rotation of successful plans (median turns)</td><td class="num">0.66–0.73</td><td class="num">0.76–0.89</td></tr>
+</tbody></table></div>
+<div class="col"><p>NTFields' successful plans keep more clearance, but they are the easier cases. The homotopy head also solves the cases where the endpoints themselves are 0.02 from the scene.</p></div>
+</section>
+
+<section>
+<h2>Interactive viewer</h2>
+<div class="col">
+<p><code>models/path_constrained/scripts/path_viser.py</code> is a viser viewer for these plans, built like the other shape viewers. It runs on the lab machine at port 8102 (container <code>pc_viser_path</code>).</p>
+<ul>
+  <li>Pick any of the 27 test sets and filter cases by outcome: both succeed, homotopy only, NTFields only, NTFields collides, NTFields stalls.</li>
+  <li>Both plans play on the same clock (one MPPI step per waypoint). The line of sight is drawn as the view pyramid, the planned prism or both, and turns red where the prism touches the scene. A camera frustum marks the camera.</li>
+  <li><b>Camera view:</b> a panel renders the scene from the camera end looking at the object, with an adjustable field of view. <i>Look through camera</i> moves your own viewport there, and <i>Opaque obstacles</i> makes occlusion obvious.</li>
+  <li>A clearance-along-the-plan plot for both models, and the results table.</li>
+</ul>
+</div>
+<figure><img src="img/viewer_env4_a.png" alt="Screenshot of the viser viewer showing env4 with the object path, the homotopy camera's track and view pyramid, and the control panel."><figcaption>The viewer on env4, whole-path set, first "homotopy only" case.</figcaption></figure>
+<div class="note">Run it: <code>python models/path_constrained/scripts/path_viser.py --port 8102</code> (numpy + viser only). The plans come from <code>export_viser_path.py</code> (torch, about 2 min per test set). <code>--look --opaque --dump DIR --strip 6</code> writes camera-view frames like the strips above.</div>
+</section>
+
+<section>
+<h2>Caveats</h2>
+<div class="col">
+<ul>
+  <li>The standard whole-path sets were already near 100% for the homotopy head, so the harder variants (tight, bigrot, hard, prism 0.3) were added partway through to separate the models.</li>
+  <li>Second paths, the 0.3 prism and the input-chart comparison use one seed each.</li>
+  <li>The object is a point and the line of sight is a thin prism. The view's width (field of view) is not part of the planning problem.</li>
+  <li>Nothing is committed to git yet.</li>
+</ul>
+<h3>Where everything is</h3>
+<ul>
+  <li>Method and results: <code>models/path_constrained/README.md</code>, full log <code>EXPERIMENTS.md</code></li>
+  <li>All tables: <code>results/path_constrained/summary/summary.md</code></li>
+  <li>Training: <code>train/train_homotopy_path.py</code>, <code>train/train_metric_path.py</code>; tests: <code>tests/test_path_constrained.py</code></li>
+</ul>
+</div>
+</section>
+</div>
+
+<script>
+const DATA = {"main": [{"scene": "env1", "set": "full", "hd": 100.0, "hd_sd": 0.0, "hb": 100.0, "hb_sd": 0.0, "ntf": 92.4, "ntf_sd": 3.2}, {"scene": "env1", "set": "tight", "hd": 100.0, "hd_sd": 0.0, "hb": 100.0, "hb_sd": 0.0, "ntf": 87.8, "ntf_sd": 4.5}, {"scene": "env1", "set": "bigrot", "hd": 100.0, "hd_sd": 0.0, "hb": 100.0, "hb_sd": 0.0, "ntf": 92.5, "ntf_sd": 3.1}, {"scene": "env1", "set": "hard", "hd": 100.0, "hd_sd": 0.0, "hb": 99.9, "hb_sd": 0.0, "ntf": 87.9, "ntf_sd": 3.8}, {"scene": "env1", "set": "seg", "hd": 99.9, "hd_sd": 0.0, "hb": 99.6, "hb_sd": 0.1, "ntf": 99.4, "ntf_sd": 0.3}, {"scene": "env3", "set": "full", "hd": 100.0, "hd_sd": 0.0, "hb": 100.0, "hb_sd": 0.0, "ntf": 92.3, "ntf_sd": 2.2}, {"scene": "env3", "set": "tight", "hd": 100.0, "hd_sd": 0.0, "hb": 99.9, "hb_sd": 0.0, "ntf": 87.6, "ntf_sd": 4.6}, {"scene": "env3", "set": "bigrot", "hd": 100.0, "hd_sd": 0.0, "hb": 100.0, "hb_sd": 0.0, "ntf": 92.2, "ntf_sd": 2.3}, {"scene": "env3", "set": "hard", "hd": 100.0, "hd_sd": 0.0, "hb": 99.9, "hb_sd": 0.0, "ntf": 88.5, "ntf_sd": 3.4}, {"scene": "env3", "set": "seg", "hd": 99.7, "hd_sd": 0.0, "hb": 99.2, "hb_sd": 0.0, "ntf": 99.1, "ntf_sd": 0.2}, {"scene": "env4", "set": "full", "hd": 99.0, "hd_sd": 0.4, "hb": 92.2, "hb_sd": 0.8, "ntf": 89.9, "ntf_sd": 4.0}, {"scene": "env4", "set": "tight", "hd": 99.4, "hd_sd": 0.2, "hb": 95.7, "hb_sd": 0.2, "ntf": 82.4, "ntf_sd": 3.3}, {"scene": "env4", "set": "bigrot", "hd": 99.1, "hd_sd": 0.3, "hb": 92.3, "hb_sd": 0.2, "ntf": 90.2, "ntf_sd": 4.0}, {"scene": "env4", "set": "hard", "hd": 99.6, "hd_sd": 0.0, "hb": 96.8, "hb_sd": 0.2, "ntf": 82.6, "ntf_sd": 3.4}, {"scene": "env4", "set": "seg", "hd": 99.3, "hd_sd": 0.1, "hb": 95.4, "hb_sd": 0.4, "ntf": 96.9, "ntf_sd": 1.3}], "extra": [{"scene": "env1 path b", "set": "full", "hd": 100.0, "hb": 99.8, "ntf": 95.5}, {"scene": "env3 path b", "set": "full", "hd": 98.1, "hb": 91.8, "ntf": 98.1}, {"scene": "env4 path b", "set": "full", "hd": 99.9, "hb": 99.8, "ntf": 92.3}, {"scene": "env1, prism 0.3", "set": "full", "hd": 100.0, "hb": 100.0, "ntf": 94.0}, {"scene": "env1, prism 0.3", "set": "hard", "hd": 99.4, "hb": 99.6, "ntf": 86.6}, {"scene": "env3, prism 0.3", "set": "full", "hd": 100.0, "hb": 98.4, "ntf": 83.7}, {"scene": "env3, prism 0.3", "set": "hard", "hd": 98.7, "hb": 98.4, "ntf": 74.0}, {"scene": "env4, prism 0.3", "set": "full", "hd": 99.3, "hb": 94.7, "ntf": 83.4}, {"scene": "env4, prism 0.3", "set": "hard", "hd": 99.5, "hb": 93.5, "ntf": 79.3}]};
+const SERIES = [
+  { key: 'ntf', name: 'NTFields', color: 'var(--s-ntf)' },
+  { key: 'hb', name: 'homotopy, base planner', color: 'var(--s-hb)' },
+  { key: 'hd', name: 'homotopy, dual planner', color: 'var(--s-hd)' },
+];
+const SETNAME = { full: 'whole path', tight: 'tight ends', bigrot: 'turn ≥ 150°', hard: 'hard', seg: 'sub-paths' };
+function dotplot(el, rows, label) {
+  const lo = 70, hi = 100, W = 900, left = 200, right = 24, rowH = 22, top = 30, gapH = 14;
+  let y = top, groups = [], prev = null;
+  rows.forEach(r => { if (prev !== null && r.scene !== prev) y += gapH; r._y = y; y += rowH; prev = r.scene; });
+  const H = y + 30, x = v => left + (Math.max(lo, v) - lo) / (hi - lo) * (W - left - right);
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('role', 'img'); svg.setAttribute('aria-label', label);
+  const add = (tag, attrs, text) => { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; svg.appendChild(e); return e; };
+  for (let v = lo; v <= hi; v += 5) {
+    add('line', { x1: x(v), x2: x(v), y1: top - 8, y2: H - 26, class: 'grid' });
+    add('text', { x: x(v), y: H - 8, 'text-anchor': 'middle' }, v + '%');
+  }
+  add('text', { x: left, y: 14 }, 'SE(3) success, forward mode');
+  prev = null;
+  rows.forEach(r => {
+    const cy = r._y + rowH / 2;
+    const lab = (r.scene !== prev ? r.scene + ' · ' : '') + (SETNAME[r.set] || r.set);
+    add('text', { x: left - 12, y: cy + 4, 'text-anchor': 'end', class: r.scene !== prev ? 'rowlab' : '' }, lab);
+    prev = r.scene;
+    add('line', { x1: x(Math.min(r.hd, r.hb, r.ntf)), x2: x(Math.max(r.hd, r.hb, r.ntf)), y1: cy, y2: cy, stroke: 'var(--rule)', 'stroke-width': 2 });
+    if (r.ntf_sd) add('line', { x1: x(r.ntf - r.ntf_sd), x2: x(Math.min(hi, r.ntf + r.ntf_sd)), y1: cy, y2: cy, stroke: 'var(--s-ntf)', 'stroke-width': 2, 'stroke-opacity': 0.45 });
+    SERIES.forEach(s => {
+      add('circle', { cx: x(r[s.key]), cy, r: 5.5, fill: s.color, stroke: 'var(--bg)', 'stroke-width': 2 });
+    });
+    const hit = add('rect', { x: left, y: r._y, width: W - left - right, height: rowH, fill: 'transparent' });
+    hit.addEventListener('mousemove', ev => show(ev, r));
+    hit.addEventListener('mouseleave', hide);
+  });
+  el.appendChild(svg);
+  const tip = document.createElement('div'); tip.className = 'tip'; tip.hidden = true; el.appendChild(tip);
+  function show(ev, r) {
+    tip.innerHTML = `<b>${r.scene}, ${SETNAME[r.set] || r.set}</b><br>homotopy dual ${r.hd.toFixed(1)} · base ${r.hb.toFixed(1)} · NTFields ${r.ntf.toFixed(1)}${r.ntf_sd ? ' ± ' + r.ntf_sd.toFixed(1) : ''}`;
+    tip.hidden = false;
+    const b = el.getBoundingClientRect();
+    let tx = ev.clientX - b.left + el.scrollLeft + 14; const ty = ev.clientY - b.top + 14;
+    if (tx + tip.offsetWidth > el.scrollWidth) tx = ev.clientX - b.left + el.scrollLeft - tip.offsetWidth - 14;
+    tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+  }
+  function hide() { tip.hidden = true; }
+}
+dotplot(document.getElementById('chart-main'), DATA.main, 'Dot plot of success per scene and test set for the three planners; homotopy dual is 99 to 100 percent everywhere, NTFields 82 to 99 percent.');
+dotplot(document.getElementById('chart-extra'), DATA.extra, 'Dot plot of success on the second paths and with prism length 0.3; homotopy dual 98 to 100 percent, NTFields 74 to 98 percent.');
+</script>

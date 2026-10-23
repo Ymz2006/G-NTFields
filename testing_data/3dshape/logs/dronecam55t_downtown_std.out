@@ -1,0 +1,29 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam55t.obj': 1 objects/groups
+  [0] 'dronecam55t'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/downtown.obj': 19 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'tower_1'  (24 triangles)
+  [2] 'tower_2'  (36 triangles)
+  [3] 'tower_3'  (24 triangles)
+  [4] 'tower_4'  (36 triangles)
+  [5] 'tower_5a'  (24 triangles)
+  [6] 'tower_5b'  (24 triangles)
+  [7] 'tower_6'  (24 triangles)
+  [8] 'tower_7'  (24 triangles)
+  [9] 'tower_8'  (36 triangles)
+  [10] 'tower_9'  (48 triangles)
+  [11] 'bridge_1'  (12 triangles)
+  [12] 'bridge_2'  (12 triangles)
+  [13] 'bridge_3'  (12 triangles)
+  [14] 'bridge_4'  (12 triangles)
+  [15] 'tree_1'  (108 triangles)
+  [16] 'tree_2'  (108 triangles)
+  [17] 'tree_3'  (108 triangles)
+  [18] 'tree_4'  (108 triangles)
+scene dronecam55t_downtown: shape radius 0.1623, half extent [0.462, 0.332, 0.49], sdf grid (154, 44, 65) (1.9s)
+[round 1] drawn 12000 in-band 478 formed 239 verified 236/239 (256s)  banked 236/1000  rrt-fail 3 recheck-fail 0
+[round 2] drawn 12000 in-band 423 formed 211 verified 211/211 (153s)  banked 447/1000  rrt-fail 3 recheck-fail 0
+[round 3] drawn 12000 in-band 424 formed 212 verified 210/212 (200s)  banked 657/1000  rrt-fail 5 recheck-fail 0
+[round 4] drawn 12000 in-band 448 formed 224 verified 223/224 (175s)  banked 880/1000  rrt-fail 6 recheck-fail 0
+[round 5] drawn 12000 in-band 457 formed 156 verified 156/156 (94s)  banked 1000/1000  rrt-fail 6 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam55t_downtown (1131s): rel angle p50 109 p90 167; |dp| p50 0.34; min clearance p50 0.0273; rrt path length p50 0.68; straight blocked frac mean 0.26

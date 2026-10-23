@@ -57,3 +57,32 @@ retrained here (`train/train_metric_baseline.py`) as the baseline. Homotopy (800
 epochs), SE(3) success on T / L / A: standard 98.9 / 98.9 / 98.9 vs 82.4 / 90.4 / 88.2; hard sets 96.7 / 97.8 / 96.5 vs
 54.3 / 65.0 / 60.6; through a hole 1.1x the plate 85.2 / 93.5 / 81.8 vs 52.4 / 63.6 / 42.8. See `models/graph_homotopy/README.md`
 section 4, `EXPERIMENTS.md` H11-H12 and `results/graph_homotopy/summary/expand_summary.md`.
+
+## Camera follow: a prism glued to a path (`models/path_constrained`, 2026-10-21)
+
+A square prism (0.02 x 0.2, the camera's line of sight) with one end glued to a point moving along a given path,
+rotation free: SE(3) planning restricted to the 4-d slice M = path x SO(3), with the path unrolled onto the x axis,
+the Eikonal residual projected onto M and a forward-only MPPI (the object never moves back). Exact box-scene
+geometry, RRT-verified test sets on env1 / env3 / env4. SE(3) success, whole path, mean of the three scenes (3
+seeds): homotopy (dual planner) 99.7 vs metric NTFields 91.5; tight endpoints 99.8 vs 85.9; prism length 0.3
+98.7-100 vs 74-94. See `models/path_constrained/README.md` and `EXPERIMENTS.md`; entry points
+`train/train_homotopy_path.py`, `train/train_metric_path.py`, `python -m unittest tests.test_path_constrained`,
+`models/path_constrained/scripts/`.
+
+## A stretchable link between two drones (`models/drone_link`, 2026-10-22)
+
+Two drones that must keep their radio link, planned as one body: a box from drone a to drone b that stretches and
+shrinks along one axis (width 0.02, length L in [0.06, 0.30]). A pose is drone a's SE(3) pose (R e_z = the direction
+to drone b) plus the length: 7 DOF. The exact clearance takes the length limits as walls; the speed is re-sampled with
+the original formulas in 7 DOF; the original metric NTFields is trained unchanged at dim 7. Scenes: the camera test's
+forest and three new ones that block the line of sight differently (windows, corridor, scaffold;
+`dataprocessing/make_link_scenes.py`). Seeds 0-2, 1000 certified cases per set, solved with the link valid the whole
+way, NTFields vs independent drones on their shortest paths: random queries 64-71 % vs 38-55 %, crossings 13-43 % vs
+3-25 % (corridor 32 vs 3). NTFields stalls on long queries (local minima of the field). Without the TD / normal terms
+the 7-d training fails in three of four scenes. Making a fifth of the training pairs span the room lifts the
+crossings in the forest (16 -> 54 %) and the corridor (32 -> 67 %) in all three seeds, trades random queries for
+crossings in the scaffold, and leaves the windows' training stuck on its initial loss plateau in two of three seeds
+(under 1 % solved); half of the pairs collapses the field in three scenes. See
+`models/drone_link/README.md` and `EXPERIMENTS.md`; entry points `train/train_metric_link.py`,
+`python -m unittest tests.test_drone_link`, `models/drone_link/scripts/` (viewer `link_viser.py`, port 8110); report
+https://claude.ai/artifact/QWuiacZDu1HVpRb5ioDHiq.

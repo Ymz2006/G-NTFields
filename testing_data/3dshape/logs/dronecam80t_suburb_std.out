@@ -1,0 +1,28 @@
+[load_obj] '/workspace/datasets/3dshape/obj/dronecam80t.obj': 1 objects/groups
+  [0] 'dronecam80t'  (86 triangles)
+[load_obj] '/workspace/datasets/3dshape/obj/suburb.obj': 15 objects/groups
+  [0] 'wall (1)'  (88 triangles)
+  [1] 'house_1'  (36 triangles)
+  [2] 'house_2'  (36 triangles)
+  [3] 'house_3'  (36 triangles)
+  [4] 'house_4'  (24 triangles)
+  [5] 'house_5'  (36 triangles)
+  [6] 'house_6'  (24 triangles)
+  [7] 'tree_1'  (156 triangles)
+  [8] 'tree_2'  (132 triangles)
+  [9] 'tree_3'  (156 triangles)
+  [10] 'tree_4'  (132 triangles)
+  [11] 'tree_5'  (156 triangles)
+  [12] 'tree_6'  (132 triangles)
+  [13] 'tree_7'  (156 triangles)
+  [14] 'tree_8'  (132 triangles)
+scene dronecam80t_suburb: shape radius 0.2131, half extent [0.436, 0.299, 0.49], sdf grid (195, 43, 64) (2.3s)
+[round 1] drawn 12000 in-band 357 formed 178 verified 139/178 (1015s)  banked 139/1000  rrt-fail 39 recheck-fail 0
+[round 2] drawn 12000 in-band 346 formed 173 verified 131/173 (1048s)  banked 270/1000  rrt-fail 81 recheck-fail 0
+[round 3] drawn 12000 in-band 307 formed 153 verified 129/153 (693s)  banked 399/1000  rrt-fail 105 recheck-fail 0
+[round 4] drawn 12000 in-band 337 formed 168 verified 137/168 (851s)  banked 536/1000  rrt-fail 136 recheck-fail 0
+[round 5] drawn 12000 in-band 354 formed 177 verified 140/177 (874s)  banked 676/1000  rrt-fail 173 recheck-fail 0
+[round 6] drawn 12000 in-band 343 formed 171 verified 136/171 (938s)  banked 812/1000  rrt-fail 208 recheck-fail 0
+[round 7] drawn 12000 in-band 335 formed 167 verified 133/167 (820s)  banked 945/1000  rrt-fail 242 recheck-fail 0
+[round 8] drawn 12000 in-band 323 formed 75 verified 64/75 (379s)  banked 1000/1000  rrt-fail 253 recheck-fail 0
+wrote 1000 pairs to /workspace/testing_data/3dshape/dronecam80t_suburb (7333s): rel angle p50 100 p90 167; |dp| p50 0.32; min clearance p50 0.0268; rrt path length p50 0.65; straight blocked frac mean 0.26

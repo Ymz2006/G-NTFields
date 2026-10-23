@@ -13,6 +13,8 @@ sqrt(|dp|^2 + (theta / 2 pi)^2), uniform sampling); a pair it cannot connect wit
 Variants (constraints in normalized units; clearance band = exact endpoint clearance on the first cloud, the
 other two clouds must give >= offset as well):
 
+  std      offset 0.02, no constraint (the standard sets' distribution, every pair RRT-verified; --name <cell>
+           writes it as the cell's standard set: the camera cells of make_camera3d.py, 2026-10-21)
   long     offset 0.02, |dp| >= 0.6                                  (top ~15 % of the standard sets' distances)
   bigrot   offset 0.02, relative rotation >= 150 deg                  (the ridge region: ~25 % of the standard sets)
   tight    offset 0.005, both clearances in [0.005, 0.02]             (both ends inside the slow band, below the
@@ -44,7 +46,7 @@ import numpy as np
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--scene', required=True, help='<shape>_<env> of testing_data/3dshape (standard) or datasets/3dshape (hole)')
-ap.add_argument('--variant', required=True, choices=['long', 'bigrot', 'tight', 'hard', 'through'])
+ap.add_argument('--variant', required=True, choices=['std', 'long', 'bigrot', 'tight', 'hard', 'through'])
 ap.add_argument('--n', type=int, default=1000)
 ap.add_argument('--out', default='/workspace/testing_data/3dshape')
 ap.add_argument('--name', default='', help='output cell name (default <scene>_<variant>)')
@@ -75,6 +77,7 @@ _SDF_SIGN = igl.SignedDistanceType.SIGNED_DISTANCE_TYPE_FAST_WINDING_NUMBER
 CLEAR_CAP = 0.03
 INF = float('inf')
 VARIANTS = {
+    'std': dict(offset=0.02, clear=(0.02, INF), dp=(0.0, INF), ang=(0.0, 180.0)),      # the standard sets, RRT-verified
     'long': dict(offset=0.02, clear=(0.02, INF), dp=(0.6, INF), ang=(0.0, 180.0)),
     'bigrot': dict(offset=0.02, clear=(0.02, INF), dp=(0.0, INF), ang=(150.0, 180.0)),
     'tight': dict(offset=0.005, clear=(0.005, 0.02), dp=(0.0, INF), ang=(0.0, 180.0)),

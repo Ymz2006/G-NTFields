@@ -1,0 +1,2 @@
+1000 / 1000 cases (1154 tried, 1315s)
+{"n": 1000, "tried": 1154, "unsolved": 0, "seconds": 1315.7527482509613, "direct_short_ok": 0.246, "direct_long_ok": 0.149, "direct_either_ok": 0.339, "rrt_iters_median": 31.0, "angle_deg_median": 134.19555940796937, "span_median": 1.5026001601841128}

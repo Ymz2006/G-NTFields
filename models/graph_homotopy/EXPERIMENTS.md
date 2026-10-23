@@ -488,3 +488,192 @@ run_shapes_queue.py --grid all). Summary section 6 of results/graph_homotopy/sum
 The lifted encoder helps where obstacles separate the classes (walled rooms, Gibson: fewer collisions, rect_small 24.0 ->
 17.4 %) and is level to slightly behind on the T / L / A sets, where both heads are near 98 %. It stays ahead of the full
 NTFields on all 60 shape / T / L / A sets; rect_small_eastville is still behind the full NTFields (78.6 vs 88.1).
+
+## H17. Camera + object: a bird followed by a camera that must keep it in view (2026-10-21)
+
+Application test of the SE(3) planners (user: "sell this idea"). Bodies (`dataprocessing/make_camera3d.py`): `bird3d` = a
+polycube glider (fuselage, head, wings, tail plane, fin; 48 long, 48 span, 18 tall) plus a 1-unit cube at the camera point
+50 units behind it on its axis — the *rigid follower*, the camera is attached but has no view volume; `birdcam3d` = the same
+bird, a 2-unit plate covering its silhouette, and a rectangle-based pyramid whose tip is the camera (field of view
+51° x 25°, base 48 x 22) — one rigid body in SE(3), so a collision-free path means the bird flies, the camera flies and
+nothing enters the line of sight. Both bodies share the bounding-box centre, so one test set scores both. Scenes in the
+env3 room shell (env_scale 220.457): `forest` (four trees 2 x 2: 12-unit trunks to y = 96, 30-unit crowns at y 90..120) and
+`city` (six buildings 45..100 high in two rows). Free random placements of the camera-aware body: 3.5 % forest, 4.5 % city
+(env9: 4.3 %). Data: 400k narrow-band pairs per cell (4 shards x 100k; `preprocess_obj_fast.py` gained an exact
+signed-distance-grid gate for the band test and a tighter exact env cull in evaluate_placements — selftest: identical pairs,
+values within 1e-5; ~40 pairs/s per GPU instead of ~4). Models hlift / hminL / mbtd x seeds 0-2, 8000 epochs, same recipes
+as H15/H16 (`run_camera_queue.py`, 98 jobs, 7.4 h on 4 GPUs). Test sets `testing_data/3dshape/birdcam3d_{forest,city}`:
+1000 RRT-verified pairs each (`make_test_sets.py --variant std`, offset 0.02). Scoring `plan_eval_homotopy.py --camera
+birdcam3d_camera.json`: besides the SE(3) collision test, at every waypoint the camera ray-casts (Moller-Trumbore, torch) to
+its 256 visible bird surface samples against the scene mesh; *follow success* = converged, bird collision-free, >= 99 % of
+the samples seen at every waypoint. Summary `results/graph_homotopy/summary/camera_summary.md`; demo dashboard
+https://claude.ai/artifact/7ufo8euaZkFA85pdV5E4uZ (page source `models/graph_homotopy/report/camera_dash/`, data export
+`aggregate_camera.py`, `export_camera_dash.py`, `export_camera_showcase.py`).
+
+Percent of 1000 pairs, mean of 3 seeds. "body" = trained on birdcam3d (the planner knows the view pyramid), "follower" =
+trained on bird3d (plans the bird with the camera as a point), both scored on the camera-aware body's pairs.
+
+| scene | model (planner) | body SE(3) | body follow | follower SE(3) | follower follow | follower view blocked |
+|---|---|---|---|---|---|---|
+| forest | lifted encoder (dual) | 95.8 | 94.4 | 77.6 | 79.7 | 19.3 |
+| forest | homotopy head (dual) | 95.9 | 95.1 | 78.5 | 79.8 | 19.3 |
+| forest | full NTFields (base) | 86.3 | 85.7 | 67.3 | 68.3 | 29.1 |
+| city | lifted encoder (dual) | 98.4 | 97.6 | 80.7 | 86.4 | 12.7 |
+| city | homotopy head (dual) | 98.2 | 97.9 | 80.4 | 86.5 | 12.8 |
+| city | full NTFields (base) | 86.8 | 86.3 | 74.3 | 77.5 | 17.3 |
+
+Paired (seed-matched, exact McNemar): body vs follower on follow success +476 / -36 (forest, lifted), +357 / -21 (city,
+lifted), +496 / -38 and +366 / -25 for the homotopy head, all p < 1e-78 — the follower's losses are view blocks
+(12-19 %), not bird collisions (1-2 %), so planning the view pyramid as part of the shape is what keeps the bird in frame.
+Lifted vs homotopy: no difference on either scene (p 0.13-0.93); both beat the full NTFields on the body by 9-11 points
+(+307..+379 / -32..-56, p < 1e-47). The base planner of the homotopy heads is within 1.5 points of dual here. Caveats:
+the camera is attached rigidly (one body), so the test does not optimise a separate camera trajectory; 400k pairs per cell
+against 800k in the shape grids.
+
+H17 viewers (2026-10-21). Dashboard: the showcase file is now rows ({part, data}; the Dashboard type reads JSON only as
+rows, which is why the first publish showed no figures), and each scene card has a Scene view / Camera view toggle;
+the camera view renders six waypoints per plan from the camera (z-buffer, the image is the pyramid's 51 x 25 degree
+cross-section; obstacles inside the pyramid in front of the bird tinted red, everything beyond the bird faded), with
+the first view break, the worst view and the first bird collision swapped in. Interactive viewer:
+`dataprocessing/camera3d_viser.py` (port 8099, container cam_viser): scene / planner / body / seed, outcome filters
+(incl. "camera-aware succeeds, follower fails"), bird and camera paths (camera path red where the view breaks), the body
+flying along the path, a Camera POV toggle (browser view at the camera, everything outside the pyramid masked) and a
+server-rendered camera image in the panel (`--render-test DIR` writes test images).
+
+## H18. Drone + chase camera: five scenes of increasing difficulty, six camera set-ups (2026-10-22, in progress)
+
+Follow-up of H17 (user: more realistic -- a smaller aircraft, the camera further away, taller and more detailed city,
+trees with overhanging branches the drone weaves through; five scenes mixing buildings and forest, increasing
+difficulty; six camera points of view per scene (closer / further, wider / narrower); lifted model vs NTFields at
+4000 epochs; the scenes must be rigorous enough that "attach a camera behind the drone and plan the drone alone"
+performs very badly). Bodies (`dataprocessing/make_dronecam3d.py`): `drone_only` = a delta-wing polycube, fuselage
+14 x 4 x 4, wing span 20, fin 4 tall (the H17 bird was 48 x 18 x 48); `dronecam<L><f>` = drone + 2-unit plate + view
+pyramid with the camera L = 30 / 55 / 80 units behind the wing (1.5 / 2.75 / 4 spans; H17: 50 behind a 48-span bird)
+and base `t` (tight, 22 x 10: the silhouette + 1) or `w` (wide, 34 x 16), fields of view 59 x 30 (30w) .. 16 x 7 deg
+(80t); `drone<L>` = drone + 1-unit cube at the camera (the rigid follower; same frame centre as the two camera bodies of
+that L, so one test set scores both). Scenes in the env3 shell (scale 220.457), box soups (12 triangles per box;
+`<env>_boxes.json` carries the boxes and part labels): meadow (5 trees, 2 sheds), suburb (6 houses, 8 trees with
+22-30-unit branches over the streets), campus (6 blocks 64..95 high, 3 sky bridges, 6 trees, porticos), downtown
+(3 x 3 tower grid 84..130 high, streets 40 / 44, 4 sky bridges, masts to y 152, porticos, 4 street trees), overgrown
+(the tower grid with 8 kerb trees whose 20-26-unit branches cross the streets, 3 cables, 3 sky bridges). Trees: 6 x 6
+trunk, stepped crown 40 tall, 2-4 branches 4 x 4 with a leaf clump. Free fraction of uniform random placements
+(`--check`, room shell counted), drone55 / dronecam55w / dronecam80w: meadow 31 / 16 / 9.5 %, suburb 22 / 7.7 / 3.8,
+campus 17 / 6.0 / 2.7, downtown 16 / 6.0 / 2.9, overgrown 10 / 1.8 / 0.8 (H17 bodies: 3.5-4.5 %).
+
+Queue `models/graph_homotopy/scripts/run_dronecam_queue.py` (status `results/graph_homotopy/queue_status_dronecam.json`):
+45 cells (5 scenes x 3 distances x {follower, tight, wide}), 4 x 100k pairs each, hlift (graph_homotopy_lift) and
+mbtd x seeds 0-2 at 4000 epochs, 30 RRT test sets (one per camera-aware cell, `--round 12000 --max-rounds 150`),
+hlift dual / mbtd base; the follower of a distance is scored on both sets of that distance against the full camera
+body. Tier A (the 55w camera and drone55 on every scene) runs first. Results `results/graph_homotopy/plan_dronecam/`,
+summary `aggregate_dronecam.py` -> `results/graph_homotopy/summary/dronecam_summary.md` and
+`results/graph_homotopy/dronecam/dash/dronecam_results.csv`. Viewer `dataprocessing/dronecam_viser.py` (port 8097,
+container dronecam_viser): scene / camera set-up / planner / body / seed, Camera POV and panel image as H17, a demo
+pose where results are missing, `--snapshot DIR` overview renders.
+
+Preprocessing (`preprocess_obj_fast.py`, 2026-10-22): the collision and clearance queries now run on signed-distance
+grids of the shape (fine h 0.005 for inside / outside, coarse h 0.02 padded 0.6 for the nearest-point ranking) with the
+exact test only on the env points the grids cannot decide, plus an exact grid collision gate on x1 before its full
+evaluation; the clearance cull bound from the coarse grid instead of a (B, 250, E) distance table; env points 75 % on the obstacles / 25 % on the room shell (`env_weighted_sampling`, 12k points). The rotational-clearance stage is kept (a third of the time; speed.npy = (distance speed + angle / pi) / 2 needs it -- a first run without it halved the speeds and was redone). Selftest (original
+vs fast, same seeds): identical pairs on forest/birdcam3d and campus/dronecam55w, values within float round-off
+(directions up to 3e-5 where a clearance of 1e-3 divides). With the machine shared with another session's trainings
+(load ~100) the old code ran at ~1 pair/s per shard on these bodies; the first grid version profiled at ~23/s alone.
+
+### H18 interim results (tier A, meadow complete at 06:00; queue running, 44 / 850 jobs)
+
+Meadow, camera 55 behind, wide (34 x 17 deg), 1000 pairs, percent (mean +- sd over seeds; lifted body 1 seed so far):
+
+| model | planned as | clean frame | follow success | drone collision | view blocked | not converged |
+|---|---|---|---|---|---|---|
+| lifted encoder | camera-aware body | 95.9 | 96.2 | 0.9 | 3.0 | 0.0 |
+| lifted encoder | rigid follower | 52.8 +- 0.5 | 73.8 +- 1.4 | 0.1 | 26.0 +- 1.5 | 0.0 |
+| full NTFields | camera-aware body | 70.3 +- 1.6 | 71.8 +- 2.5 | 9.7 | 21.0 +- 1.9 | 20.3 +- 2.0 |
+| full NTFields | rigid follower | 44.6 +- 1.0 | 57.5 +- 1.4 | 8.5 | 39.3 +- 1.0 | 10.7 +- 0.8 |
+
+Paired (seed-matched, exact McNemar): lifted body vs follower +216 / -6 on follow success (p 5e-56), +440 / -4 on
+clean frame; lifted vs NTFields on the body +252 / -10 (p 1e-61). So even in the easiest scene the rigid follower
+loses the drone on a quarter of the pairs, and NTFields on the same body fails to converge on a fifth. Dashboard
+https://claude.ai/artifact/7Qrf1ARx4mWe17HGGMxQyw (store: datasets results / paired / showcase from
+`dronecam_results.csv`, `dronecam_paired.csv`, `export_dronecam_showcase.py`; page
+`models/graph_homotopy/report/dronecam_dash/`). The machine is shared (load ~195 on 36 cores, GPUs full): one
+evaluation takes ~30 min of CPU collision checking, so the full queue needs 1-2 days.
+
+Update 08:20 (95 / 810 jobs; suburb and campus at 55w complete, 3 seeds except the campus lifted / NTFields bodies at
+1): drone kept in frame, lifted body / lifted follower / NTFields body / NTFields follower: meadow 96.9 / 72.1 / 71.8 /
+57.5, suburb 98.4 / 78.2 / 73.0 / 62.8, campus 97.5 / 73.0 / 72.0 / 57.1. The follower's typical failure is its camera
+point flying into a tree crown or leaf clump (view 0 % for a few steps; the point-sampled body check can miss a 1-unit
+cube fully inside a solid, the ray cast does not). `binom_two_sided` moved to log space (2^n overflowed at n > 1024).
+
+Update 12:10 (201 / 765 jobs): meadow complete for all six camera set-ups (bodies 1 seed, followers 2-3). Drone kept
+in frame, lifted body / lifted follower / NTFields body: 30t 99.6 / 91.5 / 76.0, 30w 98.0 / 92.6 / 77.8, 55t 95.7 /
+67.6 / 71.2, 55w 96.9 / 72.1 / 71.8, 80t 94.9 / 50.8 / 64.7, 80w 94.4 / 57.6 / 65.5. The follower degrades with the
+camera distance (its camera point sweeps a longer lever arm through the crowns); the camera-aware body stays above 94 %.
+
+#### 2026-10-22 14:20 — exact clearance check moved to the GPU
+
+The evaluation's long pole was the ground-truth clearance check: one libigl signed-distance call per waypoint
+(≈600k per evaluation across the full plan, the drone-only plan, both sheets and the goal) in a 4-process pool,
+20–50 min per evaluation on this shared machine against 1–4 min of GPU planning.  `scripts/gpu_clearance.py`
+computes the same quantity batched on the GPU (Ericson point–triangle distance + generalized winding number over
+(scene sample, body triangle) pairs, bounding-box cut for samples that cannot beat the 0.03 cap); the evaluator takes
+`--gpu-clearance` and the dronecam queue passes it.  Equivalence: on three finished runs (475k waypoints) zero sign
+mismatches vs the stored libigl values; A/B of 100 cases of meadow 55w lifted body: identical paths, all 17 boolean
+record fields identical, clearance magnitudes within 3.4e-5 (libigl's fast-winding path itself is off by up to 6e-5
+from its exact unsigned distance, the GPU version matches the exact one to 1e-17).  Clearance time 153 s → 15 s on
+100 cases; queue restarted 14:20 with `--max-eval 8` (266/735 jobs done).  Finished cells keep their CPU-checked
+results (same signs, hence same success rates).
+
+#### 2026-10-22 14:35 — suburb complete for all six cameras (13 of 30 cells; dashboard datasets results/paired v6)
+
+Drone kept in frame (follow success %, lifted body / lifted follower / NTFields body / NTFields follower; seeds 1–3):
+30t 97.9 / 92.6 / 79.6 / 69.6 · 30w 98.1 / 94.8 / 75.4 / 72.8 · 55t 97.9 / 71.6 / 71.3 / 53.6 · 55w 98.4 / 78.2 / 73.0 / 62.8 ·
+80t 96.0 / 64.5 / 67.7 / 50.0 · 80w 95.5 / 71.0 / 66.2 / 59.2.  Same shape as meadow: the farther and tighter the camera,
+the more the rigid follower loses the drone, while the camera-aware lifted body stays above 95 %.
+
+#### 2026-10-22 15:40 — campus 5 of 6 cameras (17 of 30 cells)
+
+Campus, drone kept in frame (%, lifted body / lifted follower / NTFields body / NTFields follower; 55w 3 seeds, others 1):
+30t 99.2 / 88.0 / 84.5 / 73.6 · 30w 97.9 / 93.5 / 81.3 / 76.8 · 55t 97.1 / 67.3 / 72.3 / 50.5 · 55w 96.9 / 72.2 / 72.8 / 57.3 ·
+80t 95.2 / 63.6 / 67.9 / 45.8.  Queue 379/725, 28 jobs running, no failures; downtown and overgrown still training.
+
+#### 2026-10-22 16:55 — downtown 55w first cell, campus complete (19 of 30 cells; dashboard results/paired v8, showcase v5)
+
+Campus now 3 seeds on five cameras (30t 99.4 / 89.7 / 84.3 / 73.0 · 30w 98.0 / 93.4 / 82.8 / 77.5 · 55t 97.0 / 67.5 / 73.8 / 50.5 ·
+55w 96.9 / 72.2 / 72.2 / 57.3 · 80t 94.3 / 62.7 / 67.0 / 46.1 · 80w 93.9 / 64.7 / 65.6 / 51.5, 1 seed).
+Downtown 55w (seed 0): lifted body 95.2, lifted follower 52.0, NTFields body 69.8, NTFields follower 47.2 — the tall
+blocks halve the rigid follower's in-frame rate, the camera-aware body barely moves.  Showcase gains the downtown scene
+(pair 657, tier 0 of 173 candidates: every rigid follower and the NTFields body lose the drone by step 6).
+Queue 445/700, 34 running, no failures.
+
+#### 2026-10-22 17:10 — overgrown 55w first cell: all five showcase scenes on the dashboard (results/paired v9, showcase v6)
+
+Overgrown 55w (seed 0): lifted body 86.0, lifted follower 53.4, NTFields body 55.3, NTFields follower 47.7 — the hardest
+scene: the overhanging crowns cost even the camera-aware lifted body 10 points, and the full NTFields body drops to the
+follower's level.  Downtown 55w now 3 seeds: 95.2 / 52.0 / 69.3 / 46.6.  Showcase overgrown pair 521 (tier 0 of 205
+candidates).  Queue 468/700, 35 running, no failures.
+
+#### 2026-10-22 19:00 — downtown complete for all six cameras (25 of 30 cells; dashboard results/paired v10)
+
+Downtown, drone kept in frame (%, lifted body / lifted follower / NTFields body / NTFields follower; 3 seeds, 80w 1):
+30t 99.2 / 79.8 / 86.0 / 69.4 · 30w 98.8 / 83.3 / 83.9 / 74.9 · 55t 97.1 / 49.0 / 78.0 / 43.3 · 55w 95.2 / 52.0 / 69.3 / 46.6 ·
+80t 87.8 / 34.4 / 58.2 / 28.8 · 80w 87.0 / 43.1 / 54.6 / 36.3.  The rigid follower with the far camera keeps the drone
+in frame on about a third of the pairs; the camera-aware lifted body stays at 87–99.  Overgrown 55w 3 seeds:
+85.6 / 55.8 / 57.3 / 47.0.  Queue 546/670, 34 running, no failures; only overgrown's other five cameras remain.
+
+#### 2026-10-22 20:20 — overgrown 4 of 6 cameras (28 of 30 cells; dashboard results/paired v11)
+
+Overgrown, drone kept in frame (%, lifted body / lifted follower / NTFields body / NTFields follower):
+30t 91.7 / 66.9 / 69.2 / 48.4 (3 seeds) · 30w 94.7 / 75.5 / 69.1 / 62.3 (1) · 55t 86.8 / 44.0 / 49.9 / 31.9 (2) ·
+55w 85.6 / 55.8 / 57.3 / 47.0 (3).  Queue 606/665, 19 running, no failures; 80t / 80w overgrown remain.
+
+#### 2026-10-22 22:35 — H18 complete: 5 scenes x 6 cameras x 4 plans x 3 seeds (queue 660/660, no failures; dashboard results/paired v12)
+
+Drone kept in frame, mean over the six camera set-ups (%, lifted body / lifted follower / NTFields body / NTFields follower):
+meadow 96.5 / 71.9 / 70.8 / 57.6 · suburb 97.1 / 78.4 / 73.1 / 61.0 · campus 96.6 / 75.0 / 74.3 / 59.3 ·
+downtown 94.1 / 56.9 / 71.7 / 49.9 · overgrown 86.4 / 55.2 / 58.3 / 42.5 · all 30 cells 94.2 / 67.5 / 69.6 / 54.0.
+Per cell the lifted body ranges 77.8 (overgrown 80t) – 99.5 (meadow 30t); the rigid follower 34.4 (downtown 80t) – 94.1
+(suburb 30w).  Paired (80w, all scenes, seed-matched): lifted body vs follower +904 / −22 (follow success), +1055 / −6
+(clean frame); lifted vs NTFields body +761 / −21.  Two difficulty axes behave as intended: camera distance / narrowness
+(the follower loses 5–15 points per step back), and scene tier (downtown halves the follower, overgrown is the only scene
+that costs the camera-aware body itself more than 10 points).  Timing: 97 evaluations on the CPU check (median clearance
+1536 s) vs 263 on the GPU check (median 245 s, on GPUs shared with the trainings).  Dashboard: 5 showcase scenes,
+results/paired tables; viewer dronecam_viser on 8097.  Nothing committed.

@@ -1,0 +1,47 @@
+{
+  "shape_scale": 1.0,
+  "shape_obj": "/workspace/datasets/3dshape/obj/dronecam30t.obj",
+  "env_obj": "/workspace/datasets/3dshape/obj/downtown.obj",
+  "margin": 0.05,
+  "offset": 0.02,
+  "rot_norm": 6.283185307179586,
+  "testing_data": true,
+  "yrot": false,
+  "two_d": false,
+  "shape_z_thickness": null,
+  "env_scale": 220.457,
+  "env_center": [
+    99.0,
+    91.590127,
+    -89.991084
+  ],
+  "num_tets": 91,
+  "shards": 4,
+  "env_seed": 1,
+  "torch_seeds": [
+    1000,
+    1001,
+    1002,
+    1003
+  ],
+  "variant": "std",
+  "scene": "dronecam30t_downtown",
+  "constraints": {
+    "offset": 0.02,
+    "clear": [
+      0.02,
+      Infinity
+    ],
+    "dp": [
+      0.0,
+      Infinity
+    ],
+    "ang": [
+      0.0,
+      180.0
+    ]
+  },
+  "rrt_verified": true,
+  "generator": "models/graph_homotopy/scripts/make_test_sets.py",
+  "seed": 1
+}
